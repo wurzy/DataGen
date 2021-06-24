@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "colecao_583ce287-245f-4026-8d6a-b38b7cef7974",
+  "info": {
+    "name": "colecao_583ce287-245f-4026-8d6a-b38b7cef7974"
+  },
+  "options": {},
+  "attributes": {
+    "guid": {
+      "type": "string",
+      "required": true
+    },
+    "indice": {
+      "type": "integer",
+      "required": true
+    }
+  }
+}

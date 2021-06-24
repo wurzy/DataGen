@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<autoEliminação xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:/Users/jcr/Documents/WebApps/NodeJS/docker-clav/CLAV2018/public/schema/autoEliminacao.xsd">
+    <fonteLegitimação>
+        <tipo>PGD</tipo>
+        <diploma>Portaria 194/2011</diploma>
+    </fonteLegitimação>
+    <fundos>
+        <fundo>DGLAB</fundo>
+    </fundos>
+    <classes>
+        <classe>
+            <código>070.01.07</código>
+            <referência>55</referência>
+            <anoInício>2010</anoInício>
+            <anoFim>2012</anoFim>
+            <dimensãoSuporte>
+                <papel>10</papel>
+                <digital>1</digital>
+                <outro>
+                    <valor>2</valor>
+                    <unidade>pasta A4</unidade>
+                </outro>
+            </dimensãoSuporte>
+            <númeroAgregações>5</númeroAgregações>
+            <agregações>
+                <agregação>
+                    <código>MF - DSRICT</código>
+                    <título>Departamento de Suporte à Rede de Instituições...</título>
+                    <ano>2010</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>MF - DGA</código>
+                    <título>Departamento de Gestão e Administração</título>
+                    <ano>2011</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>MF - FCCN</código>
+                    <título>Fundação para a Computação Científica Nacional</título>
+                    <ano>2011</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>MF - DFA</código>
+                    <título>Departamento de Formação Avançada</título>
+                    <ano>2011</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>MF - DPP</código>
+                    <título>Departamento de Programas e Projetos</título>
+                    <ano>2010</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+            </agregações>
+        </classe>
+        <classe>
+            <código>100.05.01.02</código>
+            <referência>103.2</referência>
+            <anoInício>1980</anoInício>
+            <anoFim>1990</anoFim>
+            <dimensãoSuporte>
+                <papel>123</papel>
+            </dimensãoSuporte>
+            <númeroAgregações>3</númeroAgregações>
+            <agregações>
+                <agregação>
+                    <código>PNA 1</código>
+                    <título>Prémios Não Atribuídos</título>
+                    <ano>1991</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>PNA 2</código>
+                    <título>Prémios Não Atribuídos</título>
+                    <ano>1991</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+                <agregação>
+                    <código>PNA 3</código>
+                    <título>Prémios Não Atribuídos</título>
+                    <ano>1991</ano>
+                    <naturezaIntervenção>DONO</naturezaIntervenção>
+                </agregação>
+            </agregações>
+        </classe>
+    </classes>
+</autoEliminação>

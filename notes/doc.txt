@@ -1,0 +1,186 @@
+ESTRUTURA DSL:
+
+<!LANGUAGE pt/en>
+{...}
+
+USADAS NA ROOT DO OBJETO (E NÃO À FRENTE DA CHAVE DO VALOR) ---------------------------------------------------------------------------------------------------------------------
+
+missing(x) {props} - probabilidade x(1-99) de o objeto não possuir as propriedades (1+) especificadas
+
+having(x) {props} - probabilidade x(1-99) de o objeto possuir as propriedades (1+) especificadas
+
+or() {props} - de todas as propriedades especificadas (1+), apenas é selecionada 1 para o objeto - mutuamente exclusivas
+
+at_least(x) {props} - de todas as propriedades especificadas (1+), são selecionadas pelo menos x delas para o objeto
+
+if (condition) {props} - se a condição se verificar, o objeto tem as props especificadas
+(else if (condition) {props})* - se as condições anteriores não se verificarem e esta sim, o objeto tem as props especificadas
+			       - pode haver entre 0 e n else ifs
+(else {props})? - se nenhuma das condições anteriores se verificar, o objeto tem as props especificadas
+		- o else é opcional
+
+function(gen) {code} - function é o nome da propriedade, o resultado da execução do ode é o valor
+		     - o argumento gen tem de estar especificado
+		     - no código, pode-se usar gen.x para aceder a qualquer moustache x ou ao range
+		     - no código, pode-se usar this.x para aceder a qualquer propriedade x definida acima no modelo da DSL
+
+
+VALORES (USADOS À FRENTE DA CHAVE DE UMA PROP DE OBJETO, NUMA POSIÇÃO DE ARRAY OU À FRENTE DE UM REPEAT) (inclui os moustaches) --------------------------------------------------------------------------------------
+
+range(n*) - gera uma lista [0,n[ - ARRAY INTEIROS
+
+range(init*,end*) - gera uma lista [init,end[; ordem ascendente ou descendente - ARRAY INTEIROS
+
+range(init*,end*,step*) - gera uma lista [init,end[, de step em step valores; ordem ascendente ou descendente - ARRAY INTEIROS
+
+[ 'repeat(n*)': ... ] - repete o elemento à frente n vezes; o mesmo array pode ter vários repeats seguidos - ARRAY
+		      - o elemento à frente pode ser uma função anónima, uma interpolação (pode ser só um moustache ou uma combinação de moustaches e strings), string, int, float, boleano, null, array, objeto, range ou repeat (nunca testei isto, tenho de ver depois lol)
+
+[ 'repeat(min*, max*)': ... ] - repete o elemento à frente entre min a max vezes; o mesmo array pode ter vários repeats seguidos - ARRAY
+
+gen => {code} - o resultado do code é o valor da prop
+
+
+MOUSTACHES ---------------------------------------------------------
+
+- valores de propriedades de objetos
+- valores de arrays
+- a seguir a qualquer moustache, pode-se colocar .string() para o converter para string, p.e. '{{boolean()}}'.string(): false -> "false"
+
+- qualquer interpolação pode ser encapsulada por unique(), p.e. unique('{{continent()}}')
+	-> se a interpolação tiver apenas 1 moustache dentro, que seja um random ou um moustache dos datasets de suporte
+		-> e o número do repeat for <= ao número de valores diferentes desse moustache, é garantido que todos os valores são diferentes
+		-> e o número do repeat for > ao número de valores diferentes desse moustache, dá erro
+	-> pode ter só 1 moustache e strings normais que garante que os valores gerados são únicos na mesma, p.e. unique('Continente: {{continent()}}')
+	-> se só tiver 1 moustache mas não for random ou moustache dos datasets de suporte, NÃO garante que os valores são todos diferentes´
+	-> se a interpolação tiver > 1 moustache dentro, NÃO garante que os valores são todos diferentes, p.e. unique('{{continent()}} - {{country()}}') pode ter valores repetidos
+
+* - pode ser uma referência local, p.e. this.prop
+
+'{{objectId()}}' - gera um _id aleatório a la mongo - STRING
+
+'{{guid()}}' - gera um UUID aleatório - STRING
+
+'{{index()}}' - índice atual no repeat ou array - INTEIRO
+'{{index(offset)}}' - índice atual no repeat ou array + offset - INTEIRO
+
+'{{boolean()}}' - gera um boleano aleatório - BOLEANO
+
+--------------------------------- NOVO --------------------------------------------------------------------------------------------------------------------------------
+
+'{{integer(int1*, int2*)}}' - gera um inteiro aleatório >= int1 e <= int2 - INTEIRO
+
+'{{formattedInteger(int1*, int2*, padding*(int), unidades(string))}}' - gera um inteiro aleatório >= int1 e <= int2
+								      - garante que tem pelo menos tantas unidades quanto o pad (se o user não quiser dar padding, pode por 0)
+								      - concatena o último arg no fim (string de unidades com 1+ chars) (se o user não quiser especificar unidades, pode por "")
+								      - STRING
+
+'{{float(num1*,num2*)}}' - gera um float aleatório >= num1 e <= num2 (nr de casas decimais = nr de casas decimais do argumento com mais) - FLOAT
+
+'{{float(num1*,num2*,casas*)}}' - gera um float aleatório >= num1 e <= num2 
+				- com o nr de casas decimais indicadas (se o último dígito por 0, o JS não o mostra, por isso pode aparecer 2.5 para 2 casas decimais (2.50))
+				- FLOAT
+
+'{{formattedFloat(num1*,num2*,casas*,int_pad*,formato)}}' - gera um float aleatório >= num1 e <= num2 
+							  - com o nr de casas decimais dado no 3º arg (este moustache como dá STRING já garante que tem sempre o nº de casas decimais certo, tendo 0's no fim ou não)
+							  - garante que a parte inteira tem pelo menos tantas casas quanto o int_pad (se o user não quiser dar padding, pode por 0)
+							  - o formato é "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros; o segundo é para separar a parte inteira da decimal; ? é uma string a concatenar no fim (unidades) opcional (se o user não quiser unidades, fecha a string logo a seguir aos últimos 00)
+
+'{{date(data_init*)}}'
+'{{date(data_init*, formato)}}
+'{{date(data_init*, data_fim*)}}'
+'{{date(data_init*, data_fim*, formato)}}' 
+		       	- gera uma data aleatória entre a data argumento e hoje
+		       	- as datas argumento têm de estar no formato DD[./-]MM[./-]YYYY
+		       	- se tiver formato, converte o resultado para o mesmo; senão dá o resultado em versão JS raw (p.e. "2100-12-15T07:09:28.227Z")
+		       	- formatos possíveis: DD.MM.YYYY DD.MM.AAAA MM.DD.YYYY MM.DD.AAAA YYYY.MM.DD AAAA.MM.DD onde o . pode ser / - ou .
+		       	- STRING
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'{{position()}}' - gera coordenadas geográficas aleatórias - STRING
+
+'{{position([min_lat*, max_lat*]*, [min_long*, max_long*]*)}}' - gera coordenadas geográficas dentro dos intervalos dados - STRING
+							       - aqui cada valor dos intervalos pode ser ref local, mas o intervalo em si também pode ser uma ref local
+
+'{{pt_phone_number()}}' - gera um número de telemóvel português (sem extensão) - STRING
+
+'{{pt_phone_number(bool)}}' - gera um número de telemóvel português com extensão (+351), se bool == true - STRING
+			    - isto não é muito útil, sou capaz de mudar no futuro
+
+'{{random(arg1,...,argN)}}' - escolhe um dos argumentos aleatoriamente (mínimo 1 arg)
+			    - pode receber objetos, arrays, boleanos, ints, floats, string, repeats, ranges, moustaches (só a função, sem os '{{}}') e referências locais
+
+'{{lorem(n,"words"/"sentences"/"paragraphs")}}' - gera n palavras/frases/parágrafos lorem ipsum - STRING
+
+TUDO STRING para baixo, a menos de indicação do contrário
+
+'{{pt_district()}}' - distrito pt
+'{{pt_district("county", nome*)}}' - distrito pt do concelho dado (determinista)
+'{{pt_district("parish", nome*)}}' - distrito pt da freguesia dada (determinista)
+'{{pt_district("city", nome*)}}' - distrito pt da cidade dada (determinista)
+
+'{{pt_county()}}' - concelho pt
+'{{pt_county("district", nome*)}}' - concelho pt do distrito dado (aleatório)
+'{{pt_county("parish", nome*)}}' - concelho pt da freguesia dada (determinista)
+
+'{{pt_parish()}}' - freguesia pt
+'{{pt_parish("district", name*)}}' - freguesia pt do distrito dado (aleatório)
+'{{pt_parish("county", name*)}}' - freguesia pt do concelho dado (aleatório)
+
+'{{pt_city()}}' - cidade pt
+'{{pt_city("district", nome*)}}' - cidade pt do distrito dado (aleatório)
+
+--------------------------------- NOVO --------------------------------------------------------------------------------------------------------------------------------
+
+'{{political_party()}}' - partido político (abreviação + nome) - OBJETO 2 STRINGS
+'{{political_party(país*)}}' - partido político (abreviação + nome) do país dado - OBJETO 2 STRINGS
+
+'{{political_party_name()}}' - nome de um partido político
+'{{political_party_name(país*)}}' - nome de um partido político do país dado
+
+'{{political_party_abbr()}}' - sigla de um partido político
+'{{political_party_abbr(país*)}}' - sigla de um partido político do país dado
+
+'{{pt_entity()}}' - sigla e designação de uma entidade pt aleatória - OBJETO 2 STRINGS
+
+'{{pt_entity_abbr()}}' - sigla de uma entidade pt aleatória
+'{{pt_entity_name()}}' - designação de uma entidade pt aleatória
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'{{soccer_club()}}' - clube de futebol aleatório
+'{{soccer_club(país*)}}' - clube de futebol do país dado (só temos de alemanha, inglaterra, espanha, italia, portugal)
+			 - o nome do país no argumento pode tar em ingles ou pt
+
+'{{firstName()}}' - nome próprio
+'{{surname()}}' - apelido
+'{{fullName()}}' - nome completo
+
+'{{actor()}}'
+'{{animal()}}'
+'{{brand()}}'
+'{{buzzword()}}'
+'{{capital()}}'
+'{{car_brand()}}'
+'{{continent()}}'
+'{{country()}}'
+'{{cultural_center()}}'
+'{{gov_entity()}}'
+'{{hacker()}}'
+'{{job()}}'
+'{{month()}}'
+'{{musician()}}'
+'{{nationality()}}'
+'{{pt_businessman()}}'
+'{{pt_politician()}}'
+'{{pt_public_figure()}}'
+'{{pt_top100_celebrity()}}'
+'{{religion()}}'
+'{{soccer_player()}}'
+'{{sport()}}'
+'{{top100_celebrity()}}'
+'{{weekday()}}'
+'{{writer()}}'
+
+PS: as funções que levam intervalos de valor funcionam tanto por ordem asc como desc

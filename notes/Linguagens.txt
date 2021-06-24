@@ -1,0 +1,54 @@
+PT/EN:
+- animals
+- buzzwords
+- continents
+- countries
+- cultural_centers
+- days
+- months
+- names
+- nationalities
+- religions
+- sports
+
+UNIVERSAL (nomes de pessoas e sítios, marcas):
+- actors
+- brands
+- capitals
+- cars
+- districts
+- gov_entities
+- hackers
+- musicians
+- pt_businessmen
+- pt_districts
+- pt_politicians
+- pt_public_figures
+- pt_top100_celebrities
+- soccer_clubs (aceita nome do país em ambas línguas no argumento)
+- soccer_players
+- top100_celebrities
+- writers
+
+PROBLEMÁTICOS:
+- jobs
+- political_parties
+
+
+<!LANGUAGE pt>
+{
+	colecao: [
+      'repeat(3)': {
+          animal: '{{animal()}}',
+          buzzword: '{{buzzword()}}',
+          continente: '{{continent()}}',
+          pais: '{{country()}}',
+          centro_cultural: '{{cultural_center()}}',
+	  	  dia: '{{day()}}',
+	      mes: '{{month()}}',
+          nacionalidade: '{{nationality()}}',
+          religiao: '{{religion()}}',  
+          desporto: '{{sport()}}'
+      }
+	]
+}

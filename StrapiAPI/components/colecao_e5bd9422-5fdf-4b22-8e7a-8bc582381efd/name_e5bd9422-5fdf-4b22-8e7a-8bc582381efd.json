@@ -1,0 +1,17 @@
+{
+  "attributes": {
+    "first": {
+      "type": "string",
+      "required": true
+    },
+    "last": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "collectionName": "components_name_e5bd9422-5fdf-4b22-8e7a-8bc582381efd",
+  "info": {
+    "name": "name"
+  },
+  "options": {}
+}

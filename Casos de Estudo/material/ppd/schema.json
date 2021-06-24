@@ -1,0 +1,263 @@
+{
+    "ppd": {
+        "geral": {
+            "numeroPPD": "",
+            "nomePPD": "1",
+            "mencaoResp": "",
+            "entSel": []
+        },
+        "sistemasInfo": [
+            {
+                "visto": true,
+                "numeroSI": "1",
+                "nomeSI": "si1",
+                "identificacao": {
+                    "adminSistema": [],
+                    "adminDados": [],
+                    "propSistemaPublico": [],
+                    "propSistemaPrivado": "",
+                    "propDados": [],
+                    "localDadosPublico": [],
+                    "localDadosPrivado": "",
+                    "userList": [],
+                    "defResponsavel": "",
+                    "insourcing": "",
+                    "outsourcing": "",
+                    "notas": ""
+                },
+                "avaliacao": {
+                    "descricao": "",
+                    "tabelaDecomposicao": [],
+                    "selecionadosTabelaFL": [],
+                    "sistemasRelacionados": [],
+                    "checkedAti": "",
+                    "checkedGrau": "",
+                    "checkedCriticidade": "",
+                    "objetoPreservacao": ""
+                },
+                "caracterizacao": {
+                    "dependenciaSoft": "",
+                    "categoriaDados": "",
+                    "modeloCres": "",
+                    "dimensao": "",
+                    "crescimento": "",
+                    "localSistema": "",
+                    "salaTec": "",
+                    "acessoSalaTec": "",
+                    "energiaRed": "",
+                    "energiaSoc": "",
+                    "alarme": "",
+                    "climatizacao": "",
+                    "seguranca": "",
+                    "comunicacaoEx": "",
+                    "planoContingencia": "",
+                    "planoMudEvolucao": "",
+                    "privAcesso": "",
+                    "catSegDados": "",
+                    "rotinaAuditoria": "",
+                    "logsRotinas": "",
+                    "integridadeInfo": "",
+                    "armazenamento": "",
+                    "replicacaoDados": "",
+                    "backupsRegular": "",
+                    "modeloBackup": "",
+                    "qualidadeBackup": "",
+                    "inventarioSoft": "",
+                    "inventarioHard": "",
+                    "documentacaoSis": "",
+                    "documentacaoProc": "",
+                    "controlVersaoDProc": "",
+                    "contratoAtivos": "",
+                    "planoRecuperacao": "",
+                    "notas": ""
+                },
+                "estrategia": {
+                    "utilizacaoOperacional": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    },
+                    "utilizacaoMemoria": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    }
+                }
+            },
+            {
+                "visto": true,
+                "numeroSI": "2",
+                "nomeSI": "si2",
+                "identificacao": {
+                    "adminSistema": [],
+                    "adminDados": [],
+                    "propSistemaPublico": [],
+                    "propSistemaPrivado": "",
+                    "propDados": [],
+                    "localDadosPublico": [],
+                    "localDadosPrivado": "",
+                    "userList": [],
+                    "defResponsavel": "",
+                    "insourcing": "",
+                    "outsourcing": "",
+                    "notas": ""
+                },
+                "avaliacao": {
+                    "descricao": "",
+                    "tabelaDecomposicao": [],
+                    "selecionadosTabelaFL": [],
+                    "sistemasRelacionados": [],
+                    "checkedAti": "",
+                    "checkedGrau": "",
+                    "checkedCriticidade": "",
+                    "objetoPreservacao": ""
+                },
+                "caracterizacao": {
+                    "dependenciaSoft": "",
+                    "categoriaDados": "",
+                    "modeloCres": "",
+                    "dimensao": "",
+                    "crescimento": "",
+                    "localSistema": "",
+                    "salaTec": "",
+                    "acessoSalaTec": "",
+                    "energiaRed": "",
+                    "energiaSoc": "",
+                    "alarme": "",
+                    "climatizacao": "",
+                    "seguranca": "",
+                    "comunicacaoEx": "",
+                    "planoContingencia": "",
+                    "planoMudEvolucao": "",
+                    "privAcesso": "",
+                    "catSegDados": "",
+                    "rotinaAuditoria": "",
+                    "logsRotinas": "",
+                    "integridadeInfo": "",
+                    "armazenamento": "",
+                    "replicacaoDados": "",
+                    "backupsRegular": "",
+                    "modeloBackup": "",
+                    "qualidadeBackup": "",
+                    "inventarioSoft": "",
+                    "inventarioHard": "",
+                    "documentacaoSis": "",
+                    "documentacaoProc": "",
+                    "controlVersaoDProc": "",
+                    "contratoAtivos": "",
+                    "planoRecuperacao": "",
+                    "notas": ""
+                },
+                "estrategia": {
+                    "utilizacaoOperacional": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    },
+                    "utilizacaoMemoria": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    }
+                }
+            },
+            {
+                "visto": true,
+                "numeroSI": "3",
+                "nomeSI": "si3",
+                "identificacao": {
+                    "adminSistema": [],
+                    "adminDados": [],
+                    "propSistemaPublico": [],
+                    "propSistemaPrivado": "",
+                    "propDados": [],
+                    "localDadosPublico": [],
+                    "localDadosPrivado": "",
+                    "userList": [],
+                    "defResponsavel": "",
+                    "insourcing": "",
+                    "outsourcing": "",
+                    "notas": ""
+                },
+                "avaliacao": {
+                    "descricao": "",
+                    "tabelaDecomposicao": [],
+                    "selecionadosTabelaFL": [],
+                    "sistemasRelacionados": [],
+                    "checkedAti": "",
+                    "checkedGrau": "",
+                    "checkedCriticidade": "",
+                    "objetoPreservacao": ""
+                },
+                "caracterizacao": {
+                    "dependenciaSoft": "",
+                    "categoriaDados": "",
+                    "modeloCres": "",
+                    "dimensao": "",
+                    "crescimento": "",
+                    "localSistema": "",
+                    "salaTec": "",
+                    "acessoSalaTec": "",
+                    "energiaRed": "",
+                    "energiaSoc": "",
+                    "alarme": "",
+                    "climatizacao": "",
+                    "seguranca": "",
+                    "comunicacaoEx": "",
+                    "planoContingencia": "",
+                    "planoMudEvolucao": "",
+                    "privAcesso": "",
+                    "catSegDados": "",
+                    "rotinaAuditoria": "",
+                    "logsRotinas": "",
+                    "integridadeInfo": "",
+                    "armazenamento": "",
+                    "replicacaoDados": "",
+                    "backupsRegular": "",
+                    "modeloBackup": "",
+                    "qualidadeBackup": "",
+                    "inventarioSoft": "",
+                    "inventarioHard": "",
+                    "documentacaoSis": "",
+                    "documentacaoProc": "",
+                    "controlVersaoDProc": "",
+                    "contratoAtivos": "",
+                    "planoRecuperacao": "",
+                    "notas": ""
+                },
+                "estrategia": {
+                    "utilizacaoOperacional": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    },
+                    "utilizacaoMemoria": {
+                        "idMetodoPreservacao": "",
+                        "fundMetodoPreservacao": "",
+                        "lacunas": ""
+                    }
+                }
+            }
+        ],
+        "arvore": [
+            {
+                "id": "1",
+                "name": "si1",
+                "titulo": "si1",
+                "children": []
+            },
+            {
+                "id": "2",
+                "name": "si2",
+                "titulo": "si2",
+                "children": []
+            },
+            {
+                "id": "3",
+                "name": "si3",
+                "titulo": "si3",
+                "children": []
+            }
+        ]
+    }
+}

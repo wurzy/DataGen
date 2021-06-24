@@ -1,0 +1,52 @@
+{
+"routes": [
+  {
+    "method": "GET",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.find",
+    "config": {
+      "policies": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s/count",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.count",
+    "config": {
+      "policies": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s/:id",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.findOne",
+    "config": {
+      "policies": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.create",
+    "config": {
+      "policies": []
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s/:id",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.update",
+    "config": {
+      "policies": []
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7s/:id",
+    "handler": "colecao_b9bcd003-f2d2-4d06-8c82-a7a3e7d823d7.delete",
+    "config": {
+      "policies": []
+    }
+  }
+]
+}

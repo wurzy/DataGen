@@ -1,0 +1,259 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:appinfo>Projeto CLAV
+Criado por jcr
+Em 2020-11-17</xs:appinfo>
+    <xs:documentation>Objetivo: apoiar a produção de autos de eliminação através da API de Dados da Plataforma CLAV – Classificação e Avaliação da Informação Pública. </xs:documentation>
+    <xs:documentation>Âmbito de aplicação: aplica-se aos autos de eliminação derivados da Lista Consolidada para a Classificação e Avaliação da Informação Pública submetidos na Plataforma para a Classificação e Avaliação da Informação Pública, isto é, aplica-se às seguintes fontes de legitimação: 
+1)	PGD/LC: Sigla de Portaria de Gestão de Documentos / Lista Consolidada. Abrange as tabelas de seleção, derivadas da Lista Consolidada, inseridas em portarias de gestão de documentos, publicadas em Diário da República. 
+2)	TS/LC: Sigla de Tabela de Seleção / Lista Consolidada. Abrange as tabelas de seleção derivadas da Lista Consolidada, aprovadas por despacho da DGLAB (aguarda publicação do novo regime jurídico para a classificação e avaliação da informação pública).
+</xs:documentation>
+  </xs:annotation>
+  <xs:element name="autoEliminação">
+    <xs:annotation>
+      <xs:documentation>Elemento principal</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fonteLegitimação">
+          <xs:annotation>
+            <xs:documentation>Identificação do diploma que regulamenta a eliminação que se propõe e com o qual será validado o AE.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tipo" type="TipoLeg"/>
+              <xs:element name="diploma" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Deverá identificar a fonte numa das seguintes formas: 1) LC, 2) Portaria número/ano, ou 3) Despacho DGLAB número/ano. A primeira forma deverá ser usada para fins de teste e enquanto a entidade não possuir um instrumento classificativo aprovado.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="fundos">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="fundo" type="xs:string" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>Deve ser preenchido com a sigla da entidade conforme catálogo disponibilizado na CLAV. Exemplos: DGLAB, SEF, UTAD, ...</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="classes">
+          <xs:annotation>
+            <xs:documentation>Identificação dos processos onde se deseja proceder a eliminações.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="classe">
+                <xs:annotation>
+                  <xs:documentation>Caraterização da classe/processo</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="código" type="xs:string" minOccurs="0" maxOccurs="1">
+                      <xs:annotation>
+                        <xs:documentation>Identificação da classe que pretende eliminar, conforme consta da fonte de legitimação. </xs:documentation>
+                        <xs:documentation>Deve colocar o código de classe do último nível que pretende eliminar (3º ou 4º nível, caso exista), conforme consta da fonte de legitimação. </xs:documentation>
+                        <xs:documentation>Exemplos: 150.10.200, 150.10.702.01, 850.10.002.02, 900.10.500</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element maxOccurs="1" minOccurs="0" name="referência" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Identificação da classe / série que pretende eliminar, conforme consta da fonte de legitimação.</xs:documentation>
+                        <xs:documentation>Um dos dois campos CLASSE ou NÚMERO DE REFERÊNCIA tem de estar obrigatoriamente preenchido. </xs:documentation>
+                        <xs:documentation>Deve colocar o código da classe / série, conforme consta da fonte de legitimação. </xs:documentation>
+                        <xs:documentation>Exemplos: 1, 2, 3, 4, 5</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="naturezaIntervenção" type="TnaturezaIntervenção" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>Indicação do tipo de intervenção da entidade produtora da informação – a entidade selecionada em FUNDO – isto é, se a entidade é dona ou participante do PN referenciado.</xs:documentation>
+                        <xs:documentation>Se estiver a preencher um AE que tenha como fonte de legitimação uma PGD/LC ou uma TS/LC deve preencher este campo com um de três valores:
+	- DONO;
+	- PARTICIPANTE;
+	- DONO/PARTICIPANTE.</xs:documentation>
+                        <xs:documentation>Se o DESTINO FINAL da classe for CONSERVAÇÃO, o campo NATUREZA DE INTERVENÇÃO tem de ser preenchido.</xs:documentation>
+                        <xs:documentation>Se o DESTINO FINAL da classe for ELIMINAÇÃO ou CONSERVAÇÃO PARCIAL, o campo NATUREZA DE INTERVENÇÃO não tem de ser preenchido.
+</xs:documentation>
+                        <xs:documentation>A entidade produtora é participante quando assegura a execução de uma parte do processo de negócio, por exemplo, a emissão de um parecer, encontrando-se o processo na sua completude noutra entidade, a dona do processo.</xs:documentation>
+                        <xs:documentation>Se o valor escolhido for PARTICIPANTE ou DONO/PARTICIPANTE, tem de preencher o campo seguinte, DONO(S) DO PN.</xs:documentation>
+                        <xs:documentation>Se o valor escolhido for DONO, não tem de preencher o campo seguinte, DONO(S) DO PN.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="donos">
+                      <xs:annotation>
+                        <xs:documentation>Identificação da(s) entidade(s) responsável(eis) pela condução do PN, pelo respetivo produto final e pela sua guarda ou conservação.</xs:documentation>
+                        <xs:documentation>Se estiver a preencher um AE que tenha como fonte de legitimação uma PGD/LC ou uma TS/LC e se o valor escolhido em NATUREZA DE INTERNVENÇÃO for PARTICIPANTE, o campo DONO(S) DO PN, tem de ser preenchido.</xs:documentation>
+                        <xs:documentation>Deve preencher o campo com a(s) sigla(s) da(s) entidade(s) conforme catálogo de entidades disponibilizado na CLAV.</xs:documentation>
+                        <xs:documentation>Exemplos: DGLAB, AdC, ADC, Alentejo 2020, DGAEs, DGAEu</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="dono" type="xs:string">
+                            <xs:annotation>
+                              <xs:documentation>Se o valor escolhido em NATUREZA DE INTERNVENÇÃO for PARTICIPANTE, o campo DONO(S) DO PN, tem de ser preenchido.</xs:documentation>
+                              <xs:documentation>Deve preencher o campo com a(s) sigla(s) da(s) entidade(s) conforme catálogo de entidades disponibilizado na CLAV.</xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="anoInício" type="xs:int">
+                      <xs:annotation>
+                        <xs:documentation>Registo do ano inicial de produção da informação a eliminar. </xs:documentation>
+                        <xs:documentation>Deve preencher o campo com o ano inicial da informação a eliminar. </xs:documentation>
+                        <xs:documentation>A data de início tem de ser anterior à data de fim. </xs:documentation>
+                        <xs:documentation>Não pode introduzir um valor superior a 100 anos a contar do ano corrente. </xs:documentation>
+                        <xs:documentation>Exemplo: Se o ano corrente é 2020, não pode introduzir como DATA DE INÍCIO o ano de 1919. </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="anoFim" type="xs:int">
+                      <xs:annotation>
+                        <xs:documentation>Registo do ano final de produção da informação a eliminar.</xs:documentation>
+                        <xs:documentation>Deve preencher o campo com o ano final da informação a eliminar. </xs:documentation>
+                        <xs:documentation>A data de fim tem de ser posterior à data de início. </xs:documentation>
+                        <xs:documentation>Não pode introduzir um valor superior a 100 anos a contar do ano corrente. </xs:documentation>
+                        <xs:documentation>Exemplo: Se o ano corrente é 2020, não pode introduzir como DATA DE FIM o ano de 1919.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="dimensãoSuporte">
+                      <xs:annotation>
+                        <xs:documentation>Pelo menos um dos tipos deve ser preenchido podendo os restantes ficar vazios.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded">
+                          <xs:element name="papel" type="xs:int" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation>Registo dos metros lineares da informação a eliminar. </xs:documentation>
+                              <xs:documentation>Pelo menos um dos campos relativos à medição tem de ser preenchido, podendo os restantes ficar vazios. </xs:documentation>
+                              <xs:documentation>Deve preencher o campo com o número de metros lineares da informação a eliminar.</xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                          <xs:element name="digital" type="xs:int" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation>Registo dos gigabites da informação a eliminar.</xs:documentation>
+                              <xs:documentation>Pelo menos um dos campos relativos à medição tem de ser preenchido, podendo os restantes ficar vazios. </xs:documentation>
+                              <xs:documentation>Deve preencher o campo com o número de gigabites da informação a eliminar. </xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                          <xs:element minOccurs="0" name="outro">
+                            <xs:annotation>
+                              <xs:documentation>Registo da dimensão noutros suportes da informação a eliminar. </xs:documentation>
+                              <xs:documentation>Pelo menos um dos campos relativos à medição tem de ser preenchido, podendo os restantes ficar vazios. </xs:documentation>
+                              <xs:documentation>Deve preencher o campo com a unidade de medida do novo suporte da informação a eliminar. </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="valor" type="xs:int"/>
+                                <xs:element name="unidade" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Unidade de medida do novo suporte: metros, Kg, bytes, ...</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="númeroAgregações" type="xs:int">
+                      <xs:annotation>
+                        <xs:documentation>Registo do número total de agregações referentes à classe, que se pretende eliminar</xs:documentation>
+                        <xs:documentation>Deve preencher o campo mesmo quando não houver identificação das agregações. </xs:documentation>
+                        <xs:documentation>Número total de agregações relativas à classe que está a identificar.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="agregações">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="agregação">
+                            <xs:annotation>
+                              <xs:documentation>Caraterização da agregação</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="código" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Indicação do código da agregação a eliminar. </xs:documentation>
+                                    <xs:documentation>Deve preencher o campo com o código da agregação que a eliminar. </xs:documentation>
+                                    <xs:documentation>Na mesma classe não podem existir agregações com o mesmo código. </xs:documentation>
+                                    <xs:documentation>Exemplos: DPP/PTCD/2020/123; 123 - 2018; </xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="título" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Deve preencher o campo com o título da agregação a eliminar. </xs:documentation>
+                                    <xs:documentation>Exemplos: Contratos de Empreitadas; Auditorias externas</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="ano" type="xs:int">
+                                  <xs:annotation>
+                                    <xs:documentation>Registo do ano de início de contagem do PCA.</xs:documentation>
+                                    <xs:documentation>A DATA DE INÍCIO DE CONTAGEM DO PCA é igual ou inferior à subtração do valor existente no campo PCA ao ano corrente. Para garantia do cumprimento integral do PCA é aconselhável adicionar 1 ano.</xs:documentation>
+                                    <xs:documentation>A DATA DE INÍCIO DE CONTAGEM DO PCA pode não coincidir com a data de produção dado que deve atender à forma de contagem do PCA, por exemplo, se a forma de contagem for a data de cessação da vigência apenas quando cessa a vigência poderá ser iniciada a contagem do PCA. </xs:documentation>
+                                    <xs:documentation>Exemplo: Se a data de início de contagem é 2010 e se o PCA for de 10 anos, então 2010+10+1, então só será possível eliminar em 2021.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="naturezaIntervenção"
+                                  type="TnaturezaIntervenção-agregação" minOccurs="0">
+                                  <xs:annotation>
+                                    <xs:documentation>Indicação da natureza da intervenção da entidade na agregação / unidade de instalação a eliminar.</xs:documentation>
+                                    <xs:documentation>Se estiver a preencher um AE que tenha como fonte de legitimação uma PGD/LC ou uma TS/LC deve preencher este campo com um de dois valores: PARTICIPANTE ou DONO.</xs:documentation>
+                                    <xs:documentation>Se o DESTINO FINAL da classe for ELIMINAÇÃO, o valor a introduzir pode ser um de dois: DONO ou PARTICIPANTE.</xs:documentation>
+                                    <xs:documentation>Se o DESTINO FINAL da classe for CONSERVAÇÃO o valor a introduzir é PARTICIPANTE.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="TipoLeg">
+    <xs:annotation>
+      <xs:documentation>Tipos de fontes de legitimação: TS/LC, PGD/LC, PGD, RADA e RADA/CLAV.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TS/LC"/>
+      <xs:enumeration value="PGD/LC"/>
+      <xs:enumeration value="LC"/>
+      <xs:enumeration value="PGD"/>
+      <xs:enumeration value="RADA"/>
+      <xs:enumeration value="RADA/CLAV"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TvalorDF">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="C"/>
+      <xs:enumeration value="E"/>
+      <xs:enumeration value="CP"/>
+      <xs:enumeration value="NE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TnaturezaIntervenção">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PARTICIPANTE"/>
+      <xs:enumeration value="DONO"/>
+      <xs:enumeration value="DONO/PARTICIPANTE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TnaturezaIntervenção-agregação">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PARTICIPANTE"/>
+      <xs:enumeration value="DONO"/>
+      <xs:enumeration value="DONO/PARTICIPANTE"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

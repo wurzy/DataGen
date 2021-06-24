@@ -1,0 +1,21 @@
+{
+  "attributes": {
+    "elem0": {
+      "type": "integer",
+      "required": true
+    },
+    "elem1": {
+      "type": "integer",
+      "required": true
+    },
+    "elem2": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "collectionName": "components_lista_nested_bbad4ebb-7987-4991-ba0b-c2b090425c32",
+  "info": {
+    "name": "lista_nested"
+  },
+  "options": {}
+}

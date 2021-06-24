@@ -1,0 +1,49 @@
+{
+  "attributes": {
+    "elem0": {
+      "type": "integer",
+      "required": true
+    },
+    "elem1": {
+      "type": "integer",
+      "required": true
+    },
+    "elem2": {
+      "type": "integer",
+      "required": true
+    },
+    "elem3": {
+      "type": "integer",
+      "required": true
+    },
+    "elem4": {
+      "type": "integer",
+      "required": true
+    },
+    "elem5": {
+      "type": "integer",
+      "required": true
+    },
+    "elem6": {
+      "type": "integer",
+      "required": true
+    },
+    "elem7": {
+      "type": "integer",
+      "required": true
+    },
+    "elem8": {
+      "type": "integer",
+      "required": true
+    },
+    "elem9": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "collectionName": "components_range_desc_bbad4ebb-7987-4991-ba0b-c2b090425c32",
+  "info": {
+    "name": "range_desc"
+  },
+  "options": {}
+}

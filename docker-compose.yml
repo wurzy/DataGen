@@ -1,0 +1,35 @@
+version: "3"
+services: 
+    back-end:
+        container_name: back-end
+        build: 
+            context: ./apiModelos
+            dockerfile: ./Dockerfile
+        restart: always
+        ports: 
+            - "4000:3000"
+        links:
+            - mongo
+        networks:
+            default:
+              aliases:
+                - front-end
+    mongo:
+        container_name: mongo
+        image: mongo
+        ports: 
+            - "27018:27017"
+    front-end:
+        container_name: front-end
+        restart: always
+        build:
+            context: ./app
+            dockerfile: ./Dockerfile
+        ports: 
+            - "8080:80"
+        links:
+            - back-end
+        networks:
+            default:
+              aliases:
+                - back-end

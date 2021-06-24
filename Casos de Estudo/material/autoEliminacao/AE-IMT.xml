@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<autoEliminação xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:/Users/jcr/Documents/WebApps/NodeJS/docker-clav/CLAV2018/public/schema/autoEliminacao.xsd">
+    <fonteLegitimação>
+        <tipo>RADA</tipo>
+        <diploma>Portaria 381/2019</diploma>
+    </fonteLegitimação>
+    <fundos>
+        <fundo>DGLAB</fundo>
+    </fundos>
+    <classes>
+        <classe>
+            <código>100.10.001</código>
+            <naturezaIntervenção>PARTICIPANTE</naturezaIntervenção>
+            <donos>
+                <dono>AR</dono>
+            </donos>
+            <anoInício>1980</anoInício>
+            <anoFim>1990</anoFim>
+            <dimensãoSuporte>
+                <papel>123</papel>
+                <digital>123</digital>
+            </dimensãoSuporte>
+            <númeroAgregações>85</númeroAgregações>
+        </classe>
+        <classe>
+            <código>150.10.701.01</código>
+            <anoInício>1985</anoInício>
+            <anoFim>1995</anoFim>
+            <dimensãoSuporte>
+                <digital>1000</digital>
+            </dimensãoSuporte>
+            <númeroAgregações>100</númeroAgregações>
+        </classe>
+    </classes>
+</autoEliminação>

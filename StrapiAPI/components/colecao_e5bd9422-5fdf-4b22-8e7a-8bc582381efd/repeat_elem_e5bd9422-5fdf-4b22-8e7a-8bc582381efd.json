@@ -1,0 +1,13 @@
+{
+  "attributes": {
+    "indice_objeto": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "collectionName": "components_repeat_elem_e5bd9422-5fdf-4b22-8e7a-8bc582381efd",
+  "info": {
+    "name": "repeat_elem"
+  },
+  "options": {}
+}

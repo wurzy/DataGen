@@ -1,0 +1,26 @@
+[
+  {
+    "guid": "4557fcba-7e2c-45ab-a20f-3c0300fa3094",
+    "indice": 0,
+    "name": {
+      "first": "Hugo",
+      "last": "Cardoso"
+    }
+  },
+  {
+    "guid": "925f6e2c-971d-4e57-901e-55016bb28abe",
+    "indice": 1,
+    "name": {
+      "first": "Hugo",
+      "last": "Cardoso"
+    }
+  },
+  {
+    "guid": "85e57a7f-e607-4dab-abb0-e38c646efd4d",
+    "indice": 2,
+    "name": {
+      "first": "Hugo",
+      "last": "Cardoso"
+    }
+  }
+]

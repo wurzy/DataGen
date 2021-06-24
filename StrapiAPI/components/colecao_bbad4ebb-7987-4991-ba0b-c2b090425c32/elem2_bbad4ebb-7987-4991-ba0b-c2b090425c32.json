@@ -1,0 +1,29 @@
+{
+  "attributes": {
+    "elem": {
+      "type": "integer",
+      "required": true
+    },
+    "indice": {
+      "type": "integer",
+      "required": true
+    },
+    "lista_nested": {
+      "type": "component",
+      "repeatable": false,
+      "required": true,
+      "component": "colecao_bbad4ebb-7987-4991-ba0b-c2b090425c32.lista_nested_bbad4ebb-7987-4991-ba0b-c2b090425c32"
+    },
+    "range": {
+      "type": "component",
+      "repeatable": false,
+      "required": true,
+      "component": "colecao_bbad4ebb-7987-4991-ba0b-c2b090425c32.range1_bbad4ebb-7987-4991-ba0b-c2b090425c32"
+    }
+  },
+  "collectionName": "components_elem2_bbad4ebb-7987-4991-ba0b-c2b090425c32",
+  "info": {
+    "name": "elem2"
+  },
+  "options": {}
+}

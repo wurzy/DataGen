@@ -1,0 +1,81 @@
+Try_1:
+-> get: forbidden
+-> pôr script no bootstrap 
+-> server restart
+-> get: works
+
+Try_2:
+-> criar nova coleção
+   (server restarts automaticamente)
+-> get: forbidden
+-> server restart
+-> get: forbidden
+
+
+Análise do script: --------------------------------------------------
+
+#####################################################################
+##### Verifica se existe o role "Public" - por default é criado #####
+
+const findPublicRole = async () => {
+  const result = await strapi
+    .query("role", "users-permissions")
+    .findOne({ type: "public" });
+  return result;
+};
+#####################################################################
+######## Vai às permissões e põe tick em todas as operações #########
+## I.e., põe todas as operações disponíveis para "Public"
+
+const setDefaultPermissions = async () => {
+  const role = await findPublicRole(); 
+  const permissions = await strapi
+    .query("permission", "users-permissions")
+    .find({ type: "application", role: role.id });
+  await Promise.all(
+    permissions.map(p =>
+      strapi
+        .query("permission", "users-permissions")
+        .update({ id: p.id }, { enabled: true })
+    )
+  );
+};
+
+#####################################################################
+################## Verifica se é a primeira run #####################
+
+const isFirstRun = async () => {
+  const pluginStore = strapi.store({
+    environment: strapi.config.environment,
+    type: "type",
+    name: "setup"
+  });
+  const initHasRun = await pluginStore.get({ key: "initHasRun" });
+  await pluginStore.set({ key: "initHasRun", value: true });
+  return !initHasRun;
+};
+
+#####################################################################
+####################### "Função" principal ##########################
+## Para já, só corre se for a primeira run
+
+module.exports = async () => {
+  const shouldSetDefaultPermissions = await isFirstRun();
+  if (shouldSetDefaultPermissions) {
+    await setDefaultPermissions();
+  }
+};
+
+---------------------------------------------------------------------
+
+Try_3:
+-> retirar condição de ser a primeira run
+  ("const shouldSetDefaultPermissions = true;" --> vai correr sempre)
+-> get da 2ª coleção: works
+
+Try_4:
+-> criar nova coleção novamente
+   (server restarts automaticamente)
+-> get: works 
+
+Fixed

@@ -1,0 +1,27 @@
+cd app
+npm run serve
+
+
+
+
+COMANDOS VUE UTEIS
+<router-link to="About">about</router-link>
+
+
+TODO LIST
+
+///FIXES///
+- Colocar a blacklist a remover tokens expirados;                             ----
+- Meter tokens na parte do cunha                                              DONE
+- Meter como variaveis a parte do cunha em vez de html injections             DONE 
+- Meter o guardar modelos funcional                                           DONE 
+- Tirar a projeçao das componentes dos modelos                                DONE 
+
+///NEW///
+(https://stackoverflow.com/questions/55420366/vuetify-css-crushes-bootstrap-css)
+- Paginaçao nos modelos gravados    DONE 
+- Filtros nos modelos gravados      DONE
+- Lista de modelos                  DONE 
+- Paginaçao na lista de modelos     DONE 
+- Filtros na lista de modelos       DONE
+- API no backend para o generate    ----

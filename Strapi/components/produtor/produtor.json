@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_produtor_produtors",
+  "info": {
+    "name": "produtorPrinc",
+    "icon": "align-justify",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "nomeP": {
+      "type": "string"
+    },
+    "valor": {
+      "type": "integer"
+    }
+  }
+}
