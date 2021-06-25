@@ -2266,6 +2266,66 @@
                 :options="cmOption"
         />
     </div>
+
+        <hr/>
+    <div>
+        <h4>Rotas Aplicacionais</h4>
+        As seguintes rotas REST são disponibilizadas como alternativa à interface gráfica:
+        <ul>
+            <li>
+                <b><code>POST</code> /api/datagen/</b>
+                <p>O corpo tem de conter o modelo da gramática (DSL) em formato <i>raw</i>, isto é, não envolvido por aspas.</p>
+                <p>Esta rota gera um objeto JSON com o dataset (também em JSON) e campos adicionais necessários para a sua inserção no Strapi.</p>
+            </li>
+            <li><b>
+                <code>POST</code> /api/datagen/json</b>
+                <p>Semelhante ao anterior mas só retorna o dataset em JSON.</p>
+            </li>
+            <li>
+                <b><code>POST</code> /api/datagen/xml</b>
+                <p>Semelhante ao anterior mas só retorna o dataset em XML.</p>
+            </li>
+        </ul>
+        Para além destas rotas, são também disponibilizadas rotas para obter os datasets utilizados na aplicação:
+        <ul>
+            <li>
+                <b><code>GET</code> /api/dataset/:nome</b>
+                <p>Este <code>nome</code> terá de ser um dos seguintes:</p>
+                <ul>
+                    <li>actors</li>
+                    <li>animals</li>
+                    <li>brands</li>
+                    <li>buzzwords</li>
+                    <li>capitals</li>
+                    <li>car_brands</li>
+                    <li>continents</li>
+                    <li>countries</li>
+                    <li>cultural_centers</li>
+                    <li>gov_entities</li>
+                    <li>hackers</li>
+                    <li>jobs</li>
+                    <li>months</li>
+                    <li>musicians</li>
+                    <li>names</li>
+                    <li>nationalities</li>
+                    <li>political_parties</li>
+                    <li>pt_businessmen</li>
+                    <li>pt_districts</li>
+                    <li>pt_entities</li>
+                    <li>pt_politicians</li>
+                    <li>pt_public_figures</li>
+                    <li>pt_top100_celebrities</li>
+                    <li>religions</li>
+                    <li>soccer_clubs</li>
+                    <li>soccer_players</li>
+                    <li>sports</li>
+                    <li>top100_celebrities</li>
+                    <li>weekdays</li>
+                    <li>writers</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
     <br/>
   </div>
 </template>
