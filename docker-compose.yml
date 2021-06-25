@@ -10,12 +10,17 @@ services:
             - "4000:3000"
         links:
             - mongo
+            - strapi
         networks:
             default:
               aliases:
                 - front-end
     mongo:
         container_name: mongo
+        environment:
+            MONGO_INITDB_DATABASE: StrapiAPI
+            MONGO_INITDB_ROOT_USERNAME: strapi
+            MONGO_INITDB_ROOT_PASSWORD: strapi
         image: mongo
         ports: 
             - "27018:27017"
@@ -29,7 +34,25 @@ services:
             - "8080:80"
         links:
             - back-end
+            - strapi
         networks:
             default:
               aliases:
                 - back-end
+    strapi:
+        image: strapi/strapi
+        container_name: strapi
+        build: 
+            context: ./StrapiAPI
+            dockerfile: ./Dockerfile
+        environment:
+            DATABASE_CLIENT: mongo
+            DATABASE_NAME: StrapiAPI
+            DATABASE_HOST: mongo
+            DATABASE_PORT: 27017
+            DATABASE_USERNAME: strapi
+            DATABASE_PASSWORD: strapi
+        ports:
+            - '1338:1337'
+        depends_on:
+            - mongo

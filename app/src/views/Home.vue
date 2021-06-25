@@ -318,7 +318,7 @@ export default {
             axios.post('/api/import/',bodyImp)
             .then(dados => {
               console.log("Import feito")
-              window.open("http://localhost:1337/"+this.colnames[index]+"s", "_blank");    
+              window.open("/strapi/"+this.colnames[index]+"s", "_blank");    
             })
             .catch(erro => console.log(erro))
           )

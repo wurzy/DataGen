@@ -493,10 +493,10 @@ router.post('/import', function(req, res, next) {
   console.log("dataset: ", dataset)
   function povoar() {
     (async () => {
-      var bol = await isReachable('http://localhost:1337/')
+      var bol = await isReachable('http://strapi:1337/')
       console.log("esperando")
       while(!bol){
-        bol = await isReachable('http://localhost:1337/')
+        bol = await isReachable('http://strapi:1337/')
       } 
     
     for (var key in dataset) {
@@ -504,7 +504,7 @@ router.post('/import', function(req, res, next) {
         var val = JSON.stringify(dataset[key]);
         console.log("val:"+ val)
 
-        axios.post('http://localhost:1337/'+apiname+"s", val, {
+        axios.post('http://strapi:1337/'+apiname+"s", val, {
           headers: {
               'Content-Type': 'application/json',
           }
