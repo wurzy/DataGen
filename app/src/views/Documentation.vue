@@ -2279,11 +2279,13 @@
             </li>
             <li><b>
                 <code>POST</code> /api/datagen/json</b>
-                <p>Semelhante ao anterior mas só retorna o dataset em JSON.</p>
+                <p>O corpo tem de conter o modelo da gramática (DSL) em formato raw, isto é, não envolvido por aspas.</p>
+                <p>Esta rota retorna apenas o dataset resultante em formato JSON.</p>
             </li>
             <li>
                 <b><code>POST</code> /api/datagen/xml</b>
-                <p>Semelhante ao anterior mas só retorna o dataset em XML.</p>
+                <p>O corpo tem de conter o modelo da gramática (DSL) em formato raw, isto é, não envolvido por aspas.</p>
+                <p>Esta rota retorna apenas o dataset resultante em formato XML.</p>
             </li>
         </ul>
         Para além destas rotas, são também disponibilizadas rotas para obter os datasets utilizados na aplicação:
