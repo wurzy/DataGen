@@ -2328,6 +2328,12 @@
             </li>
         </ul>
     </div>
+    <hr/>
+    <div>
+        <h4>Extras</h4>
+        <p>O projeto está disponível no <a href="https://github.com/wurzy/datagen">GitHub</a> e é open-source, sujeito às licenças indicadas.</p>
+        <p>Para mais informações ou questões, é recomendado contactar os desenvolvedores do projeto, presentes na secção <router-link to="sobre">Sobre</router-link>.</p>
+    </div>
     <br/>
   </div>
 </template>
