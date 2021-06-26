@@ -1,9 +1,9 @@
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /datagen
-COPY package*.json ./
+COPY package*.json /datagen
 RUN npm install
-COPY . .
+COPY . /datagen
 RUN npm run build
 
 # production stage

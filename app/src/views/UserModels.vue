@@ -85,8 +85,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import $ from 'jquery'
 
-//axios.defaults.baseURL = "http://localhost:3000/";
-
 export default {
     name: "UserModels",
     components:{

@@ -39,8 +39,6 @@
 import $ from 'jquery';
 import axios from 'axios'
 
-//axios.defaults.baseURL = "http://localhost:3000/";
-
 export default {
     name: "Login",
     data() {

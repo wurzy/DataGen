@@ -45,8 +45,6 @@ import Success from './Success.vue';
 import $ from 'jquery';
 import axios from 'axios'
 
-//axios.defaults.baseURL = "http://localhost:3000/";
-
 export default {
     name: "Register",
     components: {

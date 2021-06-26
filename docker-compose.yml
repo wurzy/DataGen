@@ -2,6 +2,9 @@ version: "3"
 services: 
     back-end:
         container_name: back-end
+        volumes:
+            - api:/apimodelos/shared/api
+            - components:/apimodelos/shared/components
         build: 
             context: ./apiModelos
             dockerfile: ./Dockerfile
@@ -19,8 +22,7 @@ services:
         container_name: mongo
         environment:
             MONGO_INITDB_DATABASE: StrapiAPI
-            MONGO_INITDB_ROOT_USERNAME: strapi
-            MONGO_INITDB_ROOT_PASSWORD: strapi
+            MONGO_INITDB_DATABASE: LEI2021
         image: mongo
         ports: 
             - "27018:27017"
@@ -45,14 +47,18 @@ services:
         build: 
             context: ./StrapiAPI
             dockerfile: ./Dockerfile
+        volumes:
+            - api:/StrapiAPI/api
+            - components:/StrapiAPI/components
         environment:
             DATABASE_CLIENT: mongo
             DATABASE_NAME: StrapiAPI
             DATABASE_HOST: mongo
             DATABASE_PORT: 27017
-            DATABASE_USERNAME: strapi
-            DATABASE_PASSWORD: strapi
         ports:
             - '1338:1337'
         depends_on:
             - mongo
+volumes:
+    api:
+    components:

@@ -46,8 +46,6 @@ import $ from 'jquery';
 import axios from 'axios'
 import Success from '../components/Success';
 
-//axios.defaults.baseURL = "http://localhost:3000/";
-
 export default {
     name: "SaveModel",
     props:["model"],

@@ -72,7 +72,7 @@ router.get('/visiveis/:id', function(req,res){
 // Adicionar um novo modelo
 router.post('/adicionar', function(req,res){
     var token = unveilToken(req.headers.authorization)
-    if(!token) forbidden()
+    if(!token) forbidden(res)
     else {
         req.body["user"] = token._id
         Model.inserir(req.body)

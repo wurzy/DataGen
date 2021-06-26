@@ -297,10 +297,6 @@ export default {
             componentes: this.componentes[index],
             dataset: JSON.parse(this.datasets[index])
           }
-          //console.log("apiname "+index+": ", this.colnames[index])
-          //console.log("model "+index+": ", this.colecoes[index])
-          //console.log("componentes "+index+": ", this.componentes[index])
-          //console.log("dataset "+index+": ",  JSON.parse(this.datasets[index]))
 
           let bodyImp= {
               apiName: this.colnames[index],
@@ -325,14 +321,6 @@ export default {
 
         }
         Promise.all(promises).then(() => console.log("Uma API gerada!"));
-       
-
-        //console.log("modelo aquii",document.getElementById("md").getAttribute("colname"))
-       
-
-        //axios.get('http://localhost:3000/dir/'+document.getElementById('filename').value,optionAxios)
-        //.then(dados => console.log("Modelo criado"))
-        //.catch(erro => console.log(erro))
         document.getElementById("downloadAPIButton").disabled = false;
       },
       download(){
