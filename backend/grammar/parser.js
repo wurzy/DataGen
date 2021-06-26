@@ -197,7 +197,11 @@ module.exports = /*
               var model = {}, data = {}, i = 0
 
               for (let p in members) {
-                if ("or" in members[p]) {
+                if (!("attributes" in members[p].model)) {
+                  data[p] = members[p].data[0]
+                  model[p] = members[p].model
+                }
+                else if ("or" in members[p]) {
                   data[members[p].data[0].key] = members[p].data[0].value
                   model = addCollectionModel(model, p+"_"+uuidv4(), members[p].model)
                 }
@@ -812,8 +816,8 @@ module.exports = /*
               val.data = Array.isArray(num) ? chunkDifferent(val.data, num) : chunk(val.data, num)
 
               if (func == null) {
-                val = createComponent("repeat_elem", val)
-                for (let i = 0; i < num; i++) model.attributes["repeat_elem"+i] = val.model
+                val = createComponent("elem", val)
+                for (let i = 0; i < num; i++) model.attributes["elem"+i] = val.model
               }
             }
 
