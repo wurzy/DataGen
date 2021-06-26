@@ -314,7 +314,8 @@ export default {
             axios.post('/api/import/',bodyImp)
             .then(dados => {
               console.log("Import feito")
-              window.open("/strapi/"+this.colnames[index]+"s", "_blank");    
+              let coln_axios = this.colnames[index]
+              setTimeout(function(){ window.open("/strapi/"+coln_axios+"s", "_blank"); }, 4000);
             })
             .catch(erro => console.log(erro))
           )
