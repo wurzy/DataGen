@@ -6,7 +6,7 @@ services:
             - api:/apimodelos/shared/api
             - components:/apimodelos/shared/components
         build: 
-            context: ./apiModelos
+            context: ./backend
             dockerfile: ./Dockerfile
         restart: always
         ports: 
@@ -30,7 +30,7 @@ services:
         container_name: front-end
         restart: always
         build:
-            context: ./app
+            context: ./frontend
             dockerfile: ./Dockerfile
         ports: 
             - "8080:80"
@@ -45,7 +45,7 @@ services:
         image: strapi/strapi
         container_name: strapi
         build: 
-            context: ./StrapiAPI
+            context: ./strapi
             dockerfile: ./Dockerfile
         volumes:
             - api:/StrapiAPI/api
