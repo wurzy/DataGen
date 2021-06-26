@@ -62,14 +62,16 @@ export default {
     methods: {
         async handleSaveModel(){
             try{
-                await axios.post('/api/modelos/adicionar', {
+                let data = {
                     user: JSON.parse(localStorage.getItem('user'))._id,
                     modelo: this.$props.model,
                     visibilidade: this.switch,
                     titulo: this.title,
                     descricao: this.description,
                     dataCriacao: new Date()
-                })
+                }
+                axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+                await axios.post('/api/modelos/adicionar', data)
                 this.title = ""
                 this.description = ""
                 this.switch = false
