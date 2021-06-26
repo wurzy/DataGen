@@ -107,27 +107,21 @@ router.delete('/collection/:name', function(req, res, next) {
 
 router.get('/download/:id', function(req, res, next) {
   try{
-    let ok = true
+    let ok = false
     var zip = AdmZip('./utils/Strapi.zip');
     if (fs.existsSync('./shared/api/'+req.params.id)) {
+      ok = true
       fs.readdirSync('./shared/api/'+req.params.id).forEach(folder => {
         fs.readdirSync('./shared/api/'+req.params.id+"/"+folder).forEach(file=>{
           zip.addLocalFile('./shared/api/'+req.params.id+"/"+folder+"/"+file, '/Strapi/api/'+req.params.id+"/"+folder)
         })
       })
     }
-    else{
-      ok = false
-      res.status(500).jsonp({erro : "API não existente"})
-    }
     if(fs.existsSync('./shared/components/'+req.params.id)){
+      ok = true
       fs.readdirSync('./shared/components/'+req.params.id).forEach(file => {
         zip.addLocalFile('./shared/components/'+req.params.id +"/"+file, "/Strapi/components/"+req.params.id)
       })
-    }
-    else{
-      ok = false
-      res.status(500).jsonp({erro : "API não existente"})
     }
     if(ok){
       res.writeHead(200, {
