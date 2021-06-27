@@ -6,12 +6,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="icon-box">
-                        <i class="material-icons">&#xE876;</i>
+                        <i class="material-icons"></i>
                     </div>
                     <button @click="refresh" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body text-center">
-                    <h4>OK!</h4>	
+                    <h4>Erro!</h4>	
                     <p> {{msg}} </p>
                     <button class="btn btn-success" @click="refresh" data-dismiss="modal"><span>Continuar</span> <i class="material-icons">&#xE5C8;</i></button>
                 </div>
@@ -22,21 +22,8 @@
 </template>
 <script>
 export default {
-    name: "Success",
-    props: ['msg', 'id', 'type'],
-    methods:{
-        refresh(){
-			if(this.$props.type=="login"){
-				this.$emit('login_ok')
-			}
-			else if (this.$props.type=="login"){
-				this.$emit('register_ok')
-			}
-			else if (this.$props.type=="generate_api"){
-				this.$emit('api_ok')
-			}
-        }
-    }
+    name: "Error",
+    props: ['msg', 'id']
 }
 </script>
 <style scoped>
@@ -53,7 +40,7 @@ export default {
 		border: none;
 	}
 	.modal-confirm .modal-header {
-		background: #47c9a2;
+		background: #cc4242;
 		border-bottom: none;   
         position: relative;
 		text-align: center !important;

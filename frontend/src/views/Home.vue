@@ -1,6 +1,8 @@
 <template>
   <div>
   <SaveModel :model="code"/>
+  <Error msg="Ocorreu um erro na geração do API possivelmente devido a um erro no modelo ou a algo inesperado que aconteceu no Strapi." id="error_api_modal"/>
+  <Success type="generate_api" msg="API gerada com sucesso! Clique no botão 'Continuar' para abrir num novo separador os links da API. NOTA: Pode demorar um pouco a aparecer o API gerado completo, caso seja o caso recarregue essa página após alguns segundos." id="success_api_modal" v-on:api_ok="apiOk"/>
     <div class="row row1">
       <div class="col-md-6 col-md-6-1">
         <div class="row row1">
@@ -63,6 +65,8 @@
 import ButtonGroup from '../components/ButtonGroup'
 import SaveModel from '../components/SaveModel.vue';
 import GrammarError from '../components/GrammarError.vue'
+import Error from '../components/Error.vue'
+import Success from '../components/Success.vue'
 
 import axios from 'axios';
 import $ from 'jquery'
@@ -82,7 +86,9 @@ export default {
   components: {
     ButtonGroup,
     SaveModel,
-    GrammarError
+    GrammarError,
+    Error,
+    Success
   },
   props: ["userModel"],
   data() {
@@ -97,6 +103,7 @@ export default {
         componentes: [],
         datasets: [],
         grammar_errors: [],
+        generated_apis: [],
         code: `<!LANGUAGE pt>
 {
   colecao: [
@@ -288,8 +295,14 @@ export default {
         $("#savemodels_modal").modal("show");
         $("#savemodels_modal").css("z-index", "1500");
       },
+      apiOk(){
+        this.generated_apis.forEach(api => {
+            window.open("/strapi/"+api+"s", "_blank")
+        })
+      },
       createAPI(){
         var promises = [];
+        var ok = true
         for (let index = 0; index < this.colecoes.length; index++) {
           let body = {
             apiName: this.colnames[index],
@@ -308,21 +321,38 @@ export default {
           promises.push(
             axios.post('/api/genAPI/',body)
             .then(dados => console.log("Modelo criado"))
-            .catch(erro => console.log(erro))
+            .catch(erro => {
+              console.log(erro)
+              ok = false
+            })
           )
           promises.push(
             axios.post('/api/import/',bodyImp)
             .then(dados => {
               console.log("Import feito")
               let coln_axios = this.colnames[index]
-              setTimeout(function(){ window.open("/strapi/"+coln_axios+"s", "_blank"); }, 4000);
+              this.generated_apis.push(coln_axios)
             })
-            .catch(erro => console.log(erro))
+            .catch(erro =>{
+              console.log(erro)
+              ok = false
+            })
           )
 
         }
-        Promise.all(promises).then(() => console.log("Uma API gerada!"));
-        document.getElementById("downloadAPIButton").disabled = false;
+        Promise.all(promises).then(() => {
+          console.log("Uma API gerada!")
+        });
+        if(ok){
+          document.getElementById("downloadAPIButton").disabled = false;
+          document.getElementById("generateAPIButton").disabled = true;
+          $("#success_api_modal").modal("show");
+          $("#success_api_modal").css("z-index", "1500");
+        }
+        else{
+          $("#error_api_modal").modal("show");
+          $("#error_api_modal").css("z-index", "1500");
+        }
       },
       download(){
         if(this.result == "") {
