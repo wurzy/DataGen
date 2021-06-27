@@ -109,7 +109,7 @@ The installation process of the application is relatively simple, assuming you m
 4. Open http://localhost:8080/ (default port on the docker-compose file)
 5. (Recommended) Create an admin account on the website
     1. Register a new account using the UI
-    2. On mongo, open the collection 'users' from the database 'LEI2021'
+    2. On the container 'mongo', open the mongo shell and enter the collection 'users' from the database 'LEI2021'
     3. Change the 'nivel' field from 'user' to 'admin' on the created account
     4. Apply the changes
 6. The application is now ready to use
