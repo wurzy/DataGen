@@ -25,9 +25,7 @@ pretenda.</p>
                 :options="cmOption"
         />
     </div>
-
     <hr/>
-
     <div>
         <h4>Definição de Pares Chave-Valor</h4>
         <p>Um par chave-valor é composto por dois elementos separadas por dois pontos (<b>:</b>).</p> 
@@ -45,7 +43,7 @@ pretenda.</p>
             <li>Função "Moustache"</li>
         </ul>
     </div>
-        <hr/>
+    <hr/>
     <div>
         <h4>Interpolações (Funções "Moustache")</h4>
         <p>
@@ -98,7 +96,6 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3"><div class="header">Argumento(s)</div></div>
             <div class="col-md-5"><div class="header">Descrição</div></div>
         </div>
-
         <div class="row margin-0">
             <div class="col-md-2">
                 <div class="cell">
@@ -125,7 +122,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um ID aleatório com 24 bytes. <br/>
-                        Exemplo: "6048e87b9281fc9a1afe8e61"
+                        Exemplo: objectID() = "6048e87b9281fc9a1afe8e61"
                     </div>
                 </div>
             </div>
@@ -156,7 +153,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um UUID aleatório. <br/>
-                        Exemplo: "3d16d5d0-4b11-4de8-9e26-6668b52d9219"
+                        Exemplo: guid() = "3d16d5d0-4b11-4de8-9e26-6668b52d9219"
                     </div>
                 </div>
             </div>
@@ -187,6 +184,39 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Retorna o índice atual do objeto gerado pelo 'repeat'. <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        letter 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Character</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    <div class="isrequired">
+                        Type:: <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um caractere aleatório. <br/>
+                        Se existir o argumento Type, que poderá ser "uppercase" ou "lowercase", gera um caractere em letra maiúscula ou minúscula, respetivamente. <br/>
+                        Exemplo1: letter() = 'a'<br/>
+                        Exemplo2: letter('uppercase') = 'A'<br/>
                     </div>
                 </div>
             </div>
@@ -339,6 +369,37 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera um inteiro aleatório entre Min e Max. <br/>
                         Exemplo: integer(2,4) = 3
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        integerOfSize 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Integer</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    <div class="isrequired">
+                        Size:: <code>Integer</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um número inteiro com o nº de dígitos igual a Size. <br/>
+                        Exemplo: integerOfSize(4) = 1234<br/>
                     </div>
                 </div>
             </div>
@@ -2585,9 +2646,46 @@ seguida:</p>
     </div>
     <hr/>
     <div>
+        <h4>Informação Adicional</h4>
+        <p>O principal propósito desta ferramenta é a geração de datasets (listas de dados) a partir do modelo do utilizador, pelo que foi projetada na expectativa de que o valor de cada coleção do modelo seja definido por um 'repeat'. 
+            </p><p>Caso se definam tipos primitivos nas coleções, o dataset será gerado corretamente na mesma, mas a API não.</p>
+    </div>
+    <hr/>
+    <div>
         <h4>Modelos Exemplo</h4>
         <p>
-            O primeiro exemplo refere-se a um caso académico da representação, utilizando grafos, de 100 cidades portuguesas únicas, que atuam como os seus nodos. Estas têm:
+            O primeiro exemplo refere-se a um conjunto de utilizadores que utilizam uma aplicação de leitura de livros. As seguintes informações são necessárias:
+            <ul>
+                <li>
+                    <b>nome</b>
+                </li>
+                <li><b>idade</b></li>
+                <li><b>número</b> do BI/CC</li>
+                <li><b>descrição</b> que é opcional (há uma chance de 70%)</li>
+                <li><b>número de livros</b> lidos no total</li>
+                <li><b>listagem dos livros</b> que contém:
+                    <ul>
+                        <li><b>título</b></li>
+                        <li><b>suporte</b> (física e digital)</li>
+                        <li><b>rating</b> do utilizador</li>
+                    </ul>
+                </li>
+                <li><b>livro favorito</b></li>
+            </ul>
+        </p>
+
+        <codemirror 
+                ref="example3"
+                :value= "example3"
+                :options="cmOption"
+        />
+        <br/>
+        <router-link :to="{name: 'Home', params: {userModel: example3}}">
+            <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
+        </router-link>
+        <br/><br/>
+        <p>
+            O segundo exemplo refere-se a um caso académico da representação, utilizando grafos, de 100 cidades portuguesas únicas, que atuam como os seus nodos. Estas têm:
             <ul>
                 <li><b>id</b> que é dado por <code>c{N}</code> onde N é um número inteiro</li>
                 <li><b>nome</b></li>
@@ -2613,7 +2711,7 @@ seguida:</p>
             <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
         </router-link>
         <br/><br/>
-        <p>O segundo exemplo refere-se a um pequeno excerto de Autos de Eliminação que são, resumidamente, uma estrutura que deve ser criada e cuidadosamente preenchida
+        <p>O terceiro exemplo refere-se a um pequeno excerto de Autos de Eliminação que são, resumidamente, uma estrutura que deve ser criada e cuidadosamente preenchida
 de maneira a eliminar documentação que atinja o prazo da sua conservação administrativa
 de forma segura. </p>
         <p>Neste exemplo serão abordadas apenas as seguintes secções desse documento:
@@ -2806,6 +2904,32 @@ combinados: range(5).map((value) => { return value+3 })
           }
       }]
   }
+}`,
+        example3:`<!LANGUAGE pt>
+{
+  perfil: [
+	'repeat(3)': {
+        nome: '{{fullName()}}',
+    	idade: '{{integer(15,60)}}',
+  		or() {
+          	BI: '{{integerOfSize(8)}}-{{integer(0,9)}}',
+          	CC: '{{integerOfSize(8)}}-{{integer(0,9)}}-{{letter("uppercase")}}{{letter("uppercase")}}{{integer(0,9)}}'
+        },
+    	having(70) {
+  			descrição: '{{lorem(1,"sentences")}}'
+		},
+        nr_livros: '{{integer(1,10)}}',
+        livros: [ 'repeat(this.nr_livros)': {
+        	titulo: '{{lorem(1,"words")}}',
+            suporte: '{{random("Físico","Digital")}}',
+            rating: '{{integer(1,5)}}'
+        } ],
+        livro_favorito(gen) {
+          var titulos = this.livros.map(x => x.titulo)
+          return gen.random(...titulos)
+      	}
+    }
+  ]
 }`,
         cmOption: {
           tabSize: 4,

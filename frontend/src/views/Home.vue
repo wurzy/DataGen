@@ -106,59 +106,27 @@ export default {
         generated_apis: [],
         code: `<!LANGUAGE pt>
 {
-  colecao: [
+  perfil: [
 	'repeat(3)': {
-        _id: '{{objectId()}}',
-        guid: '{{guid()}}',
-  		indice: '{{index()}}',
-  		missing(50) {
-        	boleano: '{{boolean()}}'
+        nome: '{{fullName()}}',
+    	idade: '{{integer(15,60)}}',
+  		or() {
+          	BI: '{{integerOfSize(8)}}-{{integer(0,9)}}',
+          	CC: '{{integerOfSize(8)}}-{{integer(0,9)}}-{{letter("uppercase")}}{{letter("uppercase")}}{{integer(0,9)}}'
         },
-        inteiro_2args: '{{integer(30,70)}}',
-        inteiro_3args: '{{formattedInteger(100,400,5,"$")}}',
-        float_2args: '{{float(-180.0451, 180)}}',
-        float_3args: '{{float(-180.0451, 180, 2)}}',
-        float_4args: '{{formattedFloat(1000, 4000, 2, 6, "0,0.00 €€€")}}',
-        posicao: '{{position()}}',
-        posicao_com_limites: '{{position([0,30.5],[-50,-25.4])}}',
-        telemovel: '{{pt_phone_number()}}',
-        telemovel_ext: '{{pt_phone_number(true)}}',
-        data: '{{date("10/01/2015")}}',
-        data2: '{{date("10/01/2015", "YYYY-MM-DD")}}',
-        data3: '{{date("10/05/2019","10/01/2018")}}',
-        data4: '{{date("10/05/2019","10/01/2018", "MM.DD.AAAA")}}',
-        aleatorio: '{{random("blue", true, false, 23, 17.56)}}',
-        lorem_palavras: '{{lorem(3,"words")}}',
-        lorem_frases: '{{lorem(2,"sentences")}}',
-        lorem_paragrafos: '{{lorem(1,"paragraphs")}}',
-	  	range: range(5),
-        range_asc: range(1,15,3),
-        range_desc: range(15,-50,-7),
-	  	string: "boas",
-	  	numero: 93,
-	  	name: {
-	    	first: "Hugo",
-	    	last: "Cardoso"
-	  	},
-    	boolean: false,
-	  	estudante: false,
-	  	trabalhador: true,
-	  	outros: null,
-	  	lista_exemplo: [
-	  		"string",
-	  		'{{boolean()}}',
-	  		{
-	  			elem: 1, 
-                indice: '{{integer(20,50)}}', 
-                lista_nested: [1,2,3], 
-                range: range(-5) 
-            }
-    	],
-  		objeto: [
-			'repeat(5)': {
-  				indice_objeto: '{{index()}}'
-  			}
-		]
+    	having(70) {
+  			descrição: '{{lorem(1,"sentences")}}'
+		},
+        nr_livros: '{{integer(1,10)}}',
+        livros: [ 'repeat(this.nr_livros)': {
+        	titulo: '{{lorem(1,"words")}}',
+            suporte: '{{random("Físico","Digital")}}',
+            rating: '{{integer(1,5)}}'
+        } ],
+        livro_favorito(gen) {
+          var titulos = this.livros.map(x => x.titulo)
+          return gen.random(...titulos)
+      	}
     }
   ]
 }`,
