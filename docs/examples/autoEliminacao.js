@@ -49,7 +49,7 @@
             if (["PGD/LC","TS/LC"].includes(this.fonteLegitimação.tipo)) {
             	naturezaIntervenção: '{{random("DONO", "PARTICIPANTE", "DONO/PARTICIPANTE")}}',
 				if (["PARTICIPANTE","DONO/PARTICIPANTE"].includes(this.naturezaIntervenção)) {
-                	donos: [ 'repeat(1,5)': '{{pt_entity("abbr")}}' ]
+                	donos: [ 'repeat(1,5)': '{{pt_entity_abbr()}}' ]
                 }
             },
             anoInício: '{{integer(1921,2021)}}',
@@ -70,7 +70,7 @@
             },
   			númeroAgregações: '{{integer(1,50)}}',
             agregações: [ 'repeat(this.númeroAgregações)': {
-            	código: '{{pt_entity("abbr")}} - {{integer(1,200)}}',
+            	código: '{{pt_entity_abbr()}} - {{integer(1,200)}}',
               	título: '{{lorem(3,"words")}}',
               	ano: '{{integer(1921,2021)}}',
               	if (["PGD/LC","TS/LC"].includes(this.fonteLegitimação.tipo)) {
