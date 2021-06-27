@@ -427,7 +427,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um número inteiro com o nº de dígitos igual a Size. <br/>
+                        Gera um número inteiro com o número de dígitos igual a Size. <br/>
                         Exemplo: integerOfSize(4) = 1234<br/>
                     </div>
                 </div>
