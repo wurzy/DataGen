@@ -1,7 +1,12 @@
 <template>
   <div class="container" style="text-align: justify; text-justify: inter-word;">
     <br/>
-    <h2>Documentação</h2>
+    <h2 style="display:inline; margin-right: 10px;" >Documentação</h2> 
+
+    <a :href="'/datagen_manual.pdf'" style="display:inline; " download>
+        <font-awesome-icon style="margin-bottom: 2px;" icon="download"/>
+    </a>
+
     <hr/>
     <div>
         <h4>Introdução</h4>
@@ -2651,7 +2656,7 @@ de forma segura. </p>
 <script>
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
+import axios from 'axios';
 import "codemirror/theme/dracula.css";
 import 'codemirror/keymap/sublime'
 import 'codemirror/mode/javascript/javascript.js'
