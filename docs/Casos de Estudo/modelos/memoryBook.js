@@ -1,7 +1,7 @@
 <!LANGUAGE pt>
 {
 	user: [ 'repeat(200)': {
-  		_id: {
+  		id_user: {
            $oid: '{{objectId()}}'
         },
         username(gen) {
@@ -27,8 +27,8 @@
         profile_picture: null,
         level: "consumer"
 	}],
-	collection: [ 'repeat(200)': {
-  		_id: {
+	user_collection: [ 'repeat(200)': {
+  		id_collection: {
            $oid: '{{objectId()}}'
         },
         name: 'Coleção {{index(1)}}',
@@ -46,7 +46,7 @@
         collection_picture: null
 	}],
 	memory: [ 'repeat(500)': {
-  		_id: {
+  		id_memory: {
            $oid: '{{objectId()}}'
         },
         title: 'Memória {{index(1)}}',
@@ -66,7 +66,7 @@
         content: '{{lorem(1, "paragraphs")}}'
 	}],
 	person: [ 'repeat(300)': {
-  		_id: {
+  		id_person: {
            $oid: '{{objectId()}}'
         },
         name: '{{fullName()}}',

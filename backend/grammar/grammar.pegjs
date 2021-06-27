@@ -73,6 +73,9 @@
         if (!join.length) join = "null"
         join += `, ${JSON.stringify(queue[queue.length-1])}, ${JSON.stringify(struct_types)}, ${JSON.stringify(array_indexes)}`
       }
+      if (key == "letter") {
+        if (!join.length) join = "null"
+      }
       if (key == "float") {
         if (args.length == 2) join += ",null"
       }
@@ -323,7 +326,7 @@ collection_object
 
       for (let p in members) {
         if (!("attributes" in members[p].model)) {
-          data[p] = members[p].data[0]
+          data[p] = repeat_keys.includes(p) ? members[p].data : members[p].data[0]
           model[p] = members[p].model
         }
         else if ("or" in members[p]) {
@@ -596,6 +599,10 @@ lorem_string
   / quotation_mark ws word:"sentences" ws quotation_mark { return word }
   / quotation_mark ws word:"paragraphs" ws quotation_mark { return word }
 
+letter_case
+  = quotation_mark ws word:"uppercase" ws quotation_mark { return word }
+  / quotation_mark ws word:"lowercase" ws quotation_mark { return word }
+
 date
   = quotation_mark ws date:((((("0"[1-9]/"1"[0-9]/"2"[0-8])("."/"/"/"-")("0"[1-9]/"1"[012]))/(("29"/"30"/"31")("."/"/"/"-")("0"[13578]/"1"[02]))/(("29"/"30")("."/"/"/"-")("0"[4,6,9]/"11")))("."/"/"/"-")("19"/[2-9][0-9])[0-9][0-9])/("29"("."/"/"/"-")"02"("."/"/"/"-")("19"/[2-9][0-9])("00"/"04"/"08"/"12"/"16"/"20"/"24"/"28"/"32"/"36"/"40"/"44"/"48"/"52"/"56"/"60"/"64"/"68"/"72"/"76"/"80"/"84"/"88"/"92"/"96"))) ws quotation_mark {
     return date.flat(2).join("").replace(/[^\d]/g, "/")
@@ -694,10 +701,22 @@ gen_moustaches
         data: fillArray("gen", null, "index", [offset, queue[queue.length-1], struct_types, array_indexes])
       }
     }
+  / "letter(" ws letter_case:letter_case? ws ")" {
+    return {
+      model: { type: "string", required: true }, 
+      data: fillArray("gen", null, "letter", [letter_case])
+    }
+  }
   / "integer(" ws min:intneg_or_local value_separator max:intneg_or_local ws ")" {
     return {
       model: { type: "integer", required: true }, 
       data: fillArray("gen", null, "integer", [min, max])
+    }
+  }
+  / "integerOfSize(" ws size:int_or_local ws ")" {
+    return {
+      model: { type: "integer", required: true }, 
+      data: fillArray("gen", null, "integerOfSize", [size])
     }
   }
   / "formattedInteger(" ws min:intneg_or_local value_separator max:intneg_or_local value_separator pad:int_or_local value_separator quotation_mark unit:[^"]* quotation_mark ws ")" {
