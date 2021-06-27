@@ -26,7 +26,7 @@ pretenda.</p>
     <div>
         <h4>Definição de Pares Chave-Valor</h4>
         <p>Um par chave-valor é composto por dois elementos separadas por dois pontos (<b>:</b>).</p> 
-        <p>A chave não pode conter espaços brancos (exceto entre o último caractere da <i>String</i> e o separador) nem qualquer outro caractere que não percença ao alfabeto ou que não seja um <i>underscore</i>.</p>
+        <p>A chave não pode conter espaços brancos (exceto entre o último caractere da <i>String</i> e o separador) nem qualquer outro caractere que não pertença ao alfabeto ou que não seja um <i>underscore</i>.</p>
         <p>Por exemplo, <code>lorem_ipsum</code> é uma chave válida enquanto <code>lorem ipsum</code>, <code>lorem:ipsum</code> ou <code>lorem-ipsum</code> não são.</p>
         <p>A única exceção é a diretiva <code>repeat</code>, que está entre plicas e que recebe como argumento um inteiro. Esta é responsável por gerar um <i>array</i> de objetos cujo comprimento é o dado por argumento.</p>
         <p>Os valores podem ser um dos seguintes:</p>
@@ -37,7 +37,7 @@ pretenda.</p>
             <li>Booleano</li>
             <li>null</li>
             <li>Objeto DSL</li>
-            <li>Função "Moustache" (a ver mais à frente)</li>
+            <li>Função "Moustache"</li>
         </ul>
     </div>
         <hr/>
@@ -73,7 +73,7 @@ categoria, por exemplo nomes e partidos políticos:
             </li>
         </ul>
         <p>
-            Estas funções de interpolação podem também ser interligadas entre si e com strings elementares para gerar strings mais estruturadas, nomeadamente moradas. Algumas destas
+            Estas funções de interpolação podem também ser interligadas entre si e com <i>Strings</i> elementares para gerar <i>Strings</i> mais estruturadas, nomeadamente moradas. Algumas destas
 funções recebem argumentos e, nesse caso, o utilizador tanto pode introduzir manualmente
 os valores, como pode referenciar outras propriedades definidas acima no modelo, através da
 variável local <code>this</code>, permitindo assim estabelecer relações entre vários campos.
@@ -471,7 +471,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um número decimal aleatório entre Min e Max com um total de C casas decimais e garante que tem pelo menos tantos algarismos na parte inteira quantos especificados no Pad. <br/>
-                        Por fim, recebe o formato no argumento Form o formato é "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo é para separar a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
+                        Por fim, recebe um formato no argumento Form como "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo separa a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
                         Caso não queira padding, pode colocar um 0 no 4º argumento e caso não queira colocar a unidade, pode acabar a <i>String</i> do formato logo a seguir aos últimos 00. <br/>
                         Exemplo1: formattedFloat(2, 400, 3, 3, "0.0.00$") = "181.306$" <br/>
                         Exemplo2: formattedFloat(2, 5, 2, 0, "0.0.00") = "2.05"
@@ -641,7 +641,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A varíavel Parte tem de ser igual a "words", "sentences" ou "paragraphs".<br/>
+                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A varíavel Parte tem de corresponder a "words", "sentences" ou "paragraphs".<br/>
                         Exemplo: lorem(3,"words") = "mollit fugiat officia"
                     </div>
                 </div>
@@ -667,7 +667,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="isrequired">
                         arg1:: <code>Object</code>,<br/>
                         ...,<br/>
-                        argN::<code>Object</code>
+                        argN:: <code>Object</code>
                     </div>
                 </div>
             </div>
@@ -675,7 +675,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Retorna aleatoriamente um dos argumentos passados à função. <br/>
-                        Exemplo: random("blue", null, true, false, 23, 17.56) = 23
+                        Exemplo: random("blue", true, false, 23, 17.56) = 23
                     </div>
                 </div>
             </div>
@@ -706,7 +706,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um conjunto de coordenadas cartesianas aleatórias. <br/>
-                        Exemplo: position() = "(22.491, 101.037)"
+                        Exemplo: position() = "(67.95632, -55.44137)"
                     </div>
                 </div>
             </div>
@@ -738,7 +738,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um conjunto de coordenadas cartesianas aleatórias, com limites superiores e inferiores. <br/>
-                        Exemplo: position([0.03,3],[-5,-2.4]) = "(1.311, -3.97)"
+                        Exemplo: position([0.03,3],[-5,-2.4]) = "(0.26275, -4.03904)"
                     </div>
                 </div>
             </div>
@@ -792,14 +792,14 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                     <div class="isrequired">
-                        bool:: <code>Boolean</code>
+                        Bool:: <code>Boolean</code>
                     </div>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um número de telemóvel português, se bool==true é colocada a extensão. <br/>
+                        Gera um número de telemóvel português e com Bool==true é colocada a extensão. <br/>
                         Exemplo: pt_phone_number(true) = "+351 911 154 239"
                     </div>
                 </div>
@@ -1027,7 +1027,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera o concelho português da freguesia dada em Coun.<br/>
                         O primeiro argumento tem de corresponder à <i>String</i> "parish".<br/>
-                        Exemplo: pt_country("parish","Tadim") = "Braga"
+                        Exemplo: pt_county("parish","Tadim") = "Braga"
                     </div>
                 </div>
             </div>
@@ -1188,7 +1188,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera uma cidade portuguesa aleatória do distrito dado em Dist.<br/>
                         O primeiro argumento tem de corresponder à <i>String</i> "district".<br/>
-                        Exemplo: pt_parish("district","Braga") = "Barcelos"
+                        Exemplo: pt_city("district","Braga") = "Barcelos"
                     </div>
                 </div>
             </div>
@@ -1281,7 +1281,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera o nome de um partido político aleatório.<br/>
-                        Exemplo: political_party_name() = Aliança de Paz" 
+                        Exemplo: political_party_name() = "Aliança de Paz" 
                     </div>
                 </div>
             </div>
@@ -1405,7 +1405,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera uma entidade portuguesa aleatória e devolve um objeto com a sigla e a designação correspondentes.<br/>
-                        Exemplo: political_party() = { "sigla": "CMBRG", "designacao": "Câmara Municipal de Braga" }
+                        Exemplo: pt_entity() = { "abbr": "CMBRG", "name": "Câmara Municipal de Braga" }
                     </div>
                 </div>
             </div>
@@ -2290,7 +2290,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
     <div>
         <h4>Primitiva 'repeat'</h4>
         <p>Para especificar o tamanho do dataset, ou de um array aninhado, existe a diretiva <code>repeat</code>,
-onde o utilizador indica a estrutura que pretende replicar (que pode ser qualquer coisa desde
+onde o utilizador indica a estrutura que pretende replicar (que pode ser qualquer uma, desde
 um tipo JSON primitivo até um objeto complexo), bem como o número de cópias, ou intervalo
 de números.
         </p>
@@ -2303,7 +2303,7 @@ de números.
         <p>
             O utilizador pode também definir tantas coleções quantas pretenda num único modelo (são
 consideradas coleções as propriedades chave-valor no nível superior do modelo) e a aplicação
-retornará o dataset resultante em sintaxe <i>json-server</i> - um objeto com um propriedade
+retornará o dataset resultante em sintaxe <i>json-server</i> - um objeto com uma propriedade
 por coleção. Durante o processamento do input, a aplicação constrói recursivamente tanto o dataset final como o modelo Strapi para a estrutura especificada, concorrentemente, de
 maneira a permitir a integração posterior numa API RESTful.
         </p>
@@ -2324,7 +2324,7 @@ argumento. O <code>unique</code> garante que as funções de interpolação às 
 sempre valores únicos, no contexto do dataset final. Isto é especialmente relevante no que
 toca a funções de interpolação que vão buscar informação aleatória aos datasets de suporte
 do DataGen, dentro de uma diretiva <code>repeat</code>, visto que não há nenhuma garantia base de que
-retornarão valores sempre diferentes e o utilizador pode não querer que isso aconteça.
+retornarão valores sempre diferentes e o utilizador pode querer que isso não aconteça.
         </p>
         <p>
             Como tal, a função <code>unique</code> apenas tem algum efeito quando aplicada em funções de
@@ -2354,7 +2354,7 @@ garantia de exclusividade mútua para os valores resultantes:
         <h4>Primitivas map/filter/reduce</h4>
         <p>
             A gramática também disponibiliza uma implementação das ferramentas de
-programação funcional fundamentais - <code>map</code>, <code>filter</code> e <code>reduce</code>. O utilizador pode uma ou
+programação funcional fundamentais - <code>map</code>, <code>filter</code> e <code>reduce</code>. O utilizador pode utilizar uma ou
 várias destas funções com um valor array (de qualquer uma das várias formas de declaração de arrays disponibilizadas na gramática). Sintaxe <i>shorthand</i> não é permitida, pelo que o
 utilizador deve sempre abrir chavetas para o bloco de código dentro da função. Tirando
 isso, esta implementação funciona exatamente como a implementação nativa do Javascript: o
@@ -2398,7 +2398,7 @@ métodos funcionais (por exemplo <code>map</code> e <code>filter</code>, que sã
             Dentro destes blocos de código, o utilizador tem acesso total a qualquer propriedade
 declarada acima no modelo da DSL, através da variável local <code>this</code>, bem como a qualquer
 função de interpolação disponível na gramática, através da variável local <code>gen</code> - sempre que
-usar uma função para definir o valor de uma propriedade do modelo, o utilizador necessidade
+usar uma função para definir o valor de uma propriedade do modelo, o utilizador tem a necessidade
 de declarar este argumento na sua assinatura, ao qual pode aceder posteriormente no corpo
 da função para aceder às ditas funções de interpolação. Tudo isto pode ser observado no
 exemplo acima.
@@ -2409,7 +2409,7 @@ exemplo acima.
         <h4>Geração Difusa</h4>
         <p>
             A gramática também permite geração difusa de propriedades, isto é, a imposição de
-restrições sobre a existência de certas propriedades, com base em condiçõoes lógicas ou probabilidades. A gramática possui quatro ferramentas diferentes para este fim:
+restrições sobre a existência de certas propriedades, com base em condições lógicas ou probabilidades. A gramática possui quatro ferramentas diferentes para este fim:
         </p>
         <ul>
             <li>
@@ -2608,7 +2608,7 @@ seguida:</p>
             <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
         </router-link>
         <br/><br/>
-        <p>O segundo exemplo refere-se a um pequeno excerto de Autos de Eliminação, que são, resumidamente, uma estrutura que deve ser criada e cuidadosamente preenchida
+        <p>O segundo exemplo refere-se a um pequeno excerto de Autos de Eliminação que são, resumidamente, uma estrutura que deve ser criada e cuidadosamente preenchida
 de maneira a eliminar documentação que atinja o prazo da sua conservação administrativa
 de forma segura. </p>
         <p>Neste exemplo serão abordadas apenas as seguintes secções desse documento:
