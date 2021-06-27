@@ -206,7 +206,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                     <div class="isrequired">
-                        Type:: <code>String</code>
+                        Nenhum
                     </div>
                 </div>
             </div>
@@ -214,9 +214,38 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um caractere aleatório. <br/>
-                        Se existir o argumento Type, que poderá ser "uppercase" ou "lowercase", gera um caractere em letra maiúscula ou minúscula, respetivamente. <br/>
-                        Exemplo1: letter() = 'a'<br/>
-                        Exemplo2: letter('uppercase') = 'A'<br/>
+                        Exemplo: letter() = 'a'<br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        letter 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Character</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    <div class="isrequired">
+                        Type:: <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um caractere aleatório mas em "uppercase" ou "lowercase" (maiúscula ou minúscula, respetivamente), dado em Type. <br/>
+                        Exemplo: letter("uppercase") = 'A'<br/>
                     </div>
                 </div>
             </div>
