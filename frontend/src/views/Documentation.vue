@@ -2660,17 +2660,17 @@ seguida:</p>
                     <b>nome</b>
                 </li>
                 <li><b>idade</b></li>
-                <li><b>número</b> do BI/CC</li>
+                <li><b>número do BI/CC</b></li>
                 <li><b>descrição</b> que é opcional (há uma chance de 70%)</li>
                 <li><b>número de livros</b> lidos no total</li>
-                <li><b>listagem dos livros</b> que contém:
+                <li><b>listagem dos livros</b> lidos:
                     <ul>
                         <li><b>título</b></li>
-                        <li><b>suporte</b> (física e digital)</li>
+                        <li><b>suporte</b> (físico ou digital)</li>
                         <li><b>rating</b> do utilizador</li>
                     </ul>
                 </li>
-                <li><b>livro favorito</b></li>
+                <li><b>livro favorito</b> da lista anterior</li>
             </ul>
         </p>
 
