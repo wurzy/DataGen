@@ -20,8 +20,8 @@
         },
     	classes: [ 'repeat(2,5)': {
             if (["PGD/LC","TS/LC"].includes(this.fonteLegitimação.tipo)) {
-              código(gen) {
-                  var nivel1 = gen.random(100,150,200,250,300,350,400,450,500,550,600,650,700,710,750,800,850,900,950)
+              código: gen => {
+                  var nivel1 = gen.random(...gen.range(100,950,50))
                   var nivel2 = gen.random(10,20,30,40,50)
                   var nivel3 = gen.integer(1,999,3)
                   var nivel4 = gen.random("01","02")
@@ -34,7 +34,7 @@
             else {
               	at_least(1) {
                   	código(gen) {
-                  		var nivel1 = gen.random(100,150,200,250,300,350,400,450,500,550,600,650,700,710,750,800,850,900,950)
+                  		var nivel1 = gen.random(...gen.range(100,950,50))
                         var nivel2 = gen.random(10,20,30,40,50)
                         var nivel3 = gen.integer(001,999)
                         var nivel4 = gen.random("01","02")

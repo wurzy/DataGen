@@ -91,9 +91,28 @@ function decimalPadding(rand, pad) {
     return rand
 }
 
+function letter(lettercase, i) {
+    var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+    if (lettercase == "uppercase") letters = letters.slice(0,26)
+    else if (lettercase == "lowercase") letters = letters.slice(26,letters.length)
+
+    return letters[Math.floor(Math.random() * letters.length)]
+}
+
 function integer(min, max, i) {
     min = Array.isArray(min) ? min[i] : min
     max = Array.isArray(max) ? max[i] : max
+
+    return Math.floor(Math.random() * ((max+1) - min) + min)
+}
+
+function integerOfSize(size, i) {
+    size = Array.isArray(size) ? size[i] : size
+
+    var min = "0".repeat(size), max = "9".repeat(size)
+    if (size > 1) min[0] = "1"
+    min = Number.parseInt(min), max = Number.parseInt(max)
 
     return Math.floor(Math.random() * ((max+1) - min) + min)
 }
@@ -216,9 +235,11 @@ module.exports = {
     boolean,
     index,
     integer,
+    integerOfSize,
     formattedInteger,
     float,
     formattedFloat,
+    letter,
     position,
     pt_phone_number,
     date,
