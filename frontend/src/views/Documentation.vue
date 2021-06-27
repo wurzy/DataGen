@@ -1565,7 +1565,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um ator aleatório.
+                        Gera um nome de um ator aleatório.
                     </div>
                 </div>
             </div>
@@ -1865,7 +1865,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um hacker aleatório.
+                        Gera um nome de um hacker aleatório.
                     </div>
                 </div>
             </div>
@@ -2656,7 +2656,6 @@ de forma segura. </p>
 <script>
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import axios from 'axios';
 import "codemirror/theme/dracula.css";
 import 'codemirror/keymap/sublime'
 import 'codemirror/mode/javascript/javascript.js'
