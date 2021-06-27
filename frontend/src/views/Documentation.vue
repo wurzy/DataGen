@@ -4,10 +4,21 @@
     <h2>Documentação</h2>
     <hr/>
     <div>
-        <h4>Definição da DSL <i>(Domain Specific Language)</i></h4>
-        <p>A DSL é definida por pares de chave-valor agrupados dentro de um bloco iniciado pela diretiva <code>repeat</code>, envolta de parêntesis retos.</p>
-        <p>Esta definição é importante para o utilizador final, uma vez que a sintaxe é muito semelhante a outras linguagens de programação e, portanto, permite uma melhor compreensão da gramática.</p>
-        <p>É possível, também, existirem objetos aninhados. Assim, permite tipar arbritrariamente <i>arrays</i> de objetos para o <i>dataset</i> final.</p>
+        <h4>Introdução</h4>
+        <p>
+            A aplicação usa um compilador baseado numa gramática <a href="https://pegjs.org/online">PEG.js</a> para processar o input do utilizador e gerar o dataset pretendido. A gramática mencionada define uma linguagem específica de domínio (DSL), com sintaxe semelhante a JSON, disponibilizando muitas
+ferramentas que permitem a geração de datasets complexos e diversificados. Estas ferramentas incluem capacidades relacionais e lógicas, fornecendo meios para os datasets satisfazerem vários tipos de limitações - o que facilita a utilização de frameworks declarativas com esta
+especificação -, bem como capacidades funcionais, permitindo uma gestão e processamento facilitados de certas propriedades dos datasets.
+        </p>
+        <p>A primeira e mais fundamental das ferramentas implementadas é a sintaxe semelhante a
+JSON - o utilizador pode especificar propriedades chave-valor, onde o valor pode tomar qualquer tipo básico ou estrutura de dados JSON, desde inteiros a objetos e arrays. O utilizador
+pode também aninhar estes valores para criar uma estrutura com qualquer profundidade que
+pretenda.</p>
+        <codemirror 
+                ref="grammar1"
+                :value= "grammar1"
+                :options="cmOption"
+        />
     </div>
 
     <hr/>
@@ -29,31 +40,50 @@
             <li>Função "Moustache" (a ver mais à frente)</li>
         </ul>
     </div>
-
-    <hr/>
+        <hr/>
     <div>
-        <h4>Funções "Moustache"</h4>
-        
-        <p>A utilidade destas funções é automatizar diretivas para o utilizador, de modo a ter um maior leque de <i>datasets</i> possíveis.</p>
-        <p>Têm de ser escritas envoltas de duas chavetas no par chave-valor pretendido, assim como plicas a englobar toda a estrutura. Por exemplo, 
-        <code v-html="'\'{{integer()}}\''"></code> é uma função "Moustache" válida.</p>
-
-        <p>A seguir a qualquer "moustache", pode-se colocar <code v-html="'.string()'"></code> para converter o resultado em <i>String</i>, p.e. <code v-html="'\'{{boolean()}}\''"></code> = false mas <code v-html="'\'{{boolean()}}\'. string()'"></code> = "false".</p>
-        <p>Qualquer interpolação também pode ser encapsulada por <code v-html="'unique()'"></code>, p.e. <code v-html="'unique(\'{{continent()}}\')'"></code>, para garantir resultados únicos.</p>
+        <h4>Interpolações (Funções "Moustache")</h4>
+        <p>
+            Para definir o valor de uma propriedade, o utilizador pode também usar interpolação. Para
+aceder a uma função de interpolação, esta necessita de estar envolta em chavetas duplas. Há
+dois tipos de funções de interpolação:
+        </p>
         <ul>
-            <li> Se a interpolação tiver apenas um "moustache" dentro, que seja um random ou um correspondente  a um dos <i>datasets</i> de suporte, e o número do repeat for inferior ao número de valores 
-            diferentes possíveis para esse "moustache", é garantido que todos os valores são diferentes. Caso o número seja superior, dá erro. </li>
-            <li> Caso tenha só um "moustache" e strings normais, garante que os valores gerados são únicos na mesma, p.e. <code v-html="'unique(\'Continente: {{continent()}}\')'">
-            </code>. Se não for random ou "moustache" dos <i>datasets</i> de suporte, já não garante que os valores sejam todos diferentes. </li>
-	        <li> Se a interpolação tiver mais que um "moustache" dentro, não garante que os valores são todos diferentes, p.e. <code v-html="'unique(\'{{continent()}} - {{country()}}\')'">
-            </code>. </li>
+            <li>
+                 Funções que geram valores espontâneos em tempo de execução, de acordo com as instruções do utilizador - por exemplo, existe uma função de geração de números inteiros
+aleatórios, onde o utilizador precisa de indicar, no mínimo, a gama de valores que
+pretende para o resultado:
+                <codemirror 
+                    ref="grammar4"
+                    :value= "grammar4"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
+            <li>
+                Funções que retornam valores aleatórios de um grupo de datasets incorporados na
+aplicação por detrás de uma API, onde cada dataset possui informação de uma dada
+categoria, por exemplo nomes e partidos políticos:
+                <codemirror 
+                    ref="grammar5"
+                    :value= "grammar5"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
         </ul>
-        <p>Uma função "moustache" também pode chamar o valor de uma propriedade local como valor de um argumento. P.e., em <code v-html="'\'{{integer(this.x, this.y)}}\''"></code>
-        são chamadas duas variáveis, definidas antes da função.</p>
-        <p>De modo semelhante, valores de propriedades também podem ser utlizados diretamente na interpolação como <code v-html="'\'{{this.arr[2]}}\''"></code> ou 
-        <code v-html="'\'{{this.x}}\''"></code>.</p>
-
-        <p>A funções que recebem intervalos de valor funcionam tanto por ordem ascendente como descrescente. </p>
+        <p>
+            Estas funções de interpolação podem também ser interligadas entre si e com strings elementares para gerar strings mais estruturadas, nomeadamente moradas. Algumas destas
+funções recebem argumentos e, nesse caso, o utilizador tanto pode introduzir manualmente
+os valores, como pode referenciar outras propriedades definidas acima no modelo, através da
+variável local <code>this</code>, permitindo assim estabelecer relações entre vários campos.
+        </p>
+            <codemirror 
+                ref="grammar6"
+                :value= "grammar6"
+                :options="cmOption"
+            />
+            <br/>
         <p>De seguida estão explícitas todas as que se encontram atualmente disponíveis.</p>
     </div>
     <div class="method">
@@ -2256,18 +2286,238 @@
             </div>
         </div>
     </div>
-    <br/>
     <hr/>
     <div>
-        <h4>Exemplo DSL</h4>
+        <h4>Primitiva 'repeat'</h4>
+        <p>Para especificar o tamanho do dataset, ou de um array aninhado, existe a diretiva <code>repeat</code>,
+onde o utilizador indica a estrutura que pretende replicar (que pode ser qualquer coisa desde
+um tipo JSON primitivo até um objeto complexo), bem como o número de cópias, ou intervalo
+de números.
+        </p>
         <codemirror 
-                ref="example1"
-                :value= "example1"
+                ref="grammar2"
+                :value= "grammar2"
                 :options="cmOption"
         />
+        <br/>
+        <p>
+            O utilizador pode também definir tantas coleções quantas pretenda num único modelo (são
+consideradas coleções as propriedades chave-valor no nível superior do modelo) e a aplicação
+retornará o dataset resultante em sintaxe <i>json-server</i> - um objeto com um propriedade
+por coleção. Durante o processamento do input, a aplicação constrói recursivamente tanto o dataset final como o modelo Strapi para a estrutura especificada, concorrentemente, de
+maneira a permitir a integração posterior numa API RESTful.
+        </p>
+        <codemirror 
+                ref="grammar3"
+                :value= "grammar3"
+                :options="cmOption"
+        />
+        <br/>
     </div>
-
-        <hr/>
+    <hr/>
+    <div>
+        <h4>Primitiva 'unique'</h4>
+        <p>
+            A gramática também disponibiliza uma ferramenta chamada <code>unique()</code>, à qual o utilizador
+pode dar uma função de interpolação, ou uma string interpolada com uma função dessas, como
+argumento. O <code>unique</code> garante que as funções de interpolação às quais é aplicado retornam
+sempre valores únicos, no contexto do dataset final. Isto é especialmente relevante no que
+toca a funções de interpolação que vão buscar informação aleatória aos datasets de suporte
+do DataGen, dentro de uma diretiva <code>repeat</code>, visto que não há nenhuma garantia base de que
+retornarão valores sempre diferentes e o utilizador pode não querer que isso aconteça.
+        </p>
+        <p>
+            Como tal, a função <code>unique</code> apenas tem algum efeito quando aplicada em funções de
+interpolação dos datasets de suporte ou com a função <code>random</code>. Desde que seja um destes dois casos (possivelmente
+interpolados com strings normais) e haja entradas distintas suficientes nos datasets para todos
+os elementos do <code>repeat</code>, o <code>unique</code> garante que todos os objetos do dataset resultante terão
+um valor diferente na propriedade em questão. Se o utilizador usar como argumento uma
+string com mais do que uma função de interpolação, também não haverá nenhum efeito -
+poderá haver combinações de valores repetidas no fim.
+        </p>
+        <p>
+            De seguida, são apresentados dois exemplos: o primeiro demonstra a utilização correta da
+função <code>unique</code>; o segundo mostra casos de uma abordagem errada (não haver valores distintos
+suficientes para o <code>repeat</code>; não ser uma função de interpolação dos datasets de suporte; mais
+do que uma função de interpolação na string) que ou não funcionarão ou não terão nenhuma
+garantia de exclusividade mútua para os valores resultantes:
+        </p>
+        <codemirror 
+                ref="grammar8"
+                :value= "grammar8"
+                :options="cmOption"
+        />
+        <br/>
+    </div>
+    <hr/>
+    <div>
+        <h4>Primitivas map/filter/reduce</h4>
+        <p>
+            A gramática também disponibiliza uma implementação das ferramentas de
+programação funcional fundamentais - <code>map</code>, <code>filter</code> e <code>reduce</code>. O utilizador pode uma ou
+várias destas funções com um valor array (de qualquer uma das várias formas de declaração de arrays disponibilizadas na gramática). Sintaxe <i>shorthand</i> não é permitida, pelo que o
+utilizador deve sempre abrir chavetas para o bloco de código dentro da função. Tirando
+isso, esta implementação funciona exatamente como a implementação nativa do Javascript: o
+utilizador pode declarar a função dentro <code>map</code>/<code>filter</code>/<code>reduce</code> ou usar sintaxe anónima para as
+variáveis; nas variáveis, pode declarar apenas o valor atual ou, adicionalmente, qualquer uma
+das outras variáveis complementares menos comuns. De seguida, é possível observar vários
+exemplos distintos do uso destas ferramentas:
+        </p>
+            <codemirror 
+                    ref="grammar14"
+                    :value= "grammar14"
+                    :options="cmOption"
+            />
+            <br/>
+    </div>   
+    <hr/>
+    <div>
+        <h4>Execução de Código / Funções</h4>
+        <p>
+            De volta às propriedades do modelo, o utilizador pode também usar funções de Javascript
+para definir o seu valor. Existem dois tipos de funções: funções assinadas, onde o nome do
+método corresponde à chave da propriedade e o resultado do corpo da função ao valor; funções
+<i>arrow</i> anónimas, que são usadas para indicar apenas o valor da propriedade (a chave precisa
+de ser especificada antes da função).
+        </p>
+        <codemirror 
+                ref="grammar9"
+                :value= "grammar9"
+                :options="cmOption"
+        />
+        <br/>
+        <p>
+            Dentro destas funções, o utilizador é livre de escrever todo o código de Javascript que
+pretenda, que será posteriormente executado para determinar o valor da propriedade. Desta
+forma, torna-se possível incorporar algoritmos mais complexos na lógica de construção do
+dataset, permitindo uma ferramenta de geração mais especializada e versátil. Dado que o
+utilizador tem acesso a toda a sintaxe de Javascript, pode também fazer uso de operadores relacionais e lógicos para elaborar condições sobre os dados pretendidos, bem como de
+métodos funcionais (por exemplo <code>map</code> e <code>filter</code>, que são implementados pelo Javascript).
+        </p>
+        <p>
+            Dentro destes blocos de código, o utilizador tem acesso total a qualquer propriedade
+declarada acima no modelo da DSL, através da variável local <code>this</code>, bem como a qualquer
+função de interpolação disponível na gramática, através da variável local <code>gen</code> - sempre que
+usar uma função para definir o valor de uma propriedade do modelo, o utilizador necessidade
+de declarar este argumento na sua assinatura, ao qual pode aceder posteriormente no corpo
+da função para aceder às ditas funções de interpolação. Tudo isto pode ser observado no
+exemplo acima.
+        </p>
+    </div>
+    <hr/>
+    <div>
+        <h4>Geração Difusa</h4>
+        <p>
+            A gramática também permite geração difusa de propriedades, isto é, a imposição de
+restrições sobre a existência de certas propriedades, com base em condiçõoes lógicas ou probabilidades. A gramática possui quatro ferramentas diferentes para este fim:
+        </p>
+        <ul>
+            <li>
+                Diretivas <code>missing</code>/<code>having</code> - como argumento, recebem a probabilidade de as propriedades contidas nelas (não) existirem no dataset final; esta probabilidade é calculada
+para cada elemento, originando assim um dataset onde alguns elementos podem ter as
+propriedades em questão e outros não:
+                <codemirror 
+                    ref="grammar10"
+                    :value= "grammar10"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
+            <li>
+                Condições <code>if</code>... <code>else if</code>... <code>else</code> - estas funcionam como em qualquer linguagem de
+programação: o utilizador pode usar operadores relacionais e outros condicionais para
+criar condições e juntá-las com a ajuda de operadores lógicos. O objeto final terá as
+propriedades especificadas no bloco da primeira condição que se verificar (ou eventualmente nenhuma delas, se todas as condições forem falsas). Nestas condições, semelhante
+ao modo de funcionamento das funções, o utilizador tem acesso ilimitado a todas as
+propriedades declaradas acima no modelo da DSL, bem como a todas as funções de
+interpolação, o que cria a possibilidade de relacionar causalmente diferentes propriedades:
+                <codemirror 
+                    ref="grammar11"
+                    :value= "grammar11"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
+            <li>
+                A diretiva <code>or</code> - a gramática disponibiliza esta operador lógico para permitir a prototipagem ágil de propriedades mutuamente exclusivas, onde apenas uma delas será
+selecionada aleatoriamente para cada objeto (note-se que não faz sentido criar uma diretiva and, pois isso seria equivalente a simplesmente listar as propriedades pretendidas
+normalmente no modelo da DSL):
+                <codemirror 
+                    ref="grammar12"
+                    :value= "grammar12"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
+            <li>
+                A diretiva <code>at_least</code> - dentro deste bloco, o utilizador escreve um conjunto de propriedades e dá como argumento o número mínimo dessas propriedades que deve estar
+presente no objeto final. O compilador seleciona um conjunto dessas propriedades aleatoriamente, entre o mínimo dado e o total:
+                <codemirror 
+                    ref="grammar13"
+                    :value= "grammar13"
+                    :options="cmOption"
+                />
+                <br/>
+            </li>
+        </ul>
+    </div>
+    <hr/>
+    <div>
+        <h4>Datasets</h4>
+        <p>
+            Em relação à API de datasets, a equipa realizou uma pesquisa extensiva por datasets
+com informação útil, utilizou os datasets bem-estruturados que encontrou e aproveitou a
+informação que pode dos restantes, processando-a para remover erros e normalizar o seu conteúdo, posteriormente agrupando todos os dados da mesma categoria de forma a criar
+datasets maiores e dotados de maior complexidade para colocar ao serviço do utilizador.
+        </p>
+        <p>
+            A equipa também criou alguns datasets originais manualmente, para tópicos considerados
+relevantes, e introduziu suporte bilingue - português e inglês - em todos os datasets disponibilizados na aplicação, de forma a dar ao utilizador a liberdade de escolher a linguagem
+que melhor se adequa ao seu objetivo. Para indicar a sua linguagem de eleição, o modelo do
+utilizador deve começar com a seguinte sintaxe:
+        </p>
+        <codemirror 
+                ref="grammar7"
+                :value= "grammar7"
+                :options="cmOption"
+        />
+        <br/>
+        <p>Atualmente, o DataGen tem datasets de suporte para todas as categorias listadas de
+seguida:</p>
+        <ul>
+            <li>atores;</li>
+            <li>animais;</li>
+            <li>capitais;</li>
+            <li>centros culturais;</li>
+            <li>cidades;</li>
+            <li>clubes de futebol;</li>
+            <li>continentes;</li>
+            <li>desportos;</li>
+            <li>dias da semana</li>
+            <li>distritos, cidades, concelhos e freguesias portuguesas;</li>
+            <li>empresários portugueses;</li>
+            <li>entidades governamentais;</li>
+            <li>escritores;</li>
+            <li>figuras públicas portuguesas;</li>
+            <li>futebolistas;</li>
+            <li>hackers;</li>
+            <li>marcas;</li>
+            <li>marcas de carros;</li>
+            <li>meses;</li>
+            <li>músicos;</li>
+            <li>nacionalidades;</li>
+            <li>nomes;</li>
+            <li>países;</li>
+            <li><i>buzzwords</i></li>
+            <li>partidos políticos;</li>
+            <li>profissões</li>
+            <li>políticos portugueses;</li>
+            <li>religiões;</li>
+            <li>top 100 celebridades;</li>
+            <li>top 100 celebridades portuguesas.</li>
+        </ul>
+    </div>
+    <hr/>
     <div>
         <h4>Rotas Aplicacionais</h4>
         As seguintes rotas REST são disponibilizadas como alternativa à interface gráfica:
@@ -2330,6 +2580,66 @@
     </div>
     <hr/>
     <div>
+        <h4>Modelos Exemplo</h4>
+        <p>
+            O primeiro exemplo refere-se a um caso académico da representação, utilizando grafos, de 100 cidades portuguesas únicas, que atuam como os seus nodos. Estas têm:
+            <ul>
+                <li><b>id</b> que é dado por <code>c{N}</code> onde N é um número inteiro</li>
+                <li><b>nome</b></li>
+                <li><b>população</b> que é um número inteiro entre 1500 e 550000</li>
+                <li><b>descrição</b></li>
+                <li><b>distrito</b> da cidade</li>
+            </ul>
+            As arestas são as ligações entre as cidades (2000 no total):
+            <ul>
+                <li><b>id</b> que é dado por <code>l{id_ligação}-{id_origem}-{id_destino}</code></li>
+                <li><b>origem</b> que é o <b>id</b> da cidade onde a ligação começa</li>
+                <li><b>destino</b> que é o <b>id</b> da cidade onde a ligação termina</li>
+                <li><b>distância</b> que é um número entre 5 e 600</li>
+            </ul>
+        </p>
+        <codemirror 
+                ref="example1"
+                :value= "example1"
+                :options="cmOption"
+        />
+        <br/>
+        <router-link :to="{name: 'Home', params: {userModel: example1}}">
+            <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
+        </router-link>
+        <br/><br/>
+        <p>O segundo exemplo refere-se a um pequeno excerto de Autos de Eliminação, que são, resumidamente, uma estrutura que deve ser criada e cuidadosamente preenchida
+de maneira a eliminar documentação que atinja o prazo da sua conservação administrativa
+de forma segura. </p>
+        <p>Neste exemplo serão abordadas apenas as seguintes secções desse documento:
+        </p>
+        <ul>
+            <li><b>tipo</b> da fonte de legitimação, que poderá ser "PGD/LC", "TS/LC", "PGD", "RADA" ou "RADA/CLAV"</li>
+            <li><b>fundos</b> que dependem do <b>tipo</b>:
+                <ul>
+                    <li>se o tipo for "PGD/LC", "TS/LC" ou "PGD", só tem um fundo (entidade)</li>
+                    <li>se não, tem entre 1 a 5 fundos (entidades)</li>
+                </ul>
+            </li>
+            <li><b>classes</b> que são entre 2 e 5 e que dependem do <b>tipo</b>:
+                <ul>
+                    <li>se o tipo for "PGD/LC" ou "TS/LC", tem um código (que pode ter 3 ou 4 níveis)</li>
+                    <li>se não, pode ter um código, uma referência ou ambos</li>
+                </ul> 
+            </li>
+        </ul>
+        <codemirror 
+                ref="example2"
+                :value= "example2"
+                :options="cmOption"
+        />
+        <br/>
+        <router-link :to="{name: 'Home', params: {userModel: example2}}">
+            <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
+        </router-link>
+    </div>
+    <hr/>
+    <div>
         <h4>Extras</h4>
         <p>O projeto está disponível no <a href="https://github.com/wurzy/datagen">GitHub</a> e é open-source, sujeito às licenças indicadas.</p>
         <p>Para mais informações ou questões, é recomendado contactar os desenvolvedores do projeto, presentes na secção <router-link to="sobre">Sobre</router-link>.</p>
@@ -2350,38 +2660,149 @@ export default {
   name: 'Documentation',
   data() {
       return {
-        example1: `[
-	'repeat(3)': {
-        _id: '{{objectId()}}',
-  		missing(50): {
-        	boleano: '{{bool()}}'
+        grammar1: `nome: {
+    first: ["Hugo", "Cardoso"],
+    last: "Miguel"
+},
+age: 21`,
+        grammar2: `nomes: [ 'repeat(150,200)': {
+    first: '{{firstName()}}',
+    last: '{{surname()}}'
+}]`,
+        grammar3: `{
+    nomes: [ 'repeat(10)': '{{fullName()}}' ],
+    animais: [ 'repeat(20)': '{{animal()}}' ]
+}`,
+        grammar4: `id: '{{objectId()}}',
+int: '{{integer(50,100)}}',
+random: '{{random(23, "olá", [1,2,3], true)}}'`,
+        grammar5: `nome: '{{fullName()}}',
+partido: '{{political_party()}}'`,
+        grammar6: `freguesia: '{{pt_parish()}}',
+distrito: '{{pt_district("parish", this.parish)}}',
+morada: 'Rua {{fullName()}}, {{pt_city("district", this.district)}}'`,
+        grammar7:`<!LANGUAGE pt> // ou alternativamente
+<!LANGUAGE en>`,
+        grammar8: `// Primeiro caso
+[ 'repeat(6)': {
+    continente: unique('{{continent()}}'),
+    país: unique('Country: {{country()}}'),
+    aleatório: unique('{{random(1,2,3,4,5,6)}}')
+} ]
+// Segundo caso
+[ 'repeat(10)': {
+    continente: unique('{{continent()}}'),
+    inteiro: unique('{{integer(5,20)}}'),
+    aleatório: unique('{{firstName()}} {{surname()}}')
+} ]
+`, 
+        grammar9:`nome: "André",
+email(gen) {
+    var i = gen.integer(1,30);
+    return '\${this.nome}.\${gen.surname()}\${i}@gmail.com'.toLowerCase();
+},
+probabilidade: gen => { return Math.random() * 100; }`,
+        grammar10: `missing(50) { prop1: 1, prop2: 2 },
+having(80) { prop3: 3 }`,
+        grammar11: `tipo: ’{{random("A","B","C")}}’,
+if (this.tipo == "A") { A: "tipo A" }
+else if (this.tipo == "B") { B: "tipo B" }
+else { C: "tipo C" }`,
+        grammar12: `or() {
+    prop1: 1,
+    prop2: 2,
+    prop3: 3
+}`,
+        grammar13:`at_least(2) {
+    prop1: 1,
+    prop2: 2,
+    prop3: 3
+}`,
+        grammar14:`map: range(5).map(value => { return value+1 }),
+filter: [0,1,2].filter(function(value, index) {return [0,1,2][index]>0}),
+reduce: range(5).reduce((accum, value, index, array) => {
+            return accum + array[index] 
+        }),
+combinados: range(5).map((value) => { return value+3 })
+                    .filter(x => { return x >= 5})
+                    .map(x => { return x*2 }).reduce((a,c) => {return a+c})`,
+        example1: `<!LANGUAGE pt>
+{
+  	cidades: [ 'repeat(100)': {
+        id_cidade: 'c{{index(1)}}',
+        nome: unique('{{pt_city()}}'),
+        população: '{{integer(1500, 550000)}}',
+        descrição: '{{lorem(1, "paragraphs")}}',
+        distrito: '{{pt_district("city", this.nome)}}'
+  	}],
+  	ligações(gen) {
+		var id = 1
+      	var cidades = this.cidades.map(x => x.id_cidade)
+		var possiveis = cidades.flatMap((v, i) => cidades.slice(i+1).map( w => v + '|' + w ))
+  		var ligs = []
+        
+        for (var i = 0; i < 2000; i++) {
+			let l = gen.random(...possiveis)
+			possiveis.splice(possiveis.indexOf(l), 1)
+
+			var split = l.split('|')
+      		ligs.push({
+				id_ligação: \`l\${id++}-\${split[0]}-\${split[1]}\`,
+				origem: split[0],
+				destino: split[1],
+				distância: gen.float(5, 600)
+			})
+        }
+		
+		return ligs
+  	}
+}`,
+        example2: `<!LANGUAGE pt>
+{
+  autoEliminação: {
+        fonteLegitimação: {
+          	tipo: '{{random("PGD/LC", "TS/LC", "PGD", "RADA", "RADA/CLAV")}}'
         },
-        posicao: '{{position()}}',
-        telemovel: '{{phone()}}',
-	  	range: range(5),
-	  	string: "string",
-	  	numero: 93,
-	  	name: {
-	    	first: "Universidade",
-	    	last: "do Minho"
-	  	},
-	  	lista_exemplo: [
-	  		"string",
-	  		32,
-	  		{
-	  			elem: 1, 
-                indice: 2, 
-                lista_nested: [1,2,3], 
-                range: range(3) 
-            }
-    	],
-  		objeto: [
-			'repeat(5)': {
-  				indice_objeto: '{{index()}}'
-  			}
-		]
-    }
-]`,
+    	fundos(gen) {
+        	if (["PGD/LC","TS/LC","PGD"].includes(this.fonteLegitimação.tipo))
+            		return [gen.pt_entity()]
+          	else {
+            		var arr = []
+                	for (var i = 0; i < gen.integer(1,5); i++) arr.push(gen.pt_entity())
+            		return arr
+            	}
+        },
+    	classes: [ 'repeat(2,5)': {
+            if (["PGD/LC","TS/LC"].includes(this.fonteLegitimação.tipo)) {
+              	código: gen => {
+                  	var nivel1 = gen.random(...gen.range(100,950,50))
+                  	var nivel2 = gen.random(10,20,30,40,50)
+                  	var nivel3 = gen.integer(1,999,3)
+                 	 var nivel4 = gen.random("01","02")
+
+                  	var classe = nivel1 + '.' + nivel2 + '.' + nivel3
+                  	if (Math.random() > 0.5) classe += '.' + nivel4
+		  	return classe
+              	}
+	    }
+            else {
+              	at_least(1) {
+                  	código(gen) {
+                  		var nivel1 = gen.random(...gen.range(100,950,50))
+                        	var nivel2 = gen.random(10,20,30,40,50)
+                        	var nivel3 = gen.integer(001,999)
+                        	var nivel4 = gen.random("01","02")
+
+                        	var classe = nivel1 + '.' + nivel2 + '.' + nivel3
+                        	if (Math.random() > 0.5) classe += '.' + nivel4
+                       		return classe
+                    	},
+            		referência: '{{random(1,2,3,55,56)}}'
+              	}
+          }
+      }]
+  }
+}`,
         cmOption: {
           tabSize: 4,
           styleActiveLine: true,
