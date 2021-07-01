@@ -106,7 +106,7 @@ The installation process of the application is relatively simple, assuming you m
    ```sh
    docker-compose up -d
    ```
-4. Open http://localhost:8080/ (default port on the docker-compose file)
+4. Open http://localhost:12080/ (default port on the docker-compose file)
 5. (Recommended) Create an admin account on the website
     1. Register a new account using the UI
     2. On the container 'mongo', open the mongo shell and enter the collection 'users' from the database 'LEI2021'

@@ -9,8 +9,6 @@ services:
             context: ./backend
             dockerfile: ./Dockerfile
         restart: always
-        ports: 
-            - "4000:3000"
         links:
             - mongo
             - strapi
@@ -24,8 +22,6 @@ services:
             MONGO_INITDB_DATABASE: StrapiAPI
             MONGO_INITDB_DATABASE: LEI2021
         image: mongo
-        ports: 
-            - "27018:27017"
     front-end:
         container_name: front-end
         restart: always
@@ -33,7 +29,7 @@ services:
             context: ./frontend
             dockerfile: ./Dockerfile
         ports: 
-            - "8080:80"
+            - "12080:80"
         links:
             - back-end
             - strapi
@@ -55,8 +51,6 @@ services:
             DATABASE_NAME: StrapiAPI
             DATABASE_HOST: mongo
             DATABASE_PORT: 27017
-        ports:
-            - '1338:1337'
         depends_on:
             - mongo
 volumes:
