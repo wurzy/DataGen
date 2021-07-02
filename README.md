@@ -65,7 +65,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-**DataGen** is a versatile and powerful tool that allows for quick prototyping and testing of softwareapplications, since currently too few solutions offer both the complexity and scalability necessaryto generate adequate datasets in order to feed a data API or a more complex APP enabling those applications testing with appropriate data volume and data complexity.
+**DataGen** is a versatile and powerful tool that allows for quick prototyping and testing of software applications, since currently too few solutions offer both the complexity and scalability necessary to generate adequate datasets in order to feed a data API or a more complex APP, enabling their testing with appropriate data volume and complexity.
 
 **DataGen**’s core is a Domain Specific Language (DSL) that was created to specify datasets. This language suffered several updates: repeating fields (with no limit), fuzzy fields (statistically generated), lists, high order functions over lists, custom made transformation functions. The final result is a diversified algebra that allows the generation of very complex datasets coping with very convoluted requirements. Throughout the paper, several examples of the possibilities will be given. 
 
@@ -106,8 +106,13 @@ The installation process of the application is relatively simple, assuming you m
    ```sh
    docker-compose up -d
    ```
-4. Open http://localhost:8080/ (default port on the docker-compose file)
-5. The application is now ready to use
+4. Open http://localhost:12080/ (default port on the docker-compose file)
+5. (Recommended) Create an admin account on the website
+    1. Register a new account using the UI
+    2. On the container 'mongo', open the mongo shell and enter the collection 'users' from the database 'LEI2021'
+    3. Change the 'nivel' field from 'user' to 'admin' on the created account
+    4. Apply the changes
+6. The application is now ready to use
 
 
 <!-- LICENSE -->
@@ -130,6 +135,8 @@ And the supervisor of the project:
 * José Ramalho - [LinkedIn](https://pt.linkedin.com/in/josé-carlos-ramalho-ab5535a) - [GitHub](https://github.com/jcramalho)
 
 Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGen)
+
+Official University of Minho Repository Entry: [http://repositorium.sdum.uminho.pt/handle/1822/73506](http://repositorium.sdum.uminho.pt/handle/1822/73506)
 
 
 
