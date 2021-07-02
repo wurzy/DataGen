@@ -800,7 +800,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um conjunto de coordenadas cartesianas aleatórias. <br/>
+                        Gera um conjunto de coordenadas geográficas aleatórias. <br/>
                         Exemplo: position() = "(67.95632, -55.44137)"
                     </div>
                 </div>
@@ -832,7 +832,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um conjunto de coordenadas cartesianas aleatórias, com limites superiores e inferiores. <br/>
+                        Gera um conjunto de coordenadas cartesianas aleatórias, dentro dos limites dados. <br/>
                         Exemplo: position([0.03,3],[-5,-2.4]) = "(0.26275, -4.03904)"
                     </div>
                 </div>

@@ -44,17 +44,10 @@
       if (!minArr) min = Array(max.length).fill(min)
       if (!maxArr) max = Array(min.length).fill(max)
       
-      if (min.length == max.length) {
-        var pairs = []
-        for (let i = 0; i < min.length; i++) pairs.push([min[i], max[i]])
-        return pairs
-      }
-      else errors.push({
-        message: 'A propriedade local que está a referenciar através do "this" não é uma posição válida!',
-        location: location()
-      })
+      var pairs = []
+      for (let i = 0; i < min.length; i++) pairs.push([min[i], max[i]])
+      return pairs
     }
-    return [min, max]
   }
 
   function trimArg(arg, marks) {
@@ -529,11 +522,8 @@ zero
 float_format
   = ws quotation_mark ws f:("0" int_sep:[^0-9"] "0" dec_sep:[^0-9"] "00" unit:[^0-9"]* { return text() }) ws quotation_mark ws { return f }
 
-lat_interval
-  = ws '[' ws min:latitude_or_local value_separator max:latitude_or_local ws ']' ws { return getPositionPairs(min,max) }
-
-long_interval
-  = ws '[' ws min:longitude_or_local value_separator max:longitude_or_local ws ']' ws { return getPositionPairs(min,max) }
+position
+  = ws '[' ws min:number_or_local value_separator max:number_or_local ws ']' ws { return getPositionPairs(min,max) }
 
 // ----- 7. Strings -----
 
@@ -642,11 +632,9 @@ unescaped
 
 // ----- 8. Moustaches -----
 
-int_or_local = int / int_local_arg
-intneg_or_local = int_neg / int_local_arg
+natural_or_local = int / natural_local_arg
+int_or_local = int_neg / int_local_arg
 number_or_local = n:number {return n.data[0]} / num_local_arg
-latitude_or_local = n:number {return n.data[0]} / num_local_arg
-longitude_or_local = n:number {return n.data[0]} / num_local_arg
 string_or_local = string_local_arg / string_arg
 date_or_local = date / date_local_arg
 random_arg = v:(directive / object / array / false / true / number / string / moustaches_value) {return v.data} / local_arg
@@ -696,7 +684,7 @@ gen_moustaches
   = "objectId(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "objectId", []) } }
   / "guid(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "guid", []) } }
   / "boolean(" ws ")" { return { model: {type: "boolean", required: true}, data: fillArray("gen", null, "boolean", []) } }
-  / "index(" ws offset:(i:intneg_or_local ws { return i })? ")" {
+  / "index(" ws offset:(i:int_or_local ws { return i })? ")" {
       return {
         model: {type: "integer", required: true},
         data: fillArray("gen", null, "index", [offset, queue[queue.length-1], struct_types, array_indexes])
@@ -708,37 +696,37 @@ gen_moustaches
       data: fillArray("gen", null, "letter", [letter_case])
     }
   }
-  / "integer(" ws min:intneg_or_local value_separator max:intneg_or_local ws ")" {
+  / "integer(" ws min:int_or_local value_separator max:int_or_local ws ")" {
     return {
       model: { type: "integer", required: true }, 
       data: fillArray("gen", null, "integer", [min, max])
     }
   }
-  / "integerOfSize(" ws size:intneg_or_local ws ")" {
+  / "integerOfSize(" ws size:int_or_local ws ")" {
     return {
       model: { type: "integer", required: true }, 
       data: fillArray("gen", null, "integerOfSize", [size])
     }
   }
-  / "formattedInteger(" ws min:intneg_or_local value_separator max:intneg_or_local value_separator pad:int_or_local value_separator quotation_mark unit:[^"]* quotation_mark ws ")" {
+  / "formattedInteger(" ws min:int_or_local value_separator max:int_or_local value_separator pad:natural_or_local value_separator quotation_mark unit:[^"]* quotation_mark ws ")" {
     return {
       model: { type: "string", required: true }, 
       data: fillArray("gen", null, "formattedInteger", [min, max, pad, unit.join("")])
     }
   }
-  / "float(" ws min:number_or_local value_separator max:number_or_local decimals:(value_separator d:int_or_local {return d})? ws ")" {
+  / "float(" ws min:number_or_local value_separator max:number_or_local decimals:(value_separator d:natural_or_local {return d})? ws ")" {
     return {
       model: { type: "float", required: true }, 
       data: fillArray("gen", null, "float", [min, max, decimals])
     }
   }
-  / "formattedFloat(" ws min:number_or_local value_separator max:number_or_local value_separator decimals:int_or_local value_separator pad:int_or_local value_separator format:float_format ")" {
+  / "formattedFloat(" ws min:number_or_local value_separator max:number_or_local value_separator decimals:natural_or_local value_separator pad:natural_or_local value_separator format:float_format ")" {
     return {
       model: { type: "string", required: true }, 
       data: fillArray("gen", null, "formattedFloat", [min, max, decimals, pad, format])
     }
   }
-  / "position(" ws limits:(lat:(lat_interval/pair_local_arg) "," long:(long_interval/pair_local_arg) {return {lat, long} })? ")" {
+  / "position(" ws limits:(lat:(position/pair_local_arg) "," long:(position/pair_local_arg) {return {lat, long} })? ")" {
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "position", [!limits ? null : limits.lat, !limits ? null : limits.long])
@@ -766,7 +754,7 @@ gen_moustaches
         data: fillArray("gen", null, "random", values)
       }
   }
-  / "lorem(" ws count:int_or_local value_separator units:lorem_string ws ")" {
+  / "lorem(" ws count:natural_or_local value_separator units:lorem_string ws ")" {
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "lorem", [count, units])
@@ -853,6 +841,8 @@ repeat
 
       if (func == null) {
         val = createComponent("elem", val)
+
+        num = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.max(a,b) })
         for (let i = 0; i < num; i++) model.attributes["elem"+i] = val.model
       }
     }
@@ -884,26 +874,47 @@ repeat_signature
   }
 
 repeat_args
-  = ws min:int_or_local ws max:("," ws m:int_or_local ws { return m })? {
+  = ws min:natural_or_local ws max:("," ws m:natural_or_local ws { return m })? {
     var minArr = Array.isArray(min), maxArr = Array.isArray(max)
 
-    if (max === null) return min
-    else if (!minArr && !maxArr) return Math.floor(Math.random() * ((max+1) - min) + min)
+    if (max === null) {
+      if ((minArr && min.some(i => i < 0)) || (!minArr && min < 0)) return Array(nr_copies).fill(0)
+      if (min === 0) return Array(nr_copies).fill(0)
+      return min
+    }
+    else if (!minArr && !maxArr) {
+      if (min < 0 || max < 0) return Array(nr_copies).fill(0)
+
+      let rand = Math.floor(Math.random() * ((max+1) - min) + min)
+      if (rand === 0) return Array(nr_copies).fill(0)
+      return rand
+    }
     else {
       if (!minArr) min = Array(max.length).fill(min)
       if (!maxArr) max = Array(min.length).fill(max)
-      var nums = []
 
-      if (min.length == max.length) {
-        for (let i = 0; i < min.length; i++) nums.push(Math.floor(Math.random() * ((max[i]+1) - min[i]) + min[i]))
-      }
-      else errors.push({
-        message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
-        location: location()
-      })
-      
+      if (min.some(i => i < 0) || max.some(i => i < 0)) return Array(nr_copies).fill(0)
+
+      var nums = []
+      for (let i = 0; i < min.length; i++) nums.push(Math.floor(Math.random() * ((max[i]+1) - min[i]) + min[i]))
       return nums
     }
+  }
+
+natural_local_arg = arg:local_arg {
+    if (invalid_local_arg) {
+      invalid_local_arg = false
+      return 0
+    }
+    else if (!(arg.every(i => i === 0) || arg.reduce((res, val) => { return res && Number.isInteger(val) }))) errors.push({
+      message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
+      location: location()
+    })
+    else if (arg.some(i => i < 0)) errors.push({
+      message: 'A propriedade local que está a referenciar através do "this" não pode ser um número negativo!',
+      location: location()
+    })
+    return arg
   }
 
 int_local_arg = arg:local_arg {
@@ -915,7 +926,7 @@ int_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
       location: location()
     })
-    return arg.map(x => parseInt(x))
+    return arg
   }
 
 num_local_arg = arg:local_arg {
@@ -927,7 +938,7 @@ num_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é um número!',
       location: location()
     })
-    return arg.map(x => parseFloat(x))
+    return arg
   }
 
 pair_local_arg = arg:local_arg {
@@ -942,7 +953,7 @@ pair_local_arg = arg:local_arg {
       })
       return [0,0]
     }
-    return arg.map(x => x.map(y => parseFloat(y)))
+    return arg
   }
 
 string_local_arg = arg:local_arg {
@@ -954,7 +965,7 @@ string_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é uma string!',
       location: location()
     })
-    return arg.map(x => String(x))
+    return arg
   }
 
 date_local_arg = arg:local_arg {
@@ -986,7 +997,7 @@ local_arg = ws "this" char:("."/"[") key:code_key ws {
       if (args[i] in local) local = local[args[i]]
       else {
         errors.push({
-          message: 'A propriedade local que está a referenciar através do "this" não é válida!',
+          message: 'A propriedade local que está a referenciar através do "this" não existe!',
           location: location()
         })
 
@@ -1020,7 +1031,7 @@ range
   }
 
 range_args
-  = init:intneg_or_local args:(value_separator end:intneg_or_local step:(value_separator s:intneg_or_local { return s })? { return {end, step}})? {
+  = init:int_or_local args:(value_separator end:int_or_local step:(value_separator s:int_or_local { return s })? { return {end, step}})? {
     var end = !args ? null : args.end
     var step = (!args || args.step == null) ? null : args.step
     let range = fillArray("gen", null, "range", [init, end, step])
@@ -1115,39 +1126,41 @@ or = "or(" ws ")" ws obj:object {
     return { name: uuidv4(), value: { or: true, model, data } }
   }
 
-at_least = "at_least(" ws num:int_or_local ws ")" obj:object {
+at_least = "at_least(" ws num:natural_or_local ws ")" obj:object {
     var model = {}, data = []
     if (!Array.isArray(num)) num = Array(nr_copies).fill(num)
-
-    for (let prop in obj.model.attributes) {
-      obj.model.attributes[prop].required = false
-      model[prop] = obj.model.attributes[prop]
-      values_map[values_map.length-1].data[prop] = []
-    }
-
-    for (let i = 0; i < nr_copies; i++) {
-      let keys = Object.keys(obj.data[i])
-      let nullKeys = Object.keys(model)
-
-      var n = Math.floor(Math.random() * ((keys.length+1) - num[i]) + num[i])
-      if (num[i] > keys.length) n = keys.length
-      data.push({})
-
-      for (let j = 0; j < n; j++) {
-        let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
-        data[i][key] = obj.data[i][key]
-        
-        if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
-        else values_map[values_map.length-1].data[key].push(obj.data[i][key])
-        
-        keys.splice(keys.indexOf(key), 1)
-        nullKeys.splice(nullKeys.indexOf(key), 1)
+    
+    if (num.every(i => i >= 0)) {
+      for (let prop in obj.model.attributes) {
+        obj.model.attributes[prop].required = false
+        model[prop] = obj.model.attributes[prop]
+        values_map[values_map.length-1].data[prop] = []
       }
 
-      nullKeys.forEach(k => {
-        if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-        else values_map[values_map.length-1].data[k].push(null)
-      })
+      for (let i = 0; i < nr_copies; i++) {
+        let keys = Object.keys(obj.data[i])
+        let nullKeys = Object.keys(model)
+
+        var n = Math.floor(Math.random() * ((keys.length+1) - num[i]) + num[i])
+        if (num[i] > keys.length) n = keys.length
+        data.push({})
+
+        for (let j = 0; j < n; j++) {
+          let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
+          data[i][key] = obj.data[i][key]
+          
+          if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
+          else values_map[values_map.length-1].data[key].push(obj.data[i][key])
+          
+          keys.splice(keys.indexOf(key), 1)
+          nullKeys.splice(nullKeys.indexOf(key), 1)
+        }
+
+        nullKeys.forEach(k => {
+          if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
+          else values_map[values_map.length-1].data[k].push(null)
+        })
+      }
     }
     
     return { name: uuidv4(), value: { at_least: true, model, data }}
