@@ -696,7 +696,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A varíavel Parte tem de corresponder a "words", "sentences" ou "paragraphs".<br/>
+                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A variável Parte tem de corresponder a "words", "sentences" ou "paragraphs".<br/>
                         Exemplo: lorem(3,"words") = "mollit fugiat officia"
                     </div>
                 </div>

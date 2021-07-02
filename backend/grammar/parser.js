@@ -889,43 +889,68 @@ module.exports = /*
             }
           },
         peg$c393 = function(arg) {
-            if (!arg.reduce((res, val) => { return res && Number.isInteger(val) })) errors.push({
+            if (invalid_local_arg) {
+              invalid_local_arg = false
+              return 0
+            }
+            else if (!arg.reduce((res, val) => { return res && Number.isInteger(val) })) errors.push({
               message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
               location: location()
             })
             return arg.map(x => parseInt(x))
           },
         peg$c394 = function(arg) {
-            if (!arg.reduce((res, val) => { return res && typeof val == 'number' })) errors.push({
+            if (invalid_local_arg) {
+              invalid_local_arg = false
+              return 0
+            }
+            else if (!(arg.every(i => i === 0) || arg.reduce((res, val) => { return res && typeof val == 'number' }))) errors.push({
               message: 'A propriedade local que está a referenciar através do "this" não é um número!',
               location: location()
             })
             return arg.map(x => parseFloat(x))
           },
         peg$c395 = function(arg) {
-            if (!arg.reduce((res, val) => { return res && Array.isArray(val) && val.length == 2 && typeof val[0] == 'number' && typeof val[1] == 'number' })) errors.push({
-              message: 'A propriedade local que está a referenciar através do "this" não é uma posição válida!',
-              location: location()
-            })
+            if (invalid_local_arg) {
+              invalid_local_arg = false
+              return [0,0]
+            }
+            else if (!(!arg.every(i => i === 0) && arg.reduce((res, val) => { return res && Array.isArray(val) && val.length == 2 && (val.every(i => i === 0) || (typeof val[0] == 'number' && typeof val[1] == 'number')) }))) {
+              errors.push({
+                message: 'A propriedade local que está a referenciar através do "this" não é uma posição válida!',
+                location: location()
+              })
+              return [0,0]
+            }
             return arg.map(x => x.map(y => parseFloat(y)))
           },
         peg$c396 = function(arg) {
-            if (!arg.reduce((res, val) => { return res && typeof val == 'string' })) errors.push({
+            if (invalid_local_arg) {
+              invalid_local_arg = false
+              return ""
+            }
+            else if (!arg.reduce((res, val) => { return res && typeof val == 'string' })) errors.push({
               message: 'A propriedade local que está a referenciar através do "this" não é uma string!',
               location: location()
             })
             return arg.map(x => String(x))
           },
         peg$c397 = function(arg) {
-            var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
-            
-            if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
-            else {
-              errors.push({
-                message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
-                location: location()
-              })
+            if (invalid_local_arg) {
+              invalid_local_arg = false
               return "01/01/1950"
+            }
+            else {
+              var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
+            
+              if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
+              else {
+                errors.push({
+                  message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
+                  location: location()
+                })
+                return "01/01/1950"
+              }
             }
           },
         peg$c398 = "this",
@@ -943,6 +968,8 @@ module.exports = /*
                   message: 'A propriedade local que está a referenciar através do "this" não é válida!',
                   location: location()
                 })
+
+                invalid_local_arg = true
                 break
               }
             }
@@ -975,7 +1002,16 @@ module.exports = /*
         peg$c406 = function(init, args) {
             var end = !args ? null : args.end
             var step = (!args || args.step == null) ? null : args.step
-            return fillArray("gen", null, "range", [init, end, step])
+            let range = fillArray("gen", null, "range", [init, end, step])
+            
+            if (range.some(i => i == false)) {
+              errors.push({
+                message: 'Este "range" entra em ciclo infinito!',
+                location: location()
+              })
+              for (let i = 0; i < range.length; i++) range[i] = []
+            }
+            return range
           },
         peg$c407 = "map",
         peg$c408 = peg$literalExpectation("map", false),
@@ -5782,7 +5818,7 @@ module.exports = /*
               s2 = peg$parsews();
               if (s2 !== peg$FAILED) {
                 s3 = peg$currPos;
-                s4 = peg$parseint();
+                s4 = peg$parseintneg_or_local();
                 if (s4 !== peg$FAILED) {
                   s5 = peg$parsews();
                   if (s5 !== peg$FAILED) {
@@ -5949,7 +5985,7 @@ module.exports = /*
                   if (s1 !== peg$FAILED) {
                     s2 = peg$parsews();
                     if (s2 !== peg$FAILED) {
-                      s3 = peg$parseint_or_local();
+                      s3 = peg$parseintneg_or_local();
                       if (s3 !== peg$FAILED) {
                         s4 = peg$parsews();
                         if (s4 !== peg$FAILED) {
@@ -7504,22 +7540,28 @@ module.exports = /*
     }
 
     function peg$parsefunctional() {
-      var s0, s1, s2;
+      var s0, s1, s2, s3;
 
       s0 = peg$currPos;
-      s1 = peg$parsemapFilter();
-      if (s1 === peg$FAILED) {
-        s1 = peg$parsereduce();
-      }
+      s1 = peg$parsews();
       if (s1 !== peg$FAILED) {
-        s2 = peg$parsefunctional();
+        s2 = peg$parsemapFilter();
         if (s2 === peg$FAILED) {
-          s2 = null;
+          s2 = peg$parsereduce();
         }
         if (s2 !== peg$FAILED) {
-          peg$savedPos = s0;
-          s1 = peg$c167();
-          s0 = s1;
+          s3 = peg$parsefunctional();
+          if (s3 === peg$FAILED) {
+            s3 = null;
+          }
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c167();
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
         } else {
           peg$currPos = s0;
           s0 = peg$FAILED;
@@ -9317,6 +9359,7 @@ module.exports = /*
       var unique = {moustaches: -1, count: 0}
 
       var values_map = [] //estrutura de referenciação local a propriedades anteriores
+      var invalid_local_arg = false //indica se a propriedade local que está a ser referenciada é inválida
 
       var errors = [] //lista de erros ligados à lógica das funcionalidades que não crasham a gramática
 

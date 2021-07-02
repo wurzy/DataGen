@@ -136,6 +136,8 @@ And the supervisor of the project:
 
 Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGen)
 
+Official University of Minho Repository Entry: [http://repositorium.sdum.uminho.pt/handle/1822/73506](http://repositorium.sdum.uminho.pt/handle/1822/73506)
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
