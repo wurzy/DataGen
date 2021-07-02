@@ -24,6 +24,7 @@
   var unique = {moustaches: -1, count: 0}
 
   var values_map = [] //estrutura de referenciação local a propriedades anteriores
+  var invalid_local_arg = false //indica se a propriedade local que está a ser referenciada é inválida
 
   var errors = [] //lista de erros ligados à lógica das funcionalidades que não crasham a gramática
 
@@ -695,7 +696,7 @@ gen_moustaches
   = "objectId(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "objectId", []) } }
   / "guid(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "guid", []) } }
   / "boolean(" ws ")" { return { model: {type: "boolean", required: true}, data: fillArray("gen", null, "boolean", []) } }
-  / "index(" ws offset:(i:int ws { return i })? ")" {
+  / "index(" ws offset:(i:intneg_or_local ws { return i })? ")" {
       return {
         model: {type: "integer", required: true},
         data: fillArray("gen", null, "index", [offset, queue[queue.length-1], struct_types, array_indexes])
@@ -713,7 +714,7 @@ gen_moustaches
       data: fillArray("gen", null, "integer", [min, max])
     }
   }
-  / "integerOfSize(" ws size:int_or_local ws ")" {
+  / "integerOfSize(" ws size:intneg_or_local ws ")" {
     return {
       model: { type: "integer", required: true }, 
       data: fillArray("gen", null, "integerOfSize", [size])
@@ -906,7 +907,11 @@ repeat_args
   }
 
 int_local_arg = arg:local_arg {
-    if (!arg.reduce((res, val) => { return res && Number.isInteger(val) })) errors.push({
+    if (invalid_local_arg) {
+      invalid_local_arg = false
+      return 0
+    }
+    else if (!arg.reduce((res, val) => { return res && Number.isInteger(val) })) errors.push({
       message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
       location: location()
     })
@@ -914,7 +919,11 @@ int_local_arg = arg:local_arg {
   }
 
 num_local_arg = arg:local_arg {
-    if (!arg.reduce((res, val) => { return res && typeof val == 'number' })) errors.push({
+    if (invalid_local_arg) {
+      invalid_local_arg = false
+      return 0
+    }
+    else if (!(arg.every(i => i === 0) || arg.reduce((res, val) => { return res && typeof val == 'number' }))) errors.push({
       message: 'A propriedade local que está a referenciar através do "this" não é um número!',
       location: location()
     })
@@ -922,15 +931,26 @@ num_local_arg = arg:local_arg {
   }
 
 pair_local_arg = arg:local_arg {
-    if (!arg.reduce((res, val) => { return res && Array.isArray(val) && val.length == 2 && typeof val[0] == 'number' && typeof val[1] == 'number' })) errors.push({
-      message: 'A propriedade local que está a referenciar através do "this" não é uma posição válida!',
-      location: location()
-    })
+    if (invalid_local_arg) {
+      invalid_local_arg = false
+      return [0,0]
+    }
+    else if (!(!arg.every(i => i === 0) && arg.reduce((res, val) => { return res && Array.isArray(val) && val.length == 2 && (val.every(i => i === 0) || (typeof val[0] == 'number' && typeof val[1] == 'number')) }))) {
+      errors.push({
+        message: 'A propriedade local que está a referenciar através do "this" não é uma posição válida!',
+        location: location()
+      })
+      return [0,0]
+    }
     return arg.map(x => x.map(y => parseFloat(y)))
   }
 
 string_local_arg = arg:local_arg {
-    if (!arg.reduce((res, val) => { return res && typeof val == 'string' })) errors.push({
+    if (invalid_local_arg) {
+      invalid_local_arg = false
+      return ""
+    }
+    else if (!arg.reduce((res, val) => { return res && typeof val == 'string' })) errors.push({
       message: 'A propriedade local que está a referenciar através do "this" não é uma string!',
       location: location()
     })
@@ -938,15 +958,21 @@ string_local_arg = arg:local_arg {
   }
 
 date_local_arg = arg:local_arg {
-    var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
-    
-    if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
-    else {
-      errors.push({
-        message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
-        location: location()
-      })
+    if (invalid_local_arg) {
+      invalid_local_arg = false
       return "01/01/1950"
+    }
+    else {
+      var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
+    
+      if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
+      else {
+        errors.push({
+          message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
+          location: location()
+        })
+        return "01/01/1950"
+      }
     }
   }
 
@@ -963,6 +989,8 @@ local_arg = ws "this" char:("."/"[") key:code_key ws {
           message: 'A propriedade local que está a referenciar através do "this" não é válida!',
           location: location()
         })
+
+        invalid_local_arg = true
         break
       }
     }
@@ -995,10 +1023,19 @@ range_args
   = init:intneg_or_local args:(value_separator end:intneg_or_local step:(value_separator s:intneg_or_local { return s })? { return {end, step}})? {
     var end = !args ? null : args.end
     var step = (!args || args.step == null) ? null : args.step
-    return fillArray("gen", null, "range", [init, end, step])
+    let range = fillArray("gen", null, "range", [init, end, step])
+
+    if (range.some(i => i == false)) {
+      errors.push({
+        message: 'Este "range" entra em ciclo infinito!',
+        location: location()
+      })
+      for (let i = 0; i < range.length; i++) range[i] = []
+    }
+    return range
   }
 
-functional = (mapFilter / reduce) functional? { return text() }
+functional = ws (mapFilter / reduce) functional? { return text() }
 
 mapFilter
   = "." ("map"/"filter") "(" ws "function(" mapFilter_args ")" ws function_code ws ")" { return text() }

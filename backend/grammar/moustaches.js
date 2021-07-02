@@ -58,6 +58,7 @@ function getIndexes(num, struct_types, array_indexes) {
 function index(offset, queue_last, struct_types, array_indexes, i) {
     var arrays = []
     if (offset == null) offset = 0
+    offset = Array.isArray(offset) ? offset[i] : offset
 
     if (Array.isArray(queue_last.value)) queue_last.value.forEach(n => arrays.push(getIndexes(n, struct_types, array_indexes)))
     else arrays = Array(queue_last.total/queue_last.value).fill(getIndexes(queue_last.value, struct_types, array_indexes))
@@ -109,12 +110,18 @@ function integer(min, max, i) {
 
 function integerOfSize(size, i) {
     size = Array.isArray(size) ? size[i] : size
+    let neg = false
+    
+    if (!size) return 0
+    else if (size < 0) { size = 0-size; neg = true }
 
-    var min = "0".repeat(size), max = "9".repeat(size)
+    let min = "0".repeat(size), max = "9".repeat(size)
     if (size > 1) min[0] = "1"
     min = Number.parseInt(min), max = Number.parseInt(max)
 
-    return Math.floor(Math.random() * ((max+1) - min) + min)
+    let rand = Math.floor(Math.random() * ((max+1) - min) + min)
+    if (neg) rand = 0 - rand
+    return rand
 }
 
 function formattedInteger(min, max, pad, unit, i) {
@@ -220,9 +227,11 @@ function range(init, end, step, i) {
     }
     else {
         end = Array.isArray(end) ? end[i] : end
-        if (step == null) step = init < end ? 1 : -1
+        if (step == null || step == 0) step = init < end ? 1 : -1
         else step = Array.isArray(step) ? step[i] : step
     }
+
+    if ((end > init && step < 0) || (end < init && step > 0)) return false
 
     var range = []
     for (let i = init; (init < end) ? i < end : i > end; i += step) range.push(i)
