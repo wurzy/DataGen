@@ -581,18 +581,23 @@ string_arg
 district_keyword = "pt_district" / "pt_county" / "pt_parish" / "pt_city" { return text() }
 
 place_label
-  = ws quotation_mark ws label:(("district") / ("county") / ("parish") / ("city")) ws quotation_mark ws {
+  = ws quotation_mark ws label:(("district") / ("distrito") / ("county") / ("concelho") / ("parish") / ("freguesia") / ("city") / ("cidade")) ws quotation_mark ws {
+    if (label == "distrito") label = "district"
+    if (label == "concelho") label = "county"
+    if (label == "freguesia") label = "parish"
+    if (label == "cidade") label = "city"
+
     return capitalize(label)
   }
 
 lorem_string
-  = quotation_mark ws word:"words" ws quotation_mark { return word }
-  / quotation_mark ws word:"sentences" ws quotation_mark { return word }
-  / quotation_mark ws word:"paragraphs" ws quotation_mark { return word }
+  = quotation_mark ws word:(("word""s"?) / ("palavra""s"?)) ws quotation_mark { return "words" }
+  / quotation_mark ws word:(("sentence""s"?) / ("frase""s"?)) ws quotation_mark { return "sentences" }
+  / quotation_mark ws word:(("paragraph""s"?) / ("par"("a"/"á")"grafo""s"?)) ws quotation_mark { return "paragraphs" }
 
 letter_case
-  = quotation_mark ws word:"uppercase" ws quotation_mark { return word }
-  / quotation_mark ws word:"lowercase" ws quotation_mark { return word }
+  = quotation_mark ws word:(("uppercase") / ("mai"("ú"/"u")"scula")) ws quotation_mark { return "uppercase" }
+  / quotation_mark ws word:(("lowercase") / ("min"("ú"/"u")"scula")) ws quotation_mark { return "lowercase" }
 
 date
   = quotation_mark ws date:((((("0"[1-9]/"1"[0-9]/"2"[0-8])("."/"/"/"-")("0"[1-9]/"1"[012]))/(("29"/"30"/"31")("."/"/"/"-")("0"[13578]/"1"[02]))/(("29"/"30")("."/"/"/"-")("0"[4,6,9]/"11")))("."/"/"/"-")("19"/[2-9][0-9])[0-9][0-9])/("29"("."/"/"/"-")"02"("."/"/"/"-")("19"/[2-9][0-9])("00"/"04"/"08"/"12"/"16"/"20"/"24"/"28"/"32"/"36"/"40"/"44"/"48"/"52"/"56"/"60"/"64"/"68"/"72"/"76"/"80"/"84"/"88"/"92"/"96"))) ws quotation_mark {
@@ -764,15 +769,35 @@ gen_moustaches
 api_moustaches
   = simple_api_key
   / key:district_keyword "(" moustaches:place_label "," ws name:string_or_local ws ")" {
-    if (key == "pt_district") moustaches = key + "Of" + moustaches
-    if (key == "pt_county") moustaches = key + (moustaches == "District" ? "From" : "Of") + moustaches
-    if (key == "pt_parish") moustaches = key + "From" + moustaches
-    if (key == "pt_city") moustaches = key + "From" + moustaches
-    
-    return {
-      model: {type: "string", required: true},
-      data: fillArray("data", "pt_districts", moustaches, [name])
+    let message = "", data = []
+
+    if (key == "pt_district") {
+      if (moustaches == "District") message = `Era esperado "city"/"cidade", "county"/"concelho" ou "parish"/"freguesia" mas foi encontrado "${moustaches.toLowerCase()}".`
+      else moustaches = key + "Of" + moustaches
     }
+    if (key == "pt_county") {
+      if (["County","City"].includes(moustaches)) message = `Era esperado "district"/"distrito" ou "parish"/"freguesia" mas foi encontrado "${moustaches.toLowerCase()}".`
+      else moustaches = key + (moustaches == "District" ? "From" : "Of") + moustaches
+    }
+    if (key == "pt_parish") {
+      if (["Parish","City"].includes(moustaches)) message = `Era esperado "district"/"distrito" ou "county"/"concelho" mas foi encontrado "${moustaches.toLowerCase()}".`
+      else moustaches = key + "From" + moustaches
+    }
+    if (key == "pt_city") {
+      if (moustaches != "District") message = `Era esperado "district"/"distrito" mas foi encontrado "${moustaches.toLowerCase()}".`
+      else moustaches = key + "From" + moustaches
+    }
+
+    if (message.length > 0) errors.push({ message, location: location() })
+    else {
+      data = fillArray("data", "pt_districts", moustaches, [name])
+      if (data.some(i => i === false)) errors.push({
+        message: `O nome do local que passou por argumento à função "${key}" não é válido!`,
+        location: location()
+      })
+    }
+
+    return { model: {type: "string", required: true}, data }
   }
   / key:("political_party" ("_name" / "_abbr")? {return text()}) "(" ws country:string_or_local? ws ")" {
     var moustaches = key + (country != null ? "_from" : "")
@@ -782,6 +807,11 @@ api_moustaches
       objectType: key == "political_party", model: {type: "string", required: true},
       data: fillArray("data", "political_parties", moustaches, args)
     }
+
+    if (value.data.some(i => i === false)) errors.push({
+      message: `O país que passou por argumento à função "${key}" não é válido!`,
+      location: location()
+    })
 
     if (key == "political_party") {
       value.model = { attributes: {
@@ -799,10 +829,13 @@ api_moustaches
     var moustaches = !arg ? "soccer_club" : "soccer_club_from"
     var args = arg != null ? [arg] : []
 
-    return {
-      model: {type: "string", required: true},
-      data: fillArray("data", "soccer_clubs", moustaches, args)
-    }
+    let data = fillArray("data", "soccer_clubs", moustaches, args)
+    if (data.some(i => i === false)) errors.push({
+      message: 'O país que passou por argumento à função "soccer_club" não é válido! Esta função só responde com clubes de Portugal, Espanha, Itália, Inglaterra e Alemanha.',
+      location: location()
+    })
+
+    return { model: {type: "string", required: true}, data }
   }
   / key:("pt_entity" ("_name" / "_abbr")? {return text()}) "()" {
     var value = {

@@ -24,9 +24,10 @@ const districtsAPI = {
                 let counties = dist.counties.map(x => normalize(x.county))
                 if (counties.includes(c)) return dist.district
             }
+            return false
         })
         else {
-            let district
+            let district = false
             for (let dist of districts) {
                 let counties = dist.counties.map(x => normalize(x.county))
                 if (counties.includes(county)) district = dist.district
@@ -45,9 +46,10 @@ const districtsAPI = {
                 let parishes = dist.counties.map(x => x.parishes).flat().map(x => normalize(x))
                 if (parishes.includes(c)) return dist.district
             }
+            return false
         })
         else {
-            let district
+            let district = false
             for (let dist of districts) {
                 let parishes = dist.counties.map(x => x.parishes).flat().map(x => normalize(x))
                 if (parishes.includes(parish)) district = dist.district
@@ -66,9 +68,10 @@ const districtsAPI = {
                 let cities = dist.cities.map(x => normalize(x.city))
                 if (cities.includes(c)) return dist.district
             }
+            return false
         })
         else {
-            let district
+            let district = false
             for (let dist of districts) {
                 let cities = dist.cities.map(x => normalize(x.city))
                 if (cities.includes(city)) district = dist.district
@@ -95,9 +98,10 @@ const districtsAPI = {
                     if (parishes.includes(c)) return count.county
                 }
             }
+            return false
         })
         else {
-            let county
+            let county = false
             for (let dist of districts) {
                 for (let count of dist.counties) {
                     let parishes = count.parishes.map(x => normalize(x))
@@ -120,6 +124,7 @@ const districtsAPI = {
                 let counties = districts[dists.indexOf(d)].counties.map(x => x.county)
                 return counties[Math.floor(Math.random() * counties.length)]
             }
+            return false
         })
         else {
             if (dists.includes(district)) {
@@ -127,6 +132,7 @@ const districtsAPI = {
                 if (sample > -1) return _.sampleSize(counties, sample)
                 return counties[Math.floor(Math.random() * counties.length)]
             }
+            return false
         }
     },
 
@@ -147,6 +153,7 @@ const districtsAPI = {
                 let parishes = districts[dists.indexOf(d)].counties.map(x => x.parishes).flat()
                 return parishes[Math.floor(Math.random() * parishes.length)]
             }
+            return false
         })
         else {
             if (dists.includes(district)) {
@@ -154,6 +161,7 @@ const districtsAPI = {
                 if (sample > -1) return _.sampleSize(parishes, sample)
                 return parishes[Math.floor(Math.random() * parishes.length)]
             }
+            return false
         }
     },
 
@@ -170,6 +178,7 @@ const districtsAPI = {
                     return parishes[Math.floor(Math.random() * parishes.length)]
                 }
             }
+            return false
         })
         else {
             for (let d of districts) {
@@ -181,6 +190,7 @@ const districtsAPI = {
                     return parishes[Math.floor(Math.random() * parishes.length)]
                 }
             }
+            return false
         }
     },
 
@@ -201,6 +211,7 @@ const districtsAPI = {
                 let cities = districts[dists.indexOf(d)].cities.map(x => x.city)
                 return cities[Math.floor(Math.random() * cities.length)]
             }
+            return false
         })
         else {
             if (dists.includes(district)) {
@@ -208,6 +219,7 @@ const districtsAPI = {
                 if (sample > -1) return _.sampleSize(cities, sample)
                 return cities[Math.floor(Math.random() * cities.length)]
             }
+            return false
         }
     }
 }

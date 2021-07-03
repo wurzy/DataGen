@@ -56,6 +56,8 @@ const political_partiesAPI = {
                     return party
                }
           }
+
+          return false
      },
 
      political_party_abbr_from(lang, i, sample, country) {
@@ -77,6 +79,8 @@ const political_partiesAPI = {
                     return parties[Math.floor(Math.random() * parties.length)].party_abbr
                }
           }
+
+          return false
      },
      
      political_party_name_from(lang, i, sample, country) {
@@ -98,6 +102,8 @@ const political_partiesAPI = {
                     return parties[Math.floor(Math.random() * parties.length)].party_name[lang]
                }
           }
+
+          return false
      }
 }
 

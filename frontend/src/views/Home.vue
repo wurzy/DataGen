@@ -186,7 +186,7 @@ export default {
         //deu erro que crashou a gramática
         if ("message" in generated) {
           generated.message = generated.message.replace("Expected", "Era esperado")
-          generated.message = generated.message.replace("or", "ou")
+          generated.message = generated.message.replace(", or", " ou")
           generated.message = generated.message.replace("but", "mas foi encontrado")
           generated.message = generated.message.replace(" found", "")
 

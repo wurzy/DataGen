@@ -22,6 +22,7 @@ const soccer_clubsAPI = {
                 return c.clubs[Math.floor(Math.random() * c.clubs.length)]
             }
         }
+        return false
     }
 }
 
