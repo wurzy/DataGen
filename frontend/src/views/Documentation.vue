@@ -87,7 +87,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 :options="cmOption"
             />
             <br/>
-        <p>De seguida estão explícitas todas as que se encontram atualmente disponíveis.</p>
+        <p>De seguida estão explícitas todas as que se encontram atualmente disponíveis (os argumentos que têm um asterisco podem ser referenciados localmente através da chave <b>this</b>).</p>
     </div>
     <div class="method">
         <div class="row margin-0 list-header hidden-sm hidden-xs">
@@ -177,7 +177,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Retorna o índice atual do objeto gerado pelo 'repeat'. <br/>
+                        Retorna o índice atual no array em que se encontra (normal ou gerado pelo 'repeat'). <br/>
+                        Exemplo: index() = 1 <br/>
                     </div>
                 </div>
             </div>
@@ -234,7 +235,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um caractere aleatório mas em "uppercase" ou "lowercase" (maiúscula ou minúscula, respetivamente), dado em Type. <br/>
+                        Gera um caractere aleatório em maiúscula ou minúscula, dado em Type. O Type pode ser dado em português ou inglês.<br/>
                         Exemplo: letter("uppercase") = 'A'<br/>
                     </div>
                 </div>
@@ -263,7 +264,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um booleano aleatório.
+                        Gera um booleano aleatório. <br/>
+                        Exemplo: boolean() = true <br/>
                     </div>
                 </div>
             </div>
@@ -291,7 +293,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um nome próprio aleatório.
+                        Gera um nome próprio aleatório. <br/>
+                        Exemplo: firstName() = "Hugo" <br/>
                     </div>
                 </div>
             </div>
@@ -319,7 +322,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um apelido aleatório.
+                        Gera um apelido aleatório. <br/>
+                        Exemplo: surname() = "Rodrigues" <br/>
                     </div>
                 </div>
             </div>
@@ -347,7 +351,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um nome completo aleatório.
+                        Gera um nome completo aleatório. <br/>
+                        Exemplo: surname() = "Isa Filipa Oliveirinha" <br/>
                     </div>
                 </div>
             </div>
@@ -369,8 +374,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>Integer</code>,<br/>
-                        Max:: <code>Integer</code>
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -399,7 +404,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                    Size:: <code>Integer</code>
+                    *Size:: <code>Integer</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -428,9 +433,9 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>Integer</code>,<br/>
-                        Max:: <code>Integer</code>,<br/>
-                        Pad:: <code>Integer</code>,<br/>
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>,<br/>
+                        *Pad:: <code>Integer</code>,<br/>
                         Unid:: <code>String</code>
                 </div>
             </div>
@@ -438,7 +443,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um inteiro aleatório entre Min e Max, garante que tem pelo menos tantos algarismos quantos especificados no Pad e acrescenta uma <i>String</i> Unid no final. <br/>
-                        Caso não queira padding, pode colocar um 0 no 3º argumento e caso não queira colocar a unidade, pode colocar um "" no último argumento.<br/>
+                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar a unidade, pode colocar um "" no Unid.<br/>
                         Exemplo1: formattedInteger(2, 400, 3, "$") = "100$" <br/>
                         Exemplo2: formattedInteger(1, 3, 3, "") = "002"
                     </div>
@@ -462,8 +467,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>Float</code>,<br/>
-                        Max:: <code>Float</code>
+                        *Min:: <code>Float</code>,<br/>
+                        *Max:: <code>Float</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -493,15 +498,15 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>Float</code>,<br/>
-                        Max:: <code>Float</code>,<br/>
-                        C:: <code>Integer</code>
+                        *Min:: <code>Float</code>,<br/>
+                        *Max:: <code>Float</code>,<br/>
+                        *Dec:: <code>Integer</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um número decimal aleatório entre Min e Max com um total de C casas decimais. <br/>
+                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais. <br/>
                         Caso o número gerado acabe com 0s à direita na parte decimal, estes são omitidos. <br/>
                         Exemplo: float(-180, 180, 2) = -19.11
                     </div>
@@ -525,21 +530,21 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>Integer</code>,<br/>
-                        Max:: <code>Integer</code>,<br/>
-                        C:: <code>Integer</code>,<br/>
-                        Pad:: <code>Integer</code>,<br/>
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>,<br/>
+                        *Dec:: <code>Integer</code>,<br/>
+                        *Pad:: <code>Integer</code>,<br/>
                         Form:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um número decimal aleatório entre Min e Max com um total de C casas decimais e garante que tem pelo menos tantos algarismos na parte inteira quantos especificados no Pad. <br/>
-                        Por fim, recebe um formato no argumento Form como "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo separa a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
-                        Caso não queira padding, pode colocar um 0 no 4º argumento e caso não queira colocar a unidade, pode acabar a <i>String</i> do formato logo a seguir aos últimos 00. <br/>
-                        Exemplo1: formattedFloat(2, 400, 3, 3, "0.0.00$") = "181.306$" <br/>
-                        Exemplo2: formattedFloat(2, 5, 2, 0, "0.0.00") = "2.05"
+                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais e garante que tem pelo menos tantos algarismos na parte inteira quantos especificados no Pad. <br/>
+                        Por fim, recebe um formato no argumento Form na forma "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo # separa a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
+                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar uma unidade, pode acabar a <i>String</i> do formato logo a seguir aos últimos 00. <br/>
+                        Exemplo1: formattedFloat(2, 400, 3, 4, "0.0,00$") = "0.181,306$" <br/>
+                        Exemplo2: formattedFloat(2, 5, 2, 0, "0.0,00") = "2,05"
                     </div>
                 </div>
             </div>
@@ -561,14 +566,14 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Init:: <code>String</code>
+                        *Init:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma data aleatória entre a data atual e a data argumento.<br/>
-                        A <i>String</i> do argumento tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
+                        Gera uma data aleatória entre a data atual e a data Init.<br/>
+                        A <i>String</i> do Init tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
                         O resultado é dado em versão JS raw. <br/> 
                         Exemplo: date("12-12-2100") = "2056-04-11T01:22:38.174Z"
                     </div>
@@ -592,15 +597,15 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Init:: <code>String</code>,<br/>
+                        *Init:: <code>String</code>,<br/>
                         Form:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma data aleatória entre a data atual e a data argumento, no formato dado.<br/>
-                        A <i>String</i> do 1º argumento tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
+                        Gera uma data aleatória entre a data atual e a data Init, no formato dado.<br/>
+                        A <i>String</i> do argumento Init tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
 			            Os formatos possíveis para o argumento Form são os seguintes: DD.MM.YYYY, DD.MM.AAAA, MM.DD.YYYY, MM.DD.AAAA, YYYY.MM.DD e AAAA.MM.DD, onde o . pode ser / - ou .<br/>
                         Exemplo: date("12-12-2100","DD.MM.AAAA") = "09.12.2083"
                     </div>
@@ -624,8 +629,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Init:: <code>String</code>,<br/>
-                        Fim:: <code>String</code>
+                        *Init:: <code>String</code>,<br/>
+                        *Fim:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -656,8 +661,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Init:: <code>String</code>,<br/>
-                        Fim:: <code>String</code>,<br/>
+                        *Init:: <code>String</code>,<br/>
+                        *Fim:: <code>String</code>,<br/>
                         Form:: <code>String</code>
                 </div>
             </div>
@@ -665,7 +670,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera uma data aleatória entre as datas argumentos, no formato dado.<br/>
-                        A <i>String</i> dos 1ºs argumentos tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
+                        A <i>String</i> dos argumentos Init e Fim tem de ter o formato "DD[./-]MM[./-]YYYY".<br/>
 			            Os formatos possíveis para o argumento Form são os seguintes: DD.MM.YYYY, DD.MM.AAAA, MM.DD.YYYY, MM.DD.AAAA, YYYY.MM.DD e AAAA.MM.DD, onde o . pode ser / - ou .<br/>
                         Exemplo: date("12-12-2100","20-12-2100","DD.MM.AAAA") = "18.12.2100"
                     </div>
@@ -689,14 +694,14 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Num:: <code>Integer</code>,<br/>
-                        Parte:: <code>String</code>
+                        *Num:: <code>Integer</code>,<br/>
+                        Unid:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A variável Parte tem de corresponder a "words", "sentences" ou "paragraphs".<br/>
+                        Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A variável Unid tem de corresponder a "palavras", "frases" ou "parágrafos", podendo ser dada em português ou inglês.<br/>
                         Exemplo: lorem(3,"words") = "mollit fugiat officia"
                     </div>
                 </div>
@@ -719,9 +724,9 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        arg1:: <code>Object</code>,<br/>
+                        *arg1:: <code>Object</code>,<br/>
                         ...,<br/>
-                        argN:: <code>Object</code>
+                        *argN:: <code>Object</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -779,8 +784,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        [MinLat,MaxLat]:: <code>[Float]</code>,<br/>
-                        [MinLon,MaxLon]:: <code>[Float]</code>
+                        *[*MinLat,*MaxLat]:: <code>[Float]</code>,<br/>
+                        *[*MinLon,*MaxLon]:: <code>[Float]</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -874,7 +879,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um distrito português aleatório.<br/>
-                        Exemplo: pt_district() = "Braga"
+                        Exemplo: pt_district() = "Braga" <br/>
                     </div>
                 </div>
             </div>
@@ -897,77 +902,17 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                         Def:: <code>String</code>, <br/>
-                        Coun:: <code>String</code>
+                        *Loc:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera o distrito português do concelho dado em Coun.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "county".<br/>
-                        Exemplo: pt_district("county","Braga") = "Braga"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_district
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        Par:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o distrito português da freguesia dada em Par.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "parish".<br/>
-                        Exemplo: pt_district("parish","Tadim") = "Braga"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_district
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        Cit:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o distrito português da cidade dada em Cit.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "city".<br/>
-                        Exemplo: pt_district("city","Barcelos") = "Braga"
+                        Gera o distrito português do concelho, freguesia ou cidade dada em Loc.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "county", "parish" ou "city", que também podem ser dadas em português.<br/>
+                        Exemplo1: pt_district("county","Braga") = "Braga" <br/>
+                        Exemplo2: pt_district("parish","Fermentelos") = "Aveiro" <br/>
+                        Exemplo2: pt_district("city","Torres Vedras") = "Lisboa" <br/>
                     </div>
                 </div>
             </div>
@@ -996,7 +941,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera um concelho português aleatório.<br/>
-                        Exemplo: pt_county() = "Braga"
+                        Exemplo: pt_county() = "Beja" <br/>
                     </div>
                 </div>
             </div>
@@ -1019,15 +964,15 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                         Def:: <code>String</code>, <br/>
-                        Dist:: <code>String</code>
+                        *Dist:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
                         Gera um concelho português aleatório do distrito dado em Dist.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "district".<br/>
-                        Exemplo: pt_county("district","Braga") = "Barcelos"
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "distrito".<br/>
+                        Exemplo: pt_county("district","Braga") = "Barcelos" <br/>
                     </div>
                 </div>
             </div>
@@ -1050,15 +995,15 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                         Def:: <code>String</code>, <br/>
-                        Coun:: <code>String</code>
+                        *Coun:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
                         Gera o concelho português da freguesia dada em Coun.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "parish".<br/>
-                        Exemplo: pt_county("parish","Tadim") = "Braga"
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "parish" ou "freguesia".<br/>
+                        Exemplo: pt_county("parish","Tadim") = "Braga" <br/>
                     </div>
                 </div>
             </div>
@@ -1087,7 +1032,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera uma freguesia portuguesa aleatória.<br/>
-                        Exemplo: pt_parish() = "Tadim"
+                        Exemplo: pt_parish() = "Tadim" <br/>
                     </div>
                 </div>
             </div>
@@ -1110,46 +1055,16 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                         Def:: <code>String</code>, <br/>
-                        Dist:: <code>String</code>
+                        *Loc:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma freguesia portuguesa aleatória do distrito dado em Dist.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "district".<br/>
-                        Exemplo: pt_parish("district","Braga") = "Tadim"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_parish
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        Count:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma freguesia portuguesa aleatória do concelho dado em Count.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "county".<br/>
-                        Exemplo: pt_parish("county","Braga") = "Tadim"
+                        Gera uma freguesia portuguesa aleatória do distrito ou concelho dado em Loc.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "county", que também podem ser dadas em português.<br/>
+                        Exemplo1: pt_parish("district","Braga") = "Macieira de Rates" <br/>
+                        Exemplo2: pt_parish("county","Braga") = "Adaúfe" <br/>
                     </div>
                 </div>
             </div>
@@ -1178,7 +1093,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 <div class="cell">
                     <div class="description">
                         Gera uma cidade portuguesa aleatória.<br/>
-                        Exemplo: pt_city() = "Braga"
+                        Exemplo: pt_city() = "Braga" <br/>
                     </div>
                 </div>
             </div>
@@ -1201,15 +1116,15 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-3">
                 <div class="cell">
                         Def:: <code>String</code>, <br/>
-                        Dist:: <code>String</code>
+                        *Dist:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
                         Gera uma cidade portuguesa aleatória do distrito dado em Dist.<br/>
-                        O primeiro argumento tem de corresponder à <i>String</i> "district".<br/>
-                        Exemplo: pt_city("district","Braga") = "Barcelos"
+                        O primeiro argumento tem de corresponder à`s <i>Strings</i> "district" ou "distrito".<br/>
+                        Exemplo: pt_city("district","Braga") = "Barcelos" <br/>
                     </div>
                 </div>
             </div>
@@ -1260,13 +1175,13 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Cty:: <code>String</code>
+                        *Cty:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um partido político aleatório do país dado em Cty e devolve um objeto com a abreviação e o nome correspondentes.<br/>
+                        Gera um partido político aleatório do país dado em Cty e devolve um objeto com a abreviação e o nome correspondentes. O nome do país pode ser dado em português ou inglês.<br/>
                         Exemplo: political_party("Portugal") = { "party_abbr": "BE", "party_name": "Bloco de Esquerda" }
                     </div>
                 </div>
@@ -1318,13 +1233,13 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Cty:: <code>String</code>
+                        *Cty:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera o nome de um partido político aleatório do país dado em Cty.<br/>
+                        Gera o nome de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
                         Exemplo: political_party_name("Portugal") = "Bloco de Esquerda"
                     </div>
                 </div>
@@ -1376,13 +1291,13 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Cty:: <code>String</code>
+                        *Cty:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera a abreviatura de um partido político aleatório do país dado em Cty.<br/>
+                        Gera a abreviatura de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
                         Exemplo: political_party_abbr("Portugal") = "BE"
                     </div>
                 </div>
@@ -1521,7 +1436,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Cty:: <code>String</code>
+                        *Cty:: <code>String</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -1557,7 +1472,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um nome de um ator aleatório.
+                        Gera um nome de um ator aleatório. <br/>
+                        Exemplo: actor() = "Ian McKellen" <br/>
                     </div>
                 </div>
             </div>
@@ -1585,7 +1501,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um animal aleatório.
+                        Gera um animal aleatório. <br/>
+                        Exemplo: animal() = "Baleia" <br/>
                     </div>
                 </div>
             </div>
@@ -1613,7 +1530,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma marca aleatória.
+                        Gera uma marca aleatória. <br/>
+                        Exemplo: brand() = "Ford" <br/>
                     </div>
                 </div>
             </div>
@@ -1641,7 +1559,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma buzzword aleatória.
+                        Gera uma buzzword aleatória. <br/>
+                        Exemplo: buzzword() = "Ansiedade" <br/>
                     </div>
                 </div>
             </div>
@@ -1669,7 +1588,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma capital aleatória.
+                        Gera uma capital aleatória. <br/>
+                        Exemplo: capital() = "Cairo" <br/>
                     </div>
                 </div>
             </div>
@@ -1697,7 +1617,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma marca de carro aleatória.
+                        Gera uma marca de carro aleatória. <br/>
+                        Exemplo: car_brand() = "Lamborghini" <br/>
                     </div>
                 </div>
             </div>
@@ -1725,7 +1646,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um continente aleatório.
+                        Gera um continente aleatório. <br/>
+                        Exemplo: continent() = "África" <br/>
                     </div>
                 </div>
             </div>
@@ -1753,7 +1675,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um país aleatório.
+                        Gera um país aleatório. <br/>
+                        Exemplo: country() = "Alemanha" <br/>
                     </div>
                 </div>
             </div>
@@ -1781,7 +1704,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um centro cultural aleatório.
+                        Gera um centro cultural aleatório. <br/>
+                        Exemplo: cultural_center() = "Stonehenge" <br/>
                     </div>
                 </div>
             </div>
@@ -1809,7 +1733,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma entidade governamental aleatória.
+                        Gera uma entidade governamental aleatória. <br/>
+                        Exemplo: gov_entity() = "ASAE" <br/>
                     </div>
                 </div>
             </div>
@@ -1837,7 +1762,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um nome de um hacker aleatório.
+                        Gera um nome de um hacker aleatório. <br/>
+                        Exemplo: hacker() = "ioerror" <br/>
                     </div>
                 </div>
             </div>
@@ -1865,7 +1791,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um trabalho aleatório.
+                        Gera uma profissão aleatório. <br/>
+                        Exemplo: job() = "Sapateiro" <br/>
                     </div>
                 </div>
             </div>
@@ -1893,7 +1820,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um mês aleatório.
+                        Gera um mês aleatório. <br/>
+                        Exemplo: month() = "Março" <br/>
                     </div>
                 </div>
             </div>
@@ -1921,7 +1849,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um músico aleatório.
+                        Gera um músico aleatório. <br/>
+                        Exemplo: musician() = "John Lennon" <br/>
                     </div>
                 </div>
             </div>
@@ -1949,7 +1878,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma nacionalidade aleatória.
+                        Gera uma nacionalidade aleatória. <br/>
+                        Exemplo: nationality() = "Australiano" <br/>
                     </div>
                 </div>
             </div>
@@ -1977,7 +1907,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um empresário português aleatório.
+                        Gera um empresário português aleatório. <br/>
+                        Exemplo: pt_businessman() = "Manuel Cordo Boullosa" <br/>
                     </div>
                 </div>
             </div>
@@ -2005,7 +1936,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um político português aleatório.
+                        Gera um político português aleatório. <br/>
+                        Exemplo: pt_politician() = "Francisco Manuel Costa Fernandes" <br/>
                     </div>
                 </div>
             </div>
@@ -2033,7 +1965,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma figura pública portuguesa aleatória.
+                        Gera uma figura pública portuguesa aleatória. <br/>
+                        Exemplo: pt_public_figure() = "João Manzarra" <br/>
                     </div>
                 </div>
             </div>
@@ -2061,7 +1994,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma celebridade portuguesa aleatória.
+                        Gera uma celebridade portuguesa aleatória. <br/>
+                        Exemplo: pt_top100_celebrity() = "Ricardo Araújo Pereira" <br/>
                     </div>
                 </div>
             </div>
@@ -2089,7 +2023,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma religião aleatória.
+                        Gera uma religião aleatória. <br/>
+                        Exemplo: religion() = "Protestantismo" <br/>
                     </div>
                 </div>
             </div>
@@ -2117,7 +2052,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um jogador de futebol aleatório.
+                        Gera um jogador de futebol aleatório. <br/>
+                        Exemplo: soccer_player() = "Eden Hazard" <br/>
                     </div>
                 </div>
             </div>
@@ -2145,12 +2081,13 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um desporto aleatório.
+                        Gera um desporto aleatório. <br/>
+                        Exemplo: sport() = "Voleibol" <br/>
                     </div>
                 </div>
             </div>
         </div>
-                <div class="row margin-0">
+        <div class="row margin-0">
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
@@ -2173,7 +2110,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera uma celebridade aleatória.
+                        Gera uma celebridade aleatória. <br/>
+                        Exemplo: top100_celebrity() = "Lady Gaga" <br/>
                     </div>
                 </div>
             </div>
@@ -2201,7 +2139,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um dia da semana aleatório.
+                        Gera um dia da semana aleatório. <br/>
+                        Exemplo: weekday() = "Quinta-feira" <br/>
                     </div>
                 </div>
             </div>
@@ -2229,7 +2168,8 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um escritor aleatório.
+                        Gera um escritor aleatório. <br/>
+                        Exemplo: writer() = "J. R. R. Tolkien" <br/>
                     </div>
                 </div>
             </div>
@@ -2259,6 +2199,22 @@ maneira a permitir a integração posterior numa API RESTful.
         <codemirror 
                 ref="grammar3"
                 :value= "grammar3"
+                :options="cmOption"
+        />
+        <br/>
+    </div>
+    <hr/>
+    <div>
+        <h4>Primitiva 'range'</h4>
+        <p>Esta implementação da função 'range' é equivalente à implementação do <i>Python</i> e retorna uma sequência de números inteiros. 
+        A função tem a seguinte sintaxe: <code>range(start, stop, step)</code>, onde apenas o argumento <i>start</i> é obrigatório.</p>
+        <p>Se for dado apenas o argumento <i>start</i>, a sequência de números resultante começa em 0 e para antes de <i>start</i>, incrementando 1 unidade de cada vez.</p>
+        <p>Se forem dados apenas os argumentos <i>start</i> e <i>stop</i>, a sequência resultante começa em <i>start</i> e para antes de <i>stop</i>, incrementando 1 unidade de cada vez.</p>
+        <p>Se forem dados os 3 argumentos, a sequência resultante começa em <i>start</i> e para antes de <i>stop</i>, incrementando <i>step</i> unidades de cada vez.</p>
+        <p>Caso o utilizador tente fazer um ciclo infinito, o programa dará erro e avisá-lo-á disso.</p>
+        <codemirror 
+                ref="grammar15"
+                :value= "grammar15"
                 :options="cmOption"
         />
         <br/>
@@ -2711,6 +2667,11 @@ reduce: range(5).reduce((accum, value, index, array) => {
 combinados: range(5).map((value) => { return value+3 })
                     .filter(x => { return x >= 5})
                     .map(x => { return x*2 }).reduce((a,c) => {return a+c})`,
+        grammar15: `{
+    range1: range(5),
+    range2: range(1,-8),
+    range3: range(-5,20,3)
+}`,
         example1: `<!LANGUAGE pt>
 {
   	cidades: [ 'repeat(100)': {

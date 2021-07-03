@@ -7,7 +7,7 @@ const animalsAPI = {
     get() { return animals },
     animal(lang, i, sample) {
         if (sample > -1) return _.sampleSize(animals, sample)
-        return animals[Math.floor(Math.random() * animals.length)]
+        return animals[lang][Math.floor(Math.random() * animals[lang].length)]
     }
 }
 
