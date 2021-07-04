@@ -904,9 +904,13 @@ module.exports = /*
 
               if (func == null) {
                 val = createComponent("elem", val)
-
-                num = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.max(a,b) })
-                for (let i = 0; i < num; i++) model.attributes["elem"+i] = val.model
+                let min = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.min(a,b) })
+                let max = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.max(a,b) })
+                
+                for (let i = 0; i < max; i++) {
+                  if (i >= min) val.model.required = false
+                  model.attributes["elem"+i] = val.model
+                }
               }
             }
 

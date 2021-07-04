@@ -278,7 +278,7 @@ router.post('/import', function(req, res, next) {
         })
         .then(dados => console.log("postado"))
         .catch(erro => {
-          console.log("---------erro no for----------"+erro);
+          console.log("---------erro no for----------"+JSON.stringify(erro.response.data.data));
         })
       }
     }  
