@@ -2308,6 +2308,12 @@ de declarar este argumento na sua assinatura, ao qual pode aceder posteriormente
 da função para aceder às ditas funções de interpolação. Tudo isto pode ser observado no
 exemplo acima.
         </p>
+        <p>
+            É ainda de realçar que, caso o utilizador tente fazer uma invocação inválida de uma função de interpolação através do <code>gen</code>, 
+por exemplo um <code>integer("string", 10)</code> ou um <code>political_party("Oceano Pacífico")</code>, 
+será retornado um valor <code>null</code> ou <code>false</code> dentro da função Javascript, 
+por isso o utilizador precisa de verificar com bastante cuidado se o nome da função e os argumentos estão corretos.
+        </p>
     </div>
     <hr/>
     <div>
@@ -2640,7 +2646,7 @@ morada: 'Rua {{fullName()}}, {{pt_city("district", this.district)}}'`,
         grammar9:`nome: "André",
 email(gen) {
     var i = gen.integer(1,30);
-    return '\${this.nome}.\${gen.surname()}\${i}@gmail.com'.toLowerCase();
+    return \`\${this.nome}.\${gen.surname()}\${i}@gmail.com\`.toLowerCase();
 },
 probabilidade: gen => { return Math.random() * 100; }`,
         grammar10: `missing(50) { prop1: 1, prop2: 2 },

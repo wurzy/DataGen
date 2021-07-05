@@ -9746,6 +9746,10 @@ module.exports = /*
 
         if (key in genAPI) {
           if (key == "index") {
+            if (genAPI["index"](0, queue[queue.length-1], struct_types, array_indexes, 0) === false) errors.push({
+              message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
+              location: location()
+            })
             if (!join.length) join = "null"
             join += `, ${JSON.stringify(queue[queue.length-1])}, ${JSON.stringify(struct_types)}, ${JSON.stringify(array_indexes)}`
           }
@@ -9857,7 +9861,7 @@ module.exports = /*
             return false
           }
           
-          if (i == 0 && nr_copies > 1) local = local[0]
+          if (i == 0 && !repeat_keys.includes(keys[i])) local = local[0]
         }
 
         return true
