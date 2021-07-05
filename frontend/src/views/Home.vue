@@ -2,6 +2,7 @@
   <div>
   <SaveModel :model="code"/>
   <Error msg="Ocorreu um erro na geração do API possivelmente devido a um erro no modelo ou a algo inesperado que aconteceu no Strapi." id="error_api_modal"/>
+  <Error msg="O Strapi não aceita nomes com letras maiúsculas para atributos compostos! Se pretende gerar uma API para este dataset, por favor escreva os nomes desses atributos em letras minúsculas." id="error_api2_modal"/>
   <Success type="generate_api" msg="API gerada com sucesso! Clique no botão 'Continuar' para abrir num novo separador os links da API. NOTA: Pode demorar um pouco a aparecer a API completa, se for o caso recarregue essa página após alguns segundos." id="success_api_modal" v-on:api_ok="apiOk"/>
     <div class="row row1">
       <div class="col-md-6 col-md-6-1">
@@ -281,7 +282,10 @@ export default {
         return true
       },
       createAPI() {        
-        if (!this.checkModelKeys()) alert("O Strapi não aceita nomes com letras maiúsculas para atributos compostos! Se pretende gerar uma API para este dataset, por favor escreva os nomes desses atributos em letras minúsculas.")
+        if (!this.checkModelKeys()){
+            $("#error_api2_modal").modal("show");
+            $("#error_api2_modal").css("z-index", "1500");
+        }
         else {
           var promises = [];
           var ok = true
