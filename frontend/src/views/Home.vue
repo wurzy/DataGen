@@ -2,7 +2,7 @@
   <div>
   <SaveModel :model="code"/>
   <Error msg="Ocorreu um erro na geração do API possivelmente devido a um erro no modelo ou a algo inesperado que aconteceu no Strapi." id="error_api_modal"/>
-  <Success type="generate_api" msg="API gerada com sucesso! Clique no botão 'Continuar' para abrir num novo separador os links da API. NOTA: Pode demorar um pouco a aparecer o API gerado completo, caso seja o caso recarregue essa página após alguns segundos." id="success_api_modal" v-on:api_ok="apiOk"/>
+  <Success type="generate_api" msg="API gerada com sucesso! Clique no botão 'Continuar' para abrir num novo separador os links da API. NOTA: Pode demorar um pouco a aparecer a API completa, se for o caso recarregue essa página após alguns segundos." id="success_api_modal" v-on:api_ok="apiOk"/>
     <div class="row row1">
       <div class="col-md-6 col-md-6-1">
         <div class="row row1">
@@ -205,6 +205,7 @@ export default {
         }
         else { 
           this.grammar_errors = []
+
           if (this.output_format == "JSON") {
             this.cmOutput.mode = 'text/javascript'
             this.result = JSON.stringify(generated.dataModel.data, null, 2)
@@ -213,6 +214,9 @@ export default {
             this.cmOutput.mode = 'text/xml'
             this.result = jsonToXml(generated.dataModel.data)
           }
+
+          //console.log(JSON.stringify(generated.dataModel))
+          //console.log(JSON.stringify(generated.components))
 
           var mkeys = Object.keys(generated.dataModel.model)
           var ckeys = Object.keys(generated.components)
@@ -268,58 +272,69 @@ export default {
             window.open("/strapi/"+api+"s", "_blank")
         })
       },
-      createAPI(){
-        var promises = [];
-        var ok = true
-        for (let index = 0; index < this.colecoes.length; index++) {
-          let body = {
-            apiName: this.colnames[index],
-            model: this.colecoes[index],
-            componentes: this.componentes[index],
-            dataset: JSON.parse(this.datasets[index])
+      checkModelKeys() {
+        for (let collection in this.model) {
+          for (let key in this.model[collection].attributes) {
+            if ("component" in this.model[collection].attributes[key] && /[A-Z]/.test(key)) return false
           }
-
-          let bodyImp= {
+        }
+        return true
+      },
+      createAPI() {        
+        if (!this.checkModelKeys()) alert("O Strapi não aceita nomes com letras maiúsculas para atributos compostos! Se pretende gerar uma API para este dataset, por favor escreva os nomes desses atributos em letras minúsculas.")
+        else {
+          var promises = [];
+          var ok = true
+          for (let index = 0; index < this.colecoes.length; index++) {
+            let body = {
               apiName: this.colnames[index],
+              model: this.colecoes[index],
+              componentes: this.componentes[index],
               dataset: JSON.parse(this.datasets[index])
-          }
-          console.log("dataset "+index+": ", body)
-          //console.log("dataset "+index+": ", bodyImp)
-  
-          promises.push(
-            axios.post('/api/genAPI/',body)
-            .then(dados => console.log("Modelo criado"))
-            .catch(erro => {
-              console.log(erro)
-              ok = false
-            })
-          )
-          promises.push(
-            axios.post('/api/import/',bodyImp)
-            .then(dados => {
-              console.log("Import feito")
-              let coln_axios = this.colnames[index]
-              this.generated_apis.push(coln_axios)
-            })
-            .catch(erro =>{
-              console.log(erro)
-              ok = false
-            })
-          )
+            }
 
-        }
-        Promise.all(promises).then(() => {
-          console.log("Uma API gerada!")
-        });
-        if(ok){
-          document.getElementById("downloadAPIButton").disabled = false;
-          document.getElementById("generateAPIButton").disabled = true;
-          $("#success_api_modal").modal("show");
-          $("#success_api_modal").css("z-index", "1500");
-        }
-        else{
-          $("#error_api_modal").modal("show");
-          $("#error_api_modal").css("z-index", "1500");
+            let bodyImp= {
+                apiName: this.colnames[index],
+                dataset: JSON.parse(this.datasets[index])
+            }
+            console.log("dataset "+index+": ", body)
+            //console.log("dataset "+index+": ", bodyImp)
+    
+            promises.push(
+              axios.post('/api/genAPI/',body)
+              .then(dados => console.log("Modelo criado"))
+              .catch(erro => {
+                console.log(erro)
+                ok = false
+              })
+            )
+            promises.push(
+              axios.post('/api/import/',bodyImp)
+              .then(dados => {
+                console.log("Import feito")
+                let coln_axios = this.colnames[index]
+                this.generated_apis.push(coln_axios)
+              })
+              .catch(erro =>{
+                console.log(erro)
+                ok = false
+              })
+            )
+
+          }
+          Promise.all(promises).then(() => {
+            console.log("Uma API gerada!")
+          });
+          if(ok){
+            document.getElementById("downloadAPIButton").disabled = false;
+            document.getElementById("generateAPIButton").disabled = true;
+            $("#success_api_modal").modal("show");
+            $("#success_api_modal").css("z-index", "1500");
+          }
+          else{
+            $("#error_api_modal").modal("show");
+            $("#error_api_modal").css("z-index", "1500");
+          }
         }
       },
       download(){
