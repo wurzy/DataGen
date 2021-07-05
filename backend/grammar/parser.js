@@ -1052,7 +1052,7 @@ module.exports = /*
             if (char == "[") key = char + key
 
             let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-            let args = key.match(/([$a-zA-Z_]|[^\x00-\x7F])([$a-zA-Z0-9_]|[^\x00-\x7F])*/g)
+            let args = key.match(/([$a-zA-Z_"]|[^\x00-\x7F])([$a-zA-Z0-9_"\[\]]|[^\x00-\x7F])*/g)
 
             for (let i = 0; i < args.length; i++) {
               if (args[i] in local) local = local[args[i]]
@@ -1298,20 +1298,35 @@ module.exports = /*
         peg$c481 = function(chars) { return chars.flat().join("") },
         peg$c482 = function(str) { return "\x7B" + str.join("") + "\x7D" },
         peg$c483 = function(str) { return "(" + str.join("") + ")" },
-        peg$c484 = /^[a-zA-Z0-9_.]/,
-        peg$c485 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"], "_", "."], false, false),
-        peg$c486 = function(key) { return key.flat().join("") },
-        peg$c487 = function(char, key) {
-            if (char == "[") key = char + key
-            
-            var keySplit = key.split(/\.(.+)/)
+        peg$c484 = /^[a-zA-Z_"]/,
+        peg$c485 = peg$classExpectation([["a", "z"], ["A", "Z"], "_", "\""], false, false),
+        peg$c486 = /^[a-zA-Z0-9_."[\]]/,
+        peg$c487 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"], "_", ".", "\"", "[", "]"], false, false),
+        peg$c488 = function(key) { return key.flat().join("") },
+        peg$c489 = function(char, key) {
+            let keySplit
+
+            if (char == "[") {
+              key = char + key
+              keySplit = key.split(/\](.+)/)
+              keySplit[0] += ']'
+            }
+            else {
+              keySplit = key.split(/(\[|\.)(.+)/)
+
+              if (keySplit[1] == '.') keySplit = [keySplit[0], keySplit[2]]
+              if (keySplit[1] == '[') keySplit = [keySplit[0], '[' + keySplit[2]]
+            }
+              
             var path = `gen.local${char=="."?".":""}${keySplit[0]}${nr_copies>1?"[gen.i]":""}`
-            if (keySplit.length > 1) path += (keySplit[1][0] != "[" ? "." : "") + keySplit[1]
+            if (keySplit.length > 1) path += ((keySplit[1][0] != "[" && keySplit[1][0] != ".") ? "." : "") + keySplit[1]
+            
+            checkLocalVar(keySplit)
             return path
           },
-        peg$c488 = "gen.",
-        peg$c489 = peg$literalExpectation("gen.", false),
-        peg$c490 = function(key, args) {
+        peg$c490 = "gen.",
+        peg$c491 = peg$literalExpectation("gen.", false),
+        peg$c492 = function(key, args) {
             args = args.join("").split(",")
             
             var split = [], build = "", i = 0
@@ -1327,8 +1342,8 @@ module.exports = /*
             var obj = getApiPath(key, split.map(x => x.trim()))
             return `gen.${obj.path}(${obj.args})`
           },
-        peg$c491 = /^[0-9a-f]/i,
-        peg$c492 = peg$classExpectation([["0", "9"], ["a", "f"]], false, true),
+        peg$c493 = /^[0-9a-f]/i,
+        peg$c494 = peg$classExpectation([["0", "9"], ["a", "f"]], false, true),
 
         peg$currPos          = 0,
         peg$savedPos         = 0,
@@ -9344,12 +9359,12 @@ module.exports = /*
 
       s0 = peg$currPos;
       s1 = peg$currPos;
-      if (peg$c477.test(input.charAt(peg$currPos))) {
+      if (peg$c484.test(input.charAt(peg$currPos))) {
         s2 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c478); }
+        if (peg$silentFails === 0) { peg$fail(peg$c485); }
       }
       if (s2 === peg$FAILED) {
         if (peg$c55.test(input.charAt(peg$currPos))) {
@@ -9362,12 +9377,12 @@ module.exports = /*
       }
       if (s2 !== peg$FAILED) {
         s3 = [];
-        if (peg$c484.test(input.charAt(peg$currPos))) {
+        if (peg$c486.test(input.charAt(peg$currPos))) {
           s4 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s4 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c485); }
+          if (peg$silentFails === 0) { peg$fail(peg$c487); }
         }
         if (s4 === peg$FAILED) {
           if (peg$c55.test(input.charAt(peg$currPos))) {
@@ -9380,12 +9395,12 @@ module.exports = /*
         }
         while (s4 !== peg$FAILED) {
           s3.push(s4);
-          if (peg$c484.test(input.charAt(peg$currPos))) {
+          if (peg$c486.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c485); }
+            if (peg$silentFails === 0) { peg$fail(peg$c487); }
           }
           if (s4 === peg$FAILED) {
             if (peg$c55.test(input.charAt(peg$currPos))) {
@@ -9410,7 +9425,7 @@ module.exports = /*
       }
       if (s1 !== peg$FAILED) {
         peg$savedPos = s0;
-        s1 = peg$c486(s1);
+        s1 = peg$c488(s1);
       }
       s0 = s1;
 
@@ -9449,7 +9464,7 @@ module.exports = /*
           s3 = peg$parsecode_key();
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c487(s2, s3);
+            s1 = peg$c489(s2, s3);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -9471,12 +9486,12 @@ module.exports = /*
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 4) === peg$c488) {
-        s1 = peg$c488;
+      if (input.substr(peg$currPos, 4) === peg$c490) {
+        s1 = peg$c490;
         peg$currPos += 4;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c489); }
+        if (peg$silentFails === 0) { peg$fail(peg$c491); }
       }
       if (s1 !== peg$FAILED) {
         s2 = peg$parsecode_key();
@@ -9505,7 +9520,7 @@ module.exports = /*
               s5 = peg$parseARGS_STOP();
               if (s5 !== peg$FAILED) {
                 peg$savedPos = s0;
-                s1 = peg$c490(s2, s4);
+                s1 = peg$c492(s2, s4);
                 s0 = s1;
               } else {
                 peg$currPos = s0;
@@ -9657,12 +9672,12 @@ module.exports = /*
     function peg$parseHEXDIG() {
       var s0;
 
-      if (peg$c491.test(input.charAt(peg$currPos))) {
+      if (peg$c493.test(input.charAt(peg$currPos))) {
         s0 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c492); }
+        if (peg$silentFails === 0) { peg$fail(peg$c494); }
       }
 
       return s0;
@@ -9814,6 +9829,40 @@ module.exports = /*
         return {path, args: join}
       }
 
+      function checkLocalVar(key) {
+        let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+        
+        key = key.reduce((res, val, i) => res += (i==0 || val == "") ? val : (val[0] == '[' ? val : ('.'+val)), "")
+        let keySplit = key.split(/(\[|\.)([^\[\.]+)/g), keys = []
+
+        for (let i = 0; i < keySplit.length; i++) {
+          if (keySplit[i] == '[') keys.push(keySplit[i] + keySplit[++i])
+          else if (keySplit[i] == '.') keys.push(keySplit[++i])
+          else if (keySplit[i] != "") keys.push(keySplit[i])
+        }
+
+        keys = keys.map(x => {
+          if (x.match(/\["[^"]*"\]/)) return x.slice(2,-2)
+          if (x.match(/\[[^\]]+\]/)) return parseInt(x.slice(1,-1))
+          return x
+        })
+
+        for (let i = 0; i < keys.length; i++) {
+          if (keys[i] in local) local = local[keys[i]]
+          else {
+            errors.push({
+              message: `A propriedade ${key} que está a tentar referenciar através do "this" nesta função não existe!`,
+              location: location()
+            })
+            return false
+          }
+          
+          if (i == 0 && nr_copies > 1) local = local[0]
+        }
+
+        return true
+      }
+
       function createComponent(name, value) {
         if ("component" in value) {
           if (open_structs > 1) {
@@ -9837,12 +9886,18 @@ module.exports = /*
       }
 
       function getFunctionData(code) {
-        var data = [], f = new Function("gen", code)
+        let f = new Function("gen", code), data = []
 
         for (let i = 0; i < nr_copies; i++) {
           let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-          data.push(f({genAPI, dataAPI, local, i}))
+
+          try { data.push(f({genAPI, dataAPI, local, i})) }
+          catch(err) {
+            errors.push({ message: "Tem algum erro nesta função!", location: location() })
+            break
+          }
         }
+        
         return data
       }
 

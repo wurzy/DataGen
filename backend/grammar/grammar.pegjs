@@ -147,6 +147,40 @@
     return {path, args: join}
   }
 
+  function checkLocalVar(key) {
+    let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+    
+    key = key.reduce((res, val, i) => res += (i==0 || val == "") ? val : (val[0] == '[' ? val : ('.'+val)), "")
+    let keySplit = key.split(/(\[|\.)([^\[\.]+)/g), keys = []
+
+    for (let i = 0; i < keySplit.length; i++) {
+      if (keySplit[i] == '[') keys.push(keySplit[i] + keySplit[++i])
+      else if (keySplit[i] == '.') keys.push(keySplit[++i])
+      else if (keySplit[i] != "") keys.push(keySplit[i])
+    }
+
+    keys = keys.map(x => {
+      if (x.match(/\["[^"]*"\]/)) return x.slice(2,-2)
+      if (x.match(/\[[^\]]+\]/)) return parseInt(x.slice(1,-1))
+      return x
+    })
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] in local) local = local[keys[i]]
+      else {
+        errors.push({
+          message: `A propriedade ${key} que está a tentar referenciar através do "this" nesta função não existe!`,
+          location: location()
+        })
+        return false
+      }
+      
+      if (i == 0 && nr_copies > 1) local = local[0]
+    }
+
+    return true
+  }
+
   function createComponent(name, value) {
     if ("component" in value) {
       if (open_structs > 1) {
@@ -170,12 +204,18 @@
   }
 
   function getFunctionData(code) {
-    var data = [], f = new Function("gen", code)
+    let f = new Function("gen", code), data = []
 
     for (let i = 0; i < nr_copies; i++) {
       let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-      data.push(f({genAPI, dataAPI, local, i}))
+
+      try { data.push(f({genAPI, dataAPI, local, i})) }
+      catch(err) {
+        errors.push({ message: "Tem algum erro nesta função!", location: location() })
+        break
+      }
     }
+    
     return data
   }
 
@@ -1028,7 +1068,7 @@ local_arg = ws "this" char:("."/"[") key:code_key ws {
     if (char == "[") key = char + key
 
     let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-    let args = key.match(/([$a-zA-Z_]|[^\x00-\x7F])([$a-zA-Z0-9_]|[^\x00-\x7F])*/g)
+    let args = key.match(/([$a-zA-Z_"]|[^\x00-\x7F])([$a-zA-Z0-9_"\[\]]|[^\x00-\x7F])*/g)
 
     for (let i = 0; i < args.length; i++) {
       if (args[i] in local) local = local[args[i]]
@@ -1279,14 +1319,27 @@ if_code = ARGS_START str:(gen_call / local_var / not_parentheses / if_code)* ARG
 
 not_code = !CODE_START !CODE_STOP. { return text() }
 
-code_key = key:(([a-zA-Z_]/[^\x00-\x7F])([a-zA-Z0-9_.]/[^\x00-\x7F])*) { return key.flat().join("") } 
+code_key = key:(([a-zA-Z_"]/[^\x00-\x7F])([a-zA-Z0-9_."\[\]]/[^\x00-\x7F])*) { return key.flat().join("") } 
 
 local_var = "this" char:("."/"[") key:code_key {
-    if (char == "[") key = char + key
-    
-    var keySplit = key.split(/\.(.+)/)
+    let keySplit
+
+    if (char == "[") {
+      key = char + key
+      keySplit = key.split(/\](.+)/)
+      keySplit[0] += ']'
+    }
+    else {
+      keySplit = key.split(/(\[|\.)(.+)/)
+
+      if (keySplit[1] == '.') keySplit = [keySplit[0], keySplit[2]]
+      if (keySplit[1] == '[') keySplit = [keySplit[0], '[' + keySplit[2]]
+    }
+      
     var path = `gen.local${char=="."?".":""}${keySplit[0]}${nr_copies>1?"[gen.i]":""}`
-    if (keySplit.length > 1) path += (keySplit[1][0] != "[" ? "." : "") + keySplit[1]
+    if (keySplit.length > 1) path += ((keySplit[1][0] != "[" && keySplit[1][0] != ".") ? "." : "") + keySplit[1]
+    
+    checkLocalVar(keySplit)
     return path
   }
 

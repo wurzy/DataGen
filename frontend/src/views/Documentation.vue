@@ -2487,7 +2487,7 @@ seguida:</p>
     <div>
         <h4>Informação Adicional</h4>
         <p>O principal propósito desta ferramenta é a geração de datasets (arrays de objetos) a partir do modelo do utilizador, pelo que foi projetada na expectativa de que o valor de cada coleção do modelo seja definido por um 'repeat'. 
-            </p><p>Caso se definam tipos primitivos nas coleções, o dataset será gerado corretamente na mesma, mas a API não.</p>
+            </p><p>Caso se definam as coleções de outra maneira (tipos primitivos, estruturas de dados explícitas ou funções), o dataset será gerado corretamente na mesma, mas a API não.</p>
     </div>
     <hr/>
     <div>
