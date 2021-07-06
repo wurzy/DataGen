@@ -13,7 +13,7 @@
               <input class="btn btn-primary float-left" type="button" value="Gerar" @click="generate"/>
             </div>
             <div class="input-group-append">
-              <input id="saveModelButton" class="btn btn-danger float-left" type="button" value="Guardar Modelo" @click="saveModel"/>
+              <input v-if="isLoggedIn" id="saveModelButton" class="btn btn-danger float-left" type="button" value="Guardar Modelo" @click="saveModel"/>
             </div>
             </div>
           </div>
@@ -95,6 +95,7 @@ export default {
   data() {
       return {
         output_format: "JSON",
+        cur_output: "JSON",
         colname: null,
         model: null,
         components: null,
@@ -242,6 +243,7 @@ export default {
           //document.getElementById("saveModelButton").disabled = false;
           document.getElementById("defaultDownloadButton").disabled = false;
           document.getElementById("generateAPIButton").disabled = false;
+          this.cur_output = this.output_format 
         }
       },
       downloadAPI(){
@@ -347,8 +349,17 @@ export default {
         }
         else {
           var element = document.createElement('a');
-          var filename = document.getElementById('filename').value + '.json'
-          element.setAttribute('href', "data:text/json;charset=utf-8," + encodeURIComponent(this.result));
+          var filename = document.getElementById('filename').value
+          var typedoc
+          if (this.cur_output == "XML") {
+            filename = filename + ".xml"
+            typedoc = "data:text/xml;charset=utf-8," 
+          }
+          else {
+            filename = filename + ".json"
+            typedoc = "data:text/json;charset=utf-8," 
+          }
+          element.setAttribute('href', typedoc + encodeURIComponent(this.result));
           element.setAttribute('download', filename);
 
           element.style.display = 'none';
@@ -364,6 +375,9 @@ export default {
       },
       codemirror2(){
         return this.$refs.output.codemirror
+      },
+      isLoggedIn(){
+        return localStorage.getItem('token') ? true : false
       }
     },
     mounted() {
