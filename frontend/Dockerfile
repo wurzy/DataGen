@@ -3,7 +3,7 @@ FROM node:lts-alpine as build-stage
 WORKDIR /datagen
 COPY package*.json /datagen/
 RUN npm install
-COPY . /datagen
+COPY . /datagen/
 RUN npm run build
 
 # production stage
