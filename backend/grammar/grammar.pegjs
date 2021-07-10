@@ -151,6 +151,12 @@
     return {path, args: join}
   }
 
+  function getLocalVars() {
+    let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+    for (let prop in local) { if (queue.length == 1 && !repeat_keys.includes(prop)) local[prop] = local[prop][0] }
+    return local
+  }
+
   function checkLocalVar(key) {
     let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
     
@@ -211,7 +217,7 @@
     let f = new Function("gen", code), data = []
 
     for (let i = 0; i < nr_copies; i++) {
-      let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+      let local = getLocalVars()
 
       try { data.push(f({genAPI, dataAPI, local, i})) }
       catch(err) {
@@ -285,10 +291,15 @@
       for (let i = 0; i < nr_copies; i++) {
         let val = resolveMoustaches(api, sub_api, moustaches, args, i, -1)
 
-        if (moustaches == "index" && !Number.isInteger(val)) errors.push({
-          message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
-          location: location()
-        })
+        if (moustaches == "index" && !Number.isInteger(val)) {
+          errors.push({
+            message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
+            location: location()
+          })
+
+          arr = Array(nr_copies).fill(0)
+          break
+        }
         else arr.push(val)
       }
 
@@ -446,7 +457,12 @@ member
   = probability / function_prop / if / or / at_least
   / name:member_key name_separator value:value_or_interpolation {
     if ("delete" in values_map[values_map.length-1]) values_map.pop()
-    values_map[values_map.length-1].data[name] = value.data
+    
+    if ("repeat" in value) {
+      values_map[values_map.length-1].data[name] = value.data.length == 1 ? value.data[0] : value.data
+      delete value.repeat
+    }
+    else values_map[values_map.length-1].data[name] = value.data
 
     if (open_structs == 1) cur_collection = ""
     value = createComponent(name, value)
@@ -512,7 +528,7 @@ array
         var f = new Function("gen", "return gen.arr" + func)
 
         for (let i = 0; i < data.length; i++) {
-          let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+          let local = getLocalVars()
           data[i] = f({genAPI, dataAPI, local, i, arr: data[i]})
         }
       }
@@ -933,15 +949,14 @@ repeat
       var f = new Function("gen", "return gen.arr" + func)
       
       for (let i = 0; i < (open_structs == 1 ? 1 : val.data.length); i++) {
-        let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-
+        let local = getLocalVars()
         if (open_structs == 1) val.data = f({genAPI, dataAPI, local, i, arr: val.data})
         else val.data[i] = f({genAPI, dataAPI, local, i, arr: val.data[i]})
       }
     }
 
     cleanMapValues()
-    return {data: val.data, model: open_structs > 1 ? model : val.model, component: true}
+    return {data: val.data, model: open_structs > 1 ? model : val.model, repeat: true, component: true}
   }
 
 repeat_signature 
@@ -983,6 +998,9 @@ repeat_args
   }
 
 natural_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return 0
@@ -995,10 +1013,15 @@ natural_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não pode ser um número negativo!',
       location: location()
     })
+
+    if (!arr) arg = arg[0]
     return arg
   }
 
 int_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return 0
@@ -1007,10 +1030,15 @@ int_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
       location: location()
     })
+
+    if (!arr) arg = arg[0]
     return arg
   }
 
 num_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return 0
@@ -1019,10 +1047,15 @@ num_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é um número!',
       location: location()
     })
+
+    if (!arr) arg = arg[0]
     return arg
   }
 
 pair_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return [0,0]
@@ -1034,10 +1067,15 @@ pair_local_arg = arg:local_arg {
       })
       return [0,0]
     }
+
+    if (!arr) arg = arg[0]
     return arg
   }
 
 string_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return ""
@@ -1046,10 +1084,15 @@ string_local_arg = arg:local_arg {
       message: 'A propriedade local que está a referenciar através do "this" não é uma string!',
       location: location()
     })
+
+    if (!arr) arg = arg[0]
     return arg
   }
 
 date_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
     if (invalid_local_arg) {
       invalid_local_arg = false
       return "01/01/1950"
@@ -1057,7 +1100,10 @@ date_local_arg = arg:local_arg {
     else {
       var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
     
-      if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
+      if (match) {
+        if (!arr) arg = arg[0]
+        return arg.map(x => x.replace(/[^\d]/g, "/"))
+      }
       else {
         errors.push({
           message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
@@ -1071,7 +1117,7 @@ date_local_arg = arg:local_arg {
 local_arg = ws "this" char:("."/"[") key:code_key ws {
     if (char == "[") key = char + key
 
-    let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+    let local = getLocalVars()
     let args = key.match(/([$a-zA-Z_"]|[^\x00-\x7F])([$a-zA-Z0-9_"\[\]]|[^\x00-\x7F])*/g)
 
     for (let i = 0; i < args.length; i++) {
@@ -1086,7 +1132,7 @@ local_arg = ws "this" char:("."/"[") key:code_key ws {
         break
       }
     }
-
+    
     return local
   }
 
@@ -1101,7 +1147,7 @@ range
       var f = new Function("gen", "return gen.arr" + func)
 
       for (let i = 0; i < data.length; i++) {
-        let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+        let local = getLocalVars()
         data[i] = f({genAPI, dataAPI, local, i, arr: data[i]})
       }
     }
@@ -1148,6 +1194,7 @@ reduce_args = "(" ws code_key value_separator code_key (value_separator code_key
 probability
   = sign:("missing" / "having" {return text()}) "(" ws probability:([1-9][0-9]?) ws ")" ws obj:object {
     var prob = parseInt(probability.join(""))/100, data = [], probArr = []
+    values_map.pop()
     
     for (let p in obj.model.attributes) {
       obj.model.attributes[p].required = false
@@ -1160,16 +1207,11 @@ probability
 
       let nullKeys = Object.keys(obj.model.attributes)
       for (let p in obj.data[i]) {
-        if (nr_copies == 1) values_map[values_map.length-1].data[p] = probArr[i] ? obj.data[i][p] : null
-        else values_map[values_map.length-1].data[p].push(probArr[i] ? obj.data[i][p] : null)
-        
+        values_map[values_map.length-1].data[p].push(probArr[i] ? obj.data[i][p] : null)
         nullKeys.splice(nullKeys.indexOf(p), 1)
       }
 
-      nullKeys.forEach(k => {
-        if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-        else values_map[values_map.length-1].data[k].push(null)
-      })
+      nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
     }
 
     return {
@@ -1180,6 +1222,7 @@ probability
 
 or = "or(" ws ")" ws obj:object {
     var model = {}, data = []
+    values_map.pop()
 
     for (let prop in obj.model.attributes) {
       obj.model.attributes[prop].required = false
@@ -1192,16 +1235,11 @@ or = "or(" ws ")" ws obj:object {
       let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
 
       data.push({key, value: obj.data[i][key]})
-
-      if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
-      else values_map[values_map.length-1].data[key].push(obj.data[i][key])
+      values_map[values_map.length-1].data[key].push(obj.data[i][key])
 
       let nullKeys = Object.keys(model)
       nullKeys.splice(nullKeys.indexOf(key), 1)
-      nullKeys.forEach(k => {
-        if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-        else values_map[values_map.length-1].data[k].push(null)
-      })
+      nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
     }
 
     return { name: uuidv4(), value: { or: true, model, data } }
@@ -1210,6 +1248,7 @@ or = "or(" ws ")" ws obj:object {
 at_least = "at_least(" ws num:natural_or_local ws ")" obj:object {
     var model = {}, data = []
     if (!Array.isArray(num)) num = Array(nr_copies).fill(num)
+    values_map.pop()
     
     if (num.every(i => i >= 0)) {
       for (let prop in obj.model.attributes) {
@@ -1229,18 +1268,13 @@ at_least = "at_least(" ws num:natural_or_local ws ")" obj:object {
         for (let j = 0; j < n; j++) {
           let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
           data[i][key] = obj.data[i][key]
-          
-          if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
-          else values_map[values_map.length-1].data[key].push(obj.data[i][key])
+          values_map[values_map.length-1].data[key].push(obj.data[i][key])
           
           keys.splice(keys.indexOf(key), 1)
           nullKeys.splice(nullKeys.indexOf(key), 1)
         }
 
-        nullKeys.forEach(k => {
-          if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-          else values_map[values_map.length-1].data[k].push(null)
-        })
+        nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
       }
     }
     
@@ -1256,6 +1290,8 @@ if =
   {
     var model = {}, data = []
     if (else_obj != null) conds.push(else_obj)
+
+    for (let i = 0; i < conds.length; i++) values_map.pop()
     
     conds.forEach(x => {
       x.if = new Function("gen", "return " + x.if)
@@ -1268,7 +1304,7 @@ if =
     })
 
     for (let i = 0; i < nr_copies; i++) {
-      let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+      let local = getLocalVars()
       let found = false, data_keys = []
       data.push({})
 
@@ -1279,26 +1315,17 @@ if =
 
           for (let prop in conds[j].obj.data[i]) {
             data[i][prop] = conds[j].obj.data[i][prop]
-            
-            if (nr_copies == 1) values_map[values_map.length-1].data[prop] = conds[j].obj.data[i][prop]
-            else values_map[values_map.length-1].data[prop].push(conds[j].obj.data[i][prop])
+            values_map[values_map.length-1].data[prop].push(conds[j].obj.data[i][prop])
           }
         }
         else {
           data_keys = data_keys.concat(Object.keys(conds[j].obj.data[i]))
-
-          for (let prop in conds[j].obj.data[i]) {
-            if (nr_copies == 1) values_map[values_map.length-1].data[prop] = null
-            else values_map[values_map.length-1].data[prop].push(null)
-          }
+          for (let prop in conds[j].obj.data[i]) values_map[values_map.length-1].data[prop].push(null)
         }
       }
       
       var null_keys = Object.keys(model).filter(x => !data_keys.includes(x))
-      null_keys.forEach(k => {
-        if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-        else values_map[values_map.length-1].data[k].push(null)
-      })
+      null_keys.forEach(k => values_map[values_map.length-1].data[k].push(null))
     }
 
     return { name: uuidv4(), value: { if: true, model, data } }
@@ -1307,7 +1334,7 @@ if =
 function_prop
   = name:function_key "(" ws "gen" ws ")" ws code:function_code {
     var data = getFunctionData(code)
-    values_map[values_map.length-1].data[name] = nr_copies == 1 ? data[0] : data
+    values_map[values_map.length-1].data[name] = data
     return { name, value: { model: {type: "json", required: true}, data } }
   }
 
@@ -1323,13 +1350,14 @@ if_code = ARGS_START str:(gen_call / local_var / not_parentheses / if_code)* ARG
 
 not_code = !CODE_START !CODE_STOP. { return text() }
 
-code_key = key:(([a-zA-Z_"]/[^\x00-\x7F])([a-zA-Z0-9_."\[\]]/[^\x00-\x7F])*) { return key.flat().join("") } 
+code_key = key:((key_property / [a-zA-Z_"]/[^\x00-\x7F]) (key_property / ([a-zA-Z0-9_\.]/[^\x00-\x7F]))*) { return key.flat().join("") } 
 
-local_var = "this" char:("."/"[") key:code_key {
+key_property = PROP_START str:(([a-zA-Z0-9_"]/[^\x00-\x7F])+) PROP_STOP { return text() }
+
+local_var = "this" char:"."? key:code_key {
     let keySplit
 
-    if (char == "[") {
-      key = char + key
+    if (char == null) {
       keySplit = key.split(/\](.+)/)
       keySplit[0] += ']'
     }
@@ -1371,6 +1399,9 @@ ARGS_STOP = ")"
 
 CODE_START = "{"
 CODE_STOP = "}"
+
+PROP_START = "["
+PROP_STOP = "]"
 
 // ----- Core ABNF Rules -----
 

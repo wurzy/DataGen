@@ -274,7 +274,12 @@ module.exports = /*
           },
         peg$c51 = function(name, value) {
             if ("delete" in values_map[values_map.length-1]) values_map.pop()
-            values_map[values_map.length-1].data[name] = value.data
+            
+            if ("repeat" in value) {
+              values_map[values_map.length-1].data[name] = value.data.length == 1 ? value.data[0] : value.data
+              delete value.repeat
+            }
+            else values_map[values_map.length-1].data[name] = value.data
 
             if (open_structs == 1) cur_collection = ""
             value = createComponent(name, value)
@@ -335,7 +340,7 @@ module.exports = /*
                 var f = new Function("gen", "return gen.arr" + func)
 
                 for (let i = 0; i < data.length; i++) {
-                  let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+                  let local = getLocalVars()
                   data[i] = f({genAPI, dataAPI, local, i, arr: data[i]})
                 }
               }
@@ -919,15 +924,14 @@ module.exports = /*
               var f = new Function("gen", "return gen.arr" + func)
               
               for (let i = 0; i < (open_structs == 1 ? 1 : val.data.length); i++) {
-                let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-
+                let local = getLocalVars()
                 if (open_structs == 1) val.data = f({genAPI, dataAPI, local, i, arr: val.data})
                 else val.data[i] = f({genAPI, dataAPI, local, i, arr: val.data[i]})
               }
             }
 
             cleanMapValues()
-            return {data: val.data, model: open_structs > 1 ? model : val.model, component: true}
+            return {data: val.data, model: open_structs > 1 ? model : val.model, repeat: true, component: true}
           },
         peg$c422 = "repeat(",
         peg$c423 = peg$literalExpectation("repeat(", false),
@@ -967,6 +971,9 @@ module.exports = /*
             }
           },
         peg$c427 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return 0
@@ -979,9 +986,14 @@ module.exports = /*
               message: 'A propriedade local que está a referenciar através do "this" não pode ser um número negativo!',
               location: location()
             })
+
+            if (!arr) arg = arg[0]
             return arg
           },
         peg$c428 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return 0
@@ -990,9 +1002,14 @@ module.exports = /*
               message: 'A propriedade local que está a referenciar através do "this" não é um inteiro!',
               location: location()
             })
+
+            if (!arr) arg = arg[0]
             return arg
           },
         peg$c429 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return 0
@@ -1001,9 +1018,14 @@ module.exports = /*
               message: 'A propriedade local que está a referenciar através do "this" não é um número!',
               location: location()
             })
+
+            if (!arr) arg = arg[0]
             return arg
           },
         peg$c430 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return [0,0]
@@ -1015,9 +1037,14 @@ module.exports = /*
               })
               return [0,0]
             }
+
+            if (!arr) arg = arg[0]
             return arg
           },
         peg$c431 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return ""
@@ -1026,9 +1053,14 @@ module.exports = /*
               message: 'A propriedade local que está a referenciar através do "this" não é uma string!',
               location: location()
             })
+
+            if (!arr) arg = arg[0]
             return arg
           },
         peg$c432 = function(arg) {
+            let arr = true
+            if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
             if (invalid_local_arg) {
               invalid_local_arg = false
               return "01/01/1950"
@@ -1036,7 +1068,10 @@ module.exports = /*
             else {
               var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
             
-              if (match) return arg.map(x => x.replace(/[^\d]/g, "/"))
+              if (match) {
+                if (!arr) arg = arg[0]
+                return arg.map(x => x.replace(/[^\d]/g, "/"))
+              }
               else {
                 errors.push({
                   message: 'A propriedade local que está a referenciar através do "this" não é uma data válida!',
@@ -1051,7 +1086,7 @@ module.exports = /*
         peg$c435 = function(char, key) {
             if (char == "[") key = char + key
 
-            let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+            let local = getLocalVars()
             let args = key.match(/([$a-zA-Z_"]|[^\x00-\x7F])([$a-zA-Z0-9_"\[\]]|[^\x00-\x7F])*/g)
 
             for (let i = 0; i < args.length; i++) {
@@ -1066,7 +1101,7 @@ module.exports = /*
                 break
               }
             }
-
+            
             return local
           },
         peg$c436 = "range(",
@@ -1081,7 +1116,7 @@ module.exports = /*
               var f = new Function("gen", "return gen.arr" + func)
 
               for (let i = 0; i < data.length; i++) {
-                let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+                let local = getLocalVars()
                 data[i] = f({genAPI, dataAPI, local, i, arr: data[i]})
               }
             }
@@ -1124,6 +1159,7 @@ module.exports = /*
         peg$c457 = peg$literalExpectation("having", false),
         peg$c458 = function(sign, probability, obj) {
             var prob = parseInt(probability.join(""))/100, data = [], probArr = []
+            values_map.pop()
             
             for (let p in obj.model.attributes) {
               obj.model.attributes[p].required = false
@@ -1136,16 +1172,11 @@ module.exports = /*
 
               let nullKeys = Object.keys(obj.model.attributes)
               for (let p in obj.data[i]) {
-                if (nr_copies == 1) values_map[values_map.length-1].data[p] = probArr[i] ? obj.data[i][p] : null
-                else values_map[values_map.length-1].data[p].push(probArr[i] ? obj.data[i][p] : null)
-                
+                values_map[values_map.length-1].data[p].push(probArr[i] ? obj.data[i][p] : null)
                 nullKeys.splice(nullKeys.indexOf(p), 1)
               }
 
-              nullKeys.forEach(k => {
-                if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-                else values_map[values_map.length-1].data[k].push(null)
-              })
+              nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
             }
 
             return {
@@ -1157,6 +1188,7 @@ module.exports = /*
         peg$c460 = peg$literalExpectation("or(", false),
         peg$c461 = function(obj) {
             var model = {}, data = []
+            values_map.pop()
 
             for (let prop in obj.model.attributes) {
               obj.model.attributes[prop].required = false
@@ -1169,16 +1201,11 @@ module.exports = /*
               let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
 
               data.push({key, value: obj.data[i][key]})
-
-              if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
-              else values_map[values_map.length-1].data[key].push(obj.data[i][key])
+              values_map[values_map.length-1].data[key].push(obj.data[i][key])
 
               let nullKeys = Object.keys(model)
               nullKeys.splice(nullKeys.indexOf(key), 1)
-              nullKeys.forEach(k => {
-                if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-                else values_map[values_map.length-1].data[k].push(null)
-              })
+              nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
             }
 
             return { name: uuidv4(), value: { or: true, model, data } }
@@ -1188,6 +1215,7 @@ module.exports = /*
         peg$c464 = function(num, obj) {
             var model = {}, data = []
             if (!Array.isArray(num)) num = Array(nr_copies).fill(num)
+            values_map.pop()
             
             if (num.every(i => i >= 0)) {
               for (let prop in obj.model.attributes) {
@@ -1207,18 +1235,13 @@ module.exports = /*
                 for (let j = 0; j < n; j++) {
                   let key = keys[Math.floor(Math.random() * (0 - keys.length) + keys.length)]
                   data[i][key] = obj.data[i][key]
-                  
-                  if (nr_copies == 1) values_map[values_map.length-1].data[key] = obj.data[i][key]
-                  else values_map[values_map.length-1].data[key].push(obj.data[i][key])
+                  values_map[values_map.length-1].data[key].push(obj.data[i][key])
                   
                   keys.splice(keys.indexOf(key), 1)
                   nullKeys.splice(nullKeys.indexOf(key), 1)
                 }
 
-                nullKeys.forEach(k => {
-                  if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-                  else values_map[values_map.length-1].data[k].push(null)
-                })
+                nullKeys.forEach(k => values_map[values_map.length-1].data[k].push(null))
               }
             }
             
@@ -1234,6 +1257,8 @@ module.exports = /*
         peg$c472 = function(conds, else_obj) {
             var model = {}, data = []
             if (else_obj != null) conds.push(else_obj)
+
+            for (let i = 0; i < conds.length; i++) values_map.pop()
             
             conds.forEach(x => {
               x.if = new Function("gen", "return " + x.if)
@@ -1246,7 +1271,7 @@ module.exports = /*
             })
 
             for (let i = 0; i < nr_copies; i++) {
-              let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+              let local = getLocalVars()
               let found = false, data_keys = []
               data.push({})
 
@@ -1257,26 +1282,17 @@ module.exports = /*
 
                   for (let prop in conds[j].obj.data[i]) {
                     data[i][prop] = conds[j].obj.data[i][prop]
-                    
-                    if (nr_copies == 1) values_map[values_map.length-1].data[prop] = conds[j].obj.data[i][prop]
-                    else values_map[values_map.length-1].data[prop].push(conds[j].obj.data[i][prop])
+                    values_map[values_map.length-1].data[prop].push(conds[j].obj.data[i][prop])
                   }
                 }
                 else {
                   data_keys = data_keys.concat(Object.keys(conds[j].obj.data[i]))
-
-                  for (let prop in conds[j].obj.data[i]) {
-                    if (nr_copies == 1) values_map[values_map.length-1].data[prop] = null
-                    else values_map[values_map.length-1].data[prop].push(null)
-                  }
+                  for (let prop in conds[j].obj.data[i]) values_map[values_map.length-1].data[prop].push(null)
                 }
               }
               
               var null_keys = Object.keys(model).filter(x => !data_keys.includes(x))
-              null_keys.forEach(k => {
-                if (nr_copies == 1) values_map[values_map.length-1].data[k] = null
-                else values_map[values_map.length-1].data[k].push(null)
-              })
+              null_keys.forEach(k => values_map[values_map.length-1].data[k].push(null))
             }
 
             return { name: uuidv4(), value: { if: true, model, data } }
@@ -1285,7 +1301,7 @@ module.exports = /*
         peg$c474 = peg$literalExpectation("gen", false),
         peg$c475 = function(name, code) {
             var data = getFunctionData(code)
-            values_map[values_map.length-1].data[name] = nr_copies == 1 ? data[0] : data
+            values_map[values_map.length-1].data[name] = data
             return { name, value: { model: {type: "json", required: true}, data } }
           },
         peg$c476 = function(code) {
@@ -1300,14 +1316,16 @@ module.exports = /*
         peg$c483 = function(str) { return "(" + str.join("") + ")" },
         peg$c484 = /^[a-zA-Z_"]/,
         peg$c485 = peg$classExpectation([["a", "z"], ["A", "Z"], "_", "\""], false, false),
-        peg$c486 = /^[a-zA-Z0-9_."[\]]/,
-        peg$c487 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"], "_", ".", "\"", "[", "]"], false, false),
+        peg$c486 = /^[a-zA-Z0-9_.]/,
+        peg$c487 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"], "_", "."], false, false),
         peg$c488 = function(key) { return key.flat().join("") },
-        peg$c489 = function(char, key) {
+        peg$c489 = /^[a-zA-Z0-9_"]/,
+        peg$c490 = peg$classExpectation([["a", "z"], ["A", "Z"], ["0", "9"], "_", "\""], false, false),
+        peg$c491 = function(str) { return text() },
+        peg$c492 = function(char, key) {
             let keySplit
 
-            if (char == "[") {
-              key = char + key
+            if (char == null) {
               keySplit = key.split(/\](.+)/)
               keySplit[0] += ']'
             }
@@ -1324,9 +1342,9 @@ module.exports = /*
             checkLocalVar(keySplit)
             return path
           },
-        peg$c490 = "gen.",
-        peg$c491 = peg$literalExpectation("gen.", false),
-        peg$c492 = function(key, args) {
+        peg$c493 = "gen.",
+        peg$c494 = peg$literalExpectation("gen.", false),
+        peg$c495 = function(key, args) {
             args = args.join("").split(",")
             
             var split = [], build = "", i = 0
@@ -1342,8 +1360,8 @@ module.exports = /*
             var obj = getApiPath(key, split.map(x => x.trim()))
             return `gen.${obj.path}(${obj.args})`
           },
-        peg$c493 = /^[0-9a-f]/i,
-        peg$c494 = peg$classExpectation([["0", "9"], ["a", "f"]], false, true),
+        peg$c496 = /^[0-9a-f]/i,
+        peg$c497 = peg$classExpectation([["0", "9"], ["a", "f"]], false, true),
 
         peg$currPos          = 0,
         peg$savedPos         = 0,
@@ -9359,42 +9377,29 @@ module.exports = /*
 
       s0 = peg$currPos;
       s1 = peg$currPos;
-      if (peg$c484.test(input.charAt(peg$currPos))) {
-        s2 = input.charAt(peg$currPos);
-        peg$currPos++;
-      } else {
-        s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c485); }
-      }
+      s2 = peg$parsekey_property();
       if (s2 === peg$FAILED) {
-        if (peg$c55.test(input.charAt(peg$currPos))) {
+        if (peg$c484.test(input.charAt(peg$currPos))) {
           s2 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c56); }
+          if (peg$silentFails === 0) { peg$fail(peg$c485); }
+        }
+        if (s2 === peg$FAILED) {
+          if (peg$c55.test(input.charAt(peg$currPos))) {
+            s2 = input.charAt(peg$currPos);
+            peg$currPos++;
+          } else {
+            s2 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c56); }
+          }
         }
       }
       if (s2 !== peg$FAILED) {
         s3 = [];
-        if (peg$c486.test(input.charAt(peg$currPos))) {
-          s4 = input.charAt(peg$currPos);
-          peg$currPos++;
-        } else {
-          s4 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c487); }
-        }
+        s4 = peg$parsekey_property();
         if (s4 === peg$FAILED) {
-          if (peg$c55.test(input.charAt(peg$currPos))) {
-            s4 = input.charAt(peg$currPos);
-            peg$currPos++;
-          } else {
-            s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c56); }
-          }
-        }
-        while (s4 !== peg$FAILED) {
-          s3.push(s4);
           if (peg$c486.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
@@ -9409,6 +9414,28 @@ module.exports = /*
             } else {
               s4 = peg$FAILED;
               if (peg$silentFails === 0) { peg$fail(peg$c56); }
+            }
+          }
+        }
+        while (s4 !== peg$FAILED) {
+          s3.push(s4);
+          s4 = peg$parsekey_property();
+          if (s4 === peg$FAILED) {
+            if (peg$c486.test(input.charAt(peg$currPos))) {
+              s4 = input.charAt(peg$currPos);
+              peg$currPos++;
+            } else {
+              s4 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$c487); }
+            }
+            if (s4 === peg$FAILED) {
+              if (peg$c55.test(input.charAt(peg$currPos))) {
+                s4 = input.charAt(peg$currPos);
+                peg$currPos++;
+              } else {
+                s4 = peg$FAILED;
+                if (peg$silentFails === 0) { peg$fail(peg$c56); }
+              }
             }
           }
         }
@@ -9428,6 +9455,74 @@ module.exports = /*
         s1 = peg$c488(s1);
       }
       s0 = s1;
+
+      return s0;
+    }
+
+    function peg$parsekey_property() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      s1 = peg$parsePROP_START();
+      if (s1 !== peg$FAILED) {
+        s2 = [];
+        if (peg$c489.test(input.charAt(peg$currPos))) {
+          s3 = input.charAt(peg$currPos);
+          peg$currPos++;
+        } else {
+          s3 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c490); }
+        }
+        if (s3 === peg$FAILED) {
+          if (peg$c55.test(input.charAt(peg$currPos))) {
+            s3 = input.charAt(peg$currPos);
+            peg$currPos++;
+          } else {
+            s3 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c56); }
+          }
+        }
+        if (s3 !== peg$FAILED) {
+          while (s3 !== peg$FAILED) {
+            s2.push(s3);
+            if (peg$c489.test(input.charAt(peg$currPos))) {
+              s3 = input.charAt(peg$currPos);
+              peg$currPos++;
+            } else {
+              s3 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$c490); }
+            }
+            if (s3 === peg$FAILED) {
+              if (peg$c55.test(input.charAt(peg$currPos))) {
+                s3 = input.charAt(peg$currPos);
+                peg$currPos++;
+              } else {
+                s3 = peg$FAILED;
+                if (peg$silentFails === 0) { peg$fail(peg$c56); }
+              }
+            }
+          }
+        } else {
+          s2 = peg$FAILED;
+        }
+        if (s2 !== peg$FAILED) {
+          s3 = peg$parsePROP_STOP();
+          if (s3 !== peg$FAILED) {
+            peg$savedPos = s0;
+            s1 = peg$c491(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$FAILED;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$FAILED;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$FAILED;
+      }
 
       return s0;
     }
@@ -9452,19 +9547,13 @@ module.exports = /*
           if (peg$silentFails === 0) { peg$fail(peg$c23); }
         }
         if (s2 === peg$FAILED) {
-          if (input.charCodeAt(peg$currPos) === 91) {
-            s2 = peg$c1;
-            peg$currPos++;
-          } else {
-            s2 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c2); }
-          }
+          s2 = null;
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parsecode_key();
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c489(s2, s3);
+            s1 = peg$c492(s2, s3);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -9486,12 +9575,12 @@ module.exports = /*
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 4) === peg$c490) {
-        s1 = peg$c490;
+      if (input.substr(peg$currPos, 4) === peg$c493) {
+        s1 = peg$c493;
         peg$currPos += 4;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c491); }
+        if (peg$silentFails === 0) { peg$fail(peg$c494); }
       }
       if (s1 !== peg$FAILED) {
         s2 = peg$parsecode_key();
@@ -9520,7 +9609,7 @@ module.exports = /*
               s5 = peg$parseARGS_STOP();
               if (s5 !== peg$FAILED) {
                 peg$savedPos = s0;
-                s1 = peg$c492(s2, s4);
+                s1 = peg$c495(s2, s4);
                 s0 = s1;
               } else {
                 peg$currPos = s0;
@@ -9655,6 +9744,34 @@ module.exports = /*
       return s0;
     }
 
+    function peg$parsePROP_START() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 91) {
+        s0 = peg$c1;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c2); }
+      }
+
+      return s0;
+    }
+
+    function peg$parsePROP_STOP() {
+      var s0;
+
+      if (input.charCodeAt(peg$currPos) === 93) {
+        s0 = peg$c7;
+        peg$currPos++;
+      } else {
+        s0 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c8); }
+      }
+
+      return s0;
+    }
+
     function peg$parseDIGIT() {
       var s0;
 
@@ -9672,12 +9789,12 @@ module.exports = /*
     function peg$parseHEXDIG() {
       var s0;
 
-      if (peg$c493.test(input.charAt(peg$currPos))) {
+      if (peg$c496.test(input.charAt(peg$currPos))) {
         s0 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c494); }
+        if (peg$silentFails === 0) { peg$fail(peg$c497); }
       }
 
       return s0;
@@ -9833,6 +9950,12 @@ module.exports = /*
         return {path, args: join}
       }
 
+      function getLocalVars() {
+        let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+        for (let prop in local) { if (queue.length == 1 && !repeat_keys.includes(prop)) local[prop] = local[prop][0] }
+        return local
+      }
+
       function checkLocalVar(key) {
         let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
         
@@ -9893,7 +10016,7 @@ module.exports = /*
         let f = new Function("gen", code), data = []
 
         for (let i = 0; i < nr_copies; i++) {
-          let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
+          let local = getLocalVars()
 
           try { data.push(f({genAPI, dataAPI, local, i})) }
           catch(err) {
@@ -9967,10 +10090,15 @@ module.exports = /*
           for (let i = 0; i < nr_copies; i++) {
             let val = resolveMoustaches(api, sub_api, moustaches, args, i, -1)
 
-            if (moustaches == "index" && !Number.isInteger(val)) errors.push({
-              message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
-              location: location()
-            })
+            if (moustaches == "index" && !Number.isInteger(val)) {
+              errors.push({
+                message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
+                location: location()
+              })
+
+              arr = Array(nr_copies).fill(0)
+              break
+            }
             else arr.push(val)
           }
 
