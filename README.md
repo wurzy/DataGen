@@ -71,6 +71,7 @@
 
 After generating a dataset, DataGen gives the user the possibility to generate a RESTFul data API with it, creating a running prototype. 
 
+DataGen is available online for public use, try it now: [https://datagen.di.uminho.pt/](https://datagen.di.uminho.pt/)
 
 ### Built With
 
