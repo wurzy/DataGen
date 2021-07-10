@@ -157,6 +157,8 @@ Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGe
 
 Official University of Minho Repository Entry: [http://repositorium.sdum.uminho.pt/handle/1822/73506](http://repositorium.sdum.uminho.pt/handle/1822/73506)
 
+DataGen is now an official website on University of Minho: [https://datagen.di.uminho.pt/](https://datagen.di.uminho.pt/)
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
