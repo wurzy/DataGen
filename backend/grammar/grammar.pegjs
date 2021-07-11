@@ -89,11 +89,14 @@
         if (args.length == 2) join = (/\d/.test(args[1]) ? [args[0],args[1],"null"] : [args[0],"null",trimArg(args[1],true)]).join(",")
         if (args.length == 3) { args[2] = trimArg(args[2],true); join = args.join(",") }
       }
-      if (key == "lorem") { args[1] = trimArg(args[1],true); join = args.join(",") }
+      if (key == "lorem") {
+        args[0] = trimArg(args[0],true); join = args.join(",")
+        if (args.length == 2) join += ",null"
+      }
       if (key == "random") join = '[' + join + ']'
       if (key == "range") {
         if (args.length == 1) join += ",null,null"
-        if (args.length == 2) join = ",null"
+        if (args.length == 2) join += ",null"
       }
 
       path = "genAPI." + key
@@ -153,7 +156,7 @@
 
   function getLocalVars() {
     let local = Object.assign(..._.cloneDeep(values_map.map(x => x.data)))
-    for (let prop in local) { if (queue.length == 1 && !repeat_keys.includes(prop)) local[prop] = local[prop][0] }
+    for (let prop in local) { if (!repeat_keys.includes(prop) && nr_copies == 1) local[prop] = local[prop][0] }
     return local
   }
 
@@ -819,10 +822,10 @@ gen_moustaches
         data: fillArray("gen", null, "random", values)
       }
   }
-  / "lorem(" ws count:natural_or_local value_separator units:lorem_string ws ")" {
+  / "lorem(" ws units:lorem_string value_separator min:natural_or_local ws max:("," ws e:natural_or_local ws { return e })? ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "lorem", [count, units])
+      data: fillArray("gen", null, "lorem", [units, min, max])
     }
   }
 
@@ -1124,7 +1127,7 @@ local_arg = ws "this" char:("."/"[") key:code_key ws {
       if (args[i] in local) local = local[args[i]]
       else {
         errors.push({
-          message: 'A propriedade local que está a referenciar através do "this" não existe!',
+          message: `A propriedade ${key} que está a referenciar através do "this" não existe!`,
           location: location()
         })
 

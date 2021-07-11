@@ -64,14 +64,14 @@
                     digital: '{{integer(1,2000)}}',
                     outro: {
                         valor: '{{integer(1,2000)}}',
-                        unidade: '{{lorem(1,"words")}}'
+                        unidade: '{{lorem("words",1)}}'
                     }
               	}
             },
   			númeroAgregações: '{{integer(1,50)}}',
             agregações: [ 'repeat(this.númeroAgregações)': {
             	código: '{{pt_entity_abbr()}} - {{integer(1,200)}}',
-              	título: '{{lorem(3,"words")}}',
+              	título: '{{lorem("words",3)}}',
               	ano: '{{integer(1921,2021)}}',
               	if (["PGD/LC","TS/LC"].includes(this.fonteLegitimação.tipo)) {
             		naturezaIntervenção: '{{random("PARTICIPANTE","DONO")}}'

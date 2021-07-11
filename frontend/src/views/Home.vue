@@ -117,11 +117,11 @@ export default {
           	CC: '{{integerOfSize(8)}}-{{integer(0,9)}}-{{letter("uppercase")}}{{letter("uppercase")}}{{integer(0,9)}}'
         },
     	having(70) {
-  			descrição: '{{lorem(1,"sentences")}}'
+  			descrição: '{{lorem("sentences", 1)}}'
 		},
         nr_livros: '{{integer(1,10)}}',
         livros: [ 'repeat(this.nr_livros)': {
-        	titulo: '{{lorem(1,"words")}}',
+        	titulo: '{{lorem("words",1)}}',
             suporte: '{{random("Físico","Digital")}}',
             rating: '{{integer(1,5)}}'
         } ],

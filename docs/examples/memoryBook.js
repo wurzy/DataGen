@@ -9,7 +9,7 @@
         },
         email: '{{this.username}}{{integer(1,30)}}@{{random("gmail","outlook","hotmail")}}.com',
         having(60) {
-        	about: '{{lorem(1,"paragraphs")}}'
+        	about: '{{lorem("paragraphs",1)}}'
         },
         password: "$2a$10$xW41yTib.nnZIJTr0sEP5usfKtNyE3i60riuwmrnogzLkIhlnpiki",
         date_of_birth: gen => {
@@ -34,7 +34,7 @@
         name: 'Coleção {{index(1)}}',
         public: '{{boolean()}}',
         missing(30) {
-        	description: '{{lorem(1, "sentences")}}'
+        	description: '{{lorem("sentences", 1)}}'
         },
         createdAt: {
         	$date: gen => {
@@ -63,7 +63,7 @@
             	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
             }
         },
-        content: '{{lorem(1, "paragraphs")}}'
+        content: '{{lorem("paragraphs", 1)}}'
 	}],
 	person: [ 'repeat(300)': {
   		id_person: {

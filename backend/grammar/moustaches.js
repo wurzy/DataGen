@@ -207,9 +207,12 @@ function date(start, end, format, i) {
     return random
 }
 
-function lorem(count, units, i) {
-    count = Array.isArray(count) ? count[i] : count
-    return loremIpsum({ count, units })
+function lorem(units, min, max, i) {
+    min = Array.isArray(min) ? min[i] : min
+    max = (max != null && Array.isArray(max)) ? max[i] : max
+
+    if (max != null) min = Math.floor(Math.random() * ((max+1) - min) + min)
+    return loremIpsum({ count: min, units })
 }
 
 function random(values, i, sample) {

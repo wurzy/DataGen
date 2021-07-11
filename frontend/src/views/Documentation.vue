@@ -694,15 +694,46 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        *Num:: <code>Integer</code>,<br/>
-                        Unid:: <code>String</code>
+                        Unid:: <code>String</code>,<br/>
+                        *Num:: <code>Integer</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
                         Gera Num palavras, frases ou parágrafos de <i>lorem ipsum</i>. A variável Unid tem de corresponder a "palavras", "frases" ou "parágrafos", podendo ser dada em português ou inglês.<br/>
-                        Exemplo: lorem(3,"words") = "mollit fugiat officia"
+                        Exemplo: lorem("words", 3) = "mollit fugiat officia"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        lorem 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Unid:: <code>String</code>,<br/>
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera entre Min e Max palavras, frases ou parágrafos de <i>lorem ipsum</i>. A variável Unid tem de corresponder a "palavras", "frases" ou "parágrafos", podendo ser dada em português ou inglês.<br/>
+                        Exemplo: lorem("words", 1, 5) = "aute voluptate dolore veniam"
                     </div>
                 </div>
             </div>
@@ -2684,7 +2715,7 @@ combinados: range(5).map((value) => { return value+3 })
         id_cidade: 'c{{index(1)}}',
         nome: unique('{{pt_city()}}'),
         população: '{{integer(1500, 550000)}}',
-        descrição: '{{lorem(1, "paragraphs")}}',
+        descrição: '{{lorem("paragraphs", 1)}}',
         distrito: '{{pt_district("city", this.nome)}}'
   	}],
   	ligações(gen) {
@@ -2766,11 +2797,11 @@ combinados: range(5).map((value) => { return value+3 })
           	CC: '{{integerOfSize(8)}}-{{integer(0,9)}}-{{letter("uppercase")}}{{letter("uppercase")}}{{integer(0,9)}}'
         },
     	having(70) {
-  			descrição: '{{lorem(1,"sentences")}}'
+  			descrição: '{{lorem("sentences", 1)}}'
 		},
         nr_livros: '{{integer(1,10)}}',
         livros: [ 'repeat(this.nr_livros)': {
-        	titulo: '{{lorem(1,"words")}}',
+        	titulo: '{{lorem("words",1)}}',
             suporte: '{{random("Físico","Digital")}}',
             rating: '{{integer(1,5)}}'
         } ],

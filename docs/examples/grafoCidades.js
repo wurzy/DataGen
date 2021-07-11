@@ -4,7 +4,7 @@
         id_cidade: 'c{{index(1)}}',
         nome: unique('{{pt_city()}}'),
         população: '{{integer(1500, 550000)}}',
-        descrição: '{{lorem(1, "paragraphs")}}',
+        descrição: '{{lorem("paragraphs", 1)}}',
         distrito: '{{pt_district("city", this.nome)}}'
   	}],
   	ligações(gen) {
