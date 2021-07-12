@@ -81,14 +81,14 @@ router.post('/adicionar', function(req,res){
     }
 })
 
-// Altera a visibilidade de um modelo
-router.put('/visibilidade/:id', function(req,res){
+// Guardar alterações num modelo
+router.put('/alterar/:id', function(req,res){
     var token = unveilToken(req.headers.authorization)
     Model.consultar(req.params.id)
         .then(dados => {
             if(!token || dados.user != token._id) forbidden(res)
             else {
-                Model.alterarVisibilidade(req.params.id, req.body.visibilidade)
+                Model.alterar(req.params.id, req.body.visibilidade, req.body.modelo)
                     .then(dados => res.status(201).jsonp(dados))
                     .catch(e => res.status(500).jsonp(e))
             }

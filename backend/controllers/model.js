@@ -38,14 +38,9 @@ module.exports.remover = id => {
         .exec()
 }
 
-module.exports.alterar = model => {
-    return Model
-        .findByIdAndUpdate({_id: model._id}, model, {new: true})
-        .exec()
-}
 
-module.exports.alterarVisibilidade = (id,visibilidade) => {
+module.exports.alterar = (id,visibilidade,modelo) => {
     return Model
-        .updateOne({_id: id}, {visibilidade})
+        .updateOne({_id: id}, {visibilidade,modelo})
         .exec()
 }
