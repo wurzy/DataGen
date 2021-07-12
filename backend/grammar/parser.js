@@ -652,7 +652,7 @@ module.exports = /*
         peg$c337 = function(n) {return n.data[0]},
         peg$c338 = function(v) {return v.data},
         peg$c339 = function(interp) {
-            unique.moustaches = -1; unique.count = 0
+            unique = {moustaches: -1, count: 0, functions: []}
             return interp
           },
         peg$c340 = "unique",
@@ -664,10 +664,14 @@ module.exports = /*
           var model = { type: "string", required: true }, data
 
           if (!val.length) data = Array(nr_copies).fill("")
-          else if (unique.moustaches == 1 && unique.count < queue[queue.length-1].value) errors.push({
-            message: 'O número de resultados distintos possíveis desta função de interpolação é inferior ao argumento do "repeat" onde se encontra! Deve ser igual ou superior.',
-            location: location()
-          })
+          else if (unique.moustaches == 1 && unique.count < queue[queue.length-1].value) {
+            let message
+            
+            if (unique.functions.includes("random")) message = 'A função "random" não tem argumentos suficientes para ser possível gerar um resultado diferente para cada elemento do "repeat" em que se encontra!'
+            else message = 'O número de resultados distintos possíveis desta função de interpolação é inferior ao argumento do "repeat" onde se encontra! Deve ser igual ou superior.'
+
+            errors.push({ message, location: location() })
+          }
           else if (val.length == 1) {
             model = val[0].model; data = val[0].data
             data = !str ? val[0].data : mapToString(val[0].data)
@@ -9863,7 +9867,7 @@ module.exports = /*
       var member_key = "" //chave do membro que está a processar no momento, para guardar na array abaixo ao começar um repeat
       var repeat_keys = [] //lista das chaves dos repeats, para ao fechar o objeto principal conseguir distinguir um objeto de um repeat (a data do objeto simples vem em Array(1))
 
-      var unique = {moustaches: -1, count: 0}
+      var unique = {moustaches: -1, count: 0, functions: []}
 
       var values_map = [] //estrutura de referenciação local a propriedades anteriores
       var invalid_local_arg = false //indica se a propriedade local que está a ser referenciada é inválida
@@ -10110,15 +10114,10 @@ module.exports = /*
 
       function fillArray(api, sub_api, moustaches, args) {
         var arr = []
-        if (unique.moustaches > -1) unique.moustaches++
+        if (unique.moustaches > -1) { unique.moustaches++; unique.functions.push(moustaches) }
 
         if (unique.moustaches == 1 && (moustaches == "random" || api == "data")) {
           let queue_last = queue[queue.length-1]
-
-          if (moustaches == "random" && args.length < queue_last.value) errors.push({
-            message: 'A função "random" não tem argumentos suficientes para ser possível gerar um resultado diferente para cada elemento do "repeat" em que se encontra!',
-            location: location()
-          })
           
           for (let i = 0; i < queue_last.total/queue_last.value; i++) {
             var uniqArr = resolveMoustaches(api, sub_api, moustaches, args, i, queue_last.value)
