@@ -8,12 +8,12 @@
                     <div class="icon-box">
                         <i class="material-icons"></i>
                     </div>
-                    <button @click="refresh" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body text-center">
                     <h4>Erro!</h4>	
                     <p> {{msg}} </p>
-                    <button class="btn btn-success" @click="refresh" data-dismiss="modal"><span>Continuar</span> <i class="material-icons">&#xE5C8;</i></button>
+                    <button class="btn btn-success" data-dismiss="modal"><span>Continuar</span> <i class="material-icons">&#xE5C8;</i></button>
                 </div>
             </div>
         </div>

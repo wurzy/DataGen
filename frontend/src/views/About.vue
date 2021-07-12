@@ -138,9 +138,40 @@
             </div>
         </div>
     </div>
+    <hr/>
+    <h4>Extras</h4>
+    <div>
+        <p>
+            O projeto está disponível em <i>open-source</i> no GitHub sujeito às licenças indicadas. 
+        </p>
+        <p>
+            Última atualização: {{ this.gitDate | moment('DD/MM/YYYY, hh:mm') }}.
+        </p>
+        <br/><br/>
+        <RepositoryCard @gitDate="handleDate"/>
 
+    </div>
    </div>
 </template>
+<script>
+import RepositoryCard from '../components/RepositoryCard.vue'
+
+export default {
+    data(){
+        return {
+            gitDate: new Date()
+        }
+    },
+    methods: {
+        handleDate(arg){
+            this.gitDate = arg
+        }
+    },
+    components:{
+        RepositoryCard
+    }
+}
+</script>
 
 <style scoped>
 * {

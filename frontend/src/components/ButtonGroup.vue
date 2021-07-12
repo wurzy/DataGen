@@ -5,6 +5,7 @@
     				<div id="radioBtn" class="btn-group">
     					<a class="btn btn-primary active" data-toggle="fun" data-title="JSON">JSON</a>
                         <a class="btn btn-success notActive" data-toggle="fun" data-title="XML">XML</a>
+                        <!--<a class="btn btn-danger notActive" data-toggle="fun" data-title="CSV" title="Apenas datasets sem aninhamento são suportados.">CSV</a>-->
     				</div>
     			</div>
     		</div>
