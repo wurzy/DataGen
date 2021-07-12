@@ -717,7 +717,7 @@ interpolation_signature = apostrophe val:(moustaches / not_moustaches)* apostrop
   if (!val.length) data = Array(nr_copies).fill("")
   else if (unique.moustaches == 1 && unique.count < queue[queue.length-1].value) {
     let message
-    
+
     if (unique.functions.includes("random")) message = 'A função "random" não tem argumentos suficientes para ser possível gerar um resultado diferente para cada elemento do "repeat" em que se encontra!'
     else message = 'O número de resultados distintos possíveis desta função de interpolação é inferior ao argumento do "repeat" onde se encontra! Deve ser igual ou superior.'
 
@@ -936,8 +936,8 @@ repeat
 
       if (func == null) {
         val = createComponent("elem", val)
-        let min = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.min(a,b) })
-        let max = !Array.isArray(num) ? num : num.reduce((a,b) => { return Math.max(a,b) })
+        let min = !Array.isArray(num) ? num : (!num.length ? 0 : num.reduce((a,b) => { return Math.min(a,b) }))
+        let max = !Array.isArray(num) ? num : (!num.length ? 0 : num.reduce((a,b) => { return Math.max(a,b) }))
         
         for (let i = 0; i < max; i++) {
           if (i >= min) val.model.required = false

@@ -63,7 +63,7 @@ function index(offset, queue_last, struct_types, array_indexes, i) {
     if (Array.isArray(queue_last.value)) queue_last.value.forEach(n => arrays.push(getIndexes(n, struct_types, array_indexes)))
     else arrays = Array(queue_last.total/queue_last.value).fill(getIndexes(queue_last.value, struct_types, array_indexes))
 
-    if (arrays[0] == false) return false
+    if (arrays[0] === false) return false
     return arrays.flat().map(k => k + offset)[i]
 }
 

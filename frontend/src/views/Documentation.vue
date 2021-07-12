@@ -53,7 +53,7 @@ dois tipos de funções de interpolação:
         </p>
         <ul>
             <li>
-                 Funções que geram valores espontâneos em tempo de execução, de acordo com as instruções do utilizador - por exemplo, existe uma função de geração de números inteiros
+                <b>Funções de geração espontânea</b>: geram valores espontâneos em tempo de execução, de acordo com as instruções do utilizador - por exemplo, existe uma função de geração de números inteiros
 aleatórios, onde o utilizador precisa de indicar, no mínimo, a gama de valores que
 pretende para o resultado:
                 <codemirror 
@@ -64,7 +64,7 @@ pretende para o resultado:
                 <br/>
             </li>
             <li>
-                Funções que retornam valores aleatórios de um grupo de datasets incorporados na
+                <b>Funções com suporte de datasets</b>: retornam valores aleatórios de um grupo de datasets incorporados na
 aplicação por detrás de uma API, onde cada dataset possui informação de uma dada
 categoria, por exemplo nomes e partidos políticos:
                 <codemirror 
@@ -87,159 +87,26 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 :options="cmOption"
             />
             <br/>
-        <p>De seguida estão explícitas todas as que se encontram atualmente disponíveis (os argumentos que têm um asterisco podem ser referenciados localmente através da chave <b>this</b>).</p>
+        <p>
+            O utilizador pode ainda chamar a função <code>.string()</code> à frente de uma interpolação para converter o seu valor para <i>String</i>.
+Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser usado para converter resultados de funções que retornem outros tipos.
+        </p>
+            <codemirror 
+                ref="grammar16"
+                :value= "grammar16"
+                :options="cmOption"
+            />
+            <br/>
+        <p>De seguida, estão explícitas todas as funções de interpolação que se encontram atualmente disponíveis (os argumentos que têm um asterisco podem ser referenciados localmente através da chave <code>this</code>).</p>
     </div>
+    <br>
+    <h5>Funções de geração espontânea:</h5>
     <div class="method">
         <div class="row margin-0 list-header hidden-sm hidden-xs">
             <div class="col-md-2"><div class="header">Moustache</div></div>
             <div class="col-md-2"><div class="header">Tipo</div></div>
             <div class="col-md-3"><div class="header">Argumento(s)</div></div>
             <div class="col-md-5"><div class="header">Descrição</div></div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        objectID 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um ID aleatório com 24 bytes. <br/>
-                        Exemplo: objectID() = "6048e87b9281fc9a1afe8e61"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        guid 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um UUID aleatório. <br/>
-                        Exemplo: guid() = "3d16d5d0-4b11-4de8-9e26-6668b52d9219"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        index 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Integer</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Retorna o índice atual no array em que se encontra (normal ou gerado pelo 'repeat'). <br/>
-                        Exemplo: index() = 1 <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        letter 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Character</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um caractere aleatório. <br/>
-                        Exemplo: letter() = 'a'<br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-                <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        letter 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Character</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Type:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um caractere aleatório em maiúscula ou minúscula, dado em Type. O Type pode ser dado em português ou inglês.<br/>
-                        Exemplo: letter("uppercase") = 'A'<br/>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row margin-0"> 
             <div class="col-md-2">
@@ -266,285 +133,6 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera um booleano aleatório. <br/>
                         Exemplo: boolean() = true <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0"> 
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        firstName
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um nome próprio aleatório. <br/>
-                        Exemplo: firstName() = "Hugo" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0"> 
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        surname
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um apelido aleatório. <br/>
-                        Exemplo: surname() = "Rodrigues" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0"> 
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        fullName
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um nome completo aleatório. <br/>
-                        Exemplo: surname() = "Isa Filipa Oliveirinha" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        integer 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Integer</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Min:: <code>Integer</code>,<br/>
-                        *Max:: <code>Integer</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um inteiro aleatório entre Min e Max. <br/>
-                        Exemplo: integer(2,4) = 3
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        integerOfSize 
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Integer</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                    *Size:: <code>Integer</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um número inteiro com o número de dígitos igual a Size. <br/>
-                        Exemplo: integerOfSize(4) = 1234<br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        formattedInteger
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Min:: <code>Integer</code>,<br/>
-                        *Max:: <code>Integer</code>,<br/>
-                        *Pad:: <code>Integer</code>,<br/>
-                        Unid:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um inteiro aleatório entre Min e Max, garante que tem pelo menos tantos algarismos quantos especificados no Pad e acrescenta uma <i>String</i> Unid no final. <br/>
-                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar a unidade, pode colocar um "" no Unid.<br/>
-                        Exemplo1: formattedInteger(2, 400, 3, "$") = "100$" <br/>
-                        Exemplo2: formattedInteger(1, 3, 3, "") = "002"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        float
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Float</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Min:: <code>Float</code>,<br/>
-                        *Max:: <code>Float</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um número decimal aleatório entre Min e Max. <br/>
-                        O número de casas decimais do resultado vai ser igual ao do argumento com mais casas decimais. <br/>
-                        Exemplo: float(-180.4, 180.29) = -19.10
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        float
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Float</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Min:: <code>Float</code>,<br/>
-                        *Max:: <code>Float</code>,<br/>
-                        *Dec:: <code>Integer</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais. <br/>
-                        Caso o número gerado acabe com 0s à direita na parte decimal, estes são omitidos. <br/>
-                        Exemplo: float(-180, 180, 2) = -19.11
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        formattedFloat
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Min:: <code>Integer</code>,<br/>
-                        *Max:: <code>Integer</code>,<br/>
-                        *Dec:: <code>Integer</code>,<br/>
-                        *Pad:: <code>Integer</code>,<br/>
-                        Form:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais e garante que tem pelo menos tantos algarismos na parte inteira quantos especificados no Pad. <br/>
-                        Por fim, recebe um formato no argumento Form na forma "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo # separa a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
-                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar uma unidade, pode acabar a <i>String</i> do formato logo a seguir aos últimos 00. <br/>
-                        Exemplo1: formattedFloat(2, 400, 3, 4, "0.0,00$") = "0.181,306$" <br/>
-                        Exemplo2: formattedFloat(2, 5, 2, 0, "0.0,00") = "2,05"
                     </div>
                 </div>
             </div>
@@ -681,6 +269,314 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
+                        float
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Float</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Float</code>,<br/>
+                        *Max:: <code>Float</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um número decimal aleatório entre Min e Max. <br/>
+                        O número de casas decimais do resultado vai ser igual ao do argumento com mais casas decimais. <br/>
+                        Exemplo: float(-180.4, 180.29) = -19.10
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        float
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Float</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Float</code>,<br/>
+                        *Max:: <code>Float</code>,<br/>
+                        *Dec:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais. <br/>
+                        Caso o número gerado acabe com 0s à direita na parte decimal, estes são omitidos. <br/>
+                        Exemplo: float(-180, 180, 2) = -19.11
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        formattedInteger
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>,<br/>
+                        *Pad:: <code>Integer</code>,<br/>
+                        Unid:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um inteiro aleatório entre Min e Max, garante que tem pelo menos tantos algarismos quantos especificados no Pad e acrescenta uma <i>String</i> Unid no final. <br/>
+                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar a unidade, pode colocar um "" no Unid.<br/>
+                        Exemplo1: formattedInteger(2, 400, 3, "$") = "100$" <br/>
+                        Exemplo2: formattedInteger(1, 3, 3, "") = "002"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        formattedFloat
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>,<br/>
+                        *Dec:: <code>Integer</code>,<br/>
+                        *Pad:: <code>Integer</code>,<br/>
+                        Form:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um número decimal aleatório entre Min e Max com um total de Dec casas decimais e garante que tem pelo menos tantos algarismos na parte inteira quantos especificados no Pad. <br/>
+                        Por fim, recebe um formato no argumento Form na forma "0#0#00?", onde o primeiro # é um caractere para separar cada 3 algarismos de inteiros, o segundo # separa a parte inteira da decimal e ? é uma string a concatenar no fim (unidades). <br/>
+                        Caso não queira padding, pode colocar um 0 no Pad e caso não queira colocar uma unidade, pode acabar a <i>String</i> do formato logo a seguir aos últimos 00. <br/>
+                        Exemplo1: formattedFloat(2, 400, 3, 4, "0.0,00$") = "0.181,306$" <br/>
+                        Exemplo2: formattedFloat(2, 5, 2, 0, "0.0,00") = "2,05"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        guid 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um UUID aleatório. <br/>
+                        Exemplo: guid() = "3d16d5d0-4b11-4de8-9e26-6668b52d9219"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        index 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Integer</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Retorna o índice atual no array em que se encontra (normal ou gerado pelo 'repeat'). <br/>
+                        Exemplo: index() = 1 <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        integer 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Integer</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Integer</code>,<br/>
+                        *Max:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um inteiro aleatório entre Min e Max. <br/>
+                        Exemplo: integer(2,4) = 3
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        integerOfSize 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Integer</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    *Size:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um número inteiro com o número de dígitos igual a Size. <br/>
+                        Exemplo: integerOfSize(4) = 1234<br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        letter 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Character</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um caractere aleatório. <br/>
+                        Exemplo: letter() = 'a'<br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        letter 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Character</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Type:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um caractere aleatório em maiúscula ou minúscula, dado em Type. O Type pode ser dado em português ou inglês.<br/>
+                        Exemplo: letter("uppercase") = 'A'<br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
                         lorem 
                     </div>
                 </div>
@@ -742,29 +638,27 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
-                        random 
+                        objectID 
                     </div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="cell">
                     <div class="type">
-                        <code>Object</code>
+                        <code>String</code>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        *arg1:: <code>Object</code>,<br/>
-                        ...,<br/>
-                        *argN:: <code>Object</code>
+                    Nenhum
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Retorna aleatoriamente um dos argumentos passados à função. <br/>
-                        Exemplo: random("blue", true, false, 23, 17.56) = 23
+                        Gera um ID aleatório com 24 bytes. <br/>
+                        Exemplo: objectID() = "6048e87b9281fc9a1afe8e61"
                     </div>
                 </div>
             </div>
@@ -890,281 +784,7 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
-                        pt_district
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um distrito português aleatório.<br/>
-                        Exemplo: pt_district() = "Braga" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_district
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        *Loc:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o distrito português do concelho, freguesia ou cidade dada em Loc.<br/>
-                        O primeiro argumento tem de corresponder às <i>Strings</i> "county", "parish" ou "city", que também podem ser dadas em português.<br/>
-                        Exemplo1: pt_district("county","Braga") = "Braga" <br/>
-                        Exemplo2: pt_district("parish","Fermentelos") = "Aveiro" <br/>
-                        Exemplo2: pt_district("city","Torres Vedras") = "Lisboa" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_county
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um concelho português aleatório.<br/>
-                        Exemplo: pt_county() = "Beja" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_county
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        *Dist:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um concelho português aleatório do distrito dado em Dist.<br/>
-                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "distrito".<br/>
-                        Exemplo: pt_county("district","Braga") = "Barcelos" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_county
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        *Coun:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o concelho português da freguesia dada em Coun.<br/>
-                        O primeiro argumento tem de corresponder às <i>Strings</i> "parish" ou "freguesia".<br/>
-                        Exemplo: pt_county("parish","Tadim") = "Braga" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_parish
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma freguesia portuguesa aleatória.<br/>
-                        Exemplo: pt_parish() = "Tadim" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_parish
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        *Loc:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma freguesia portuguesa aleatória do distrito ou concelho dado em Loc.<br/>
-                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "county", que também podem ser dadas em português.<br/>
-                        Exemplo1: pt_parish("district","Braga") = "Macieira de Rates" <br/>
-                        Exemplo2: pt_parish("county","Braga") = "Adaúfe" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_city
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma cidade portuguesa aleatória.<br/>
-                        Exemplo: pt_city() = "Braga" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_city
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Def:: <code>String</code>, <br/>
-                        *Dist:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma cidade portuguesa aleatória do distrito dado em Dist.<br/>
-                        O primeiro argumento tem de corresponder à`s <i>Strings</i> "district" ou "distrito".<br/>
-                        Exemplo: pt_city("district","Braga") = "Barcelos" <br/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party
+                        random 
                     </div>
                 </div>
             </div>
@@ -1177,308 +797,29 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Nenhum
+                        *arg1:: <code>Object</code>,<br/>
+                        ...,<br/>
+                        *argN:: <code>Object</code>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um partido político aleatório e devolve um objeto com a abreviação e o nome correspondentes.<br/>
-                        Exemplo: political_party() = { "party_abbr": "Fr", "party_name": "Aliança de Paz" }
+                        Retorna aleatoriamente um dos argumentos passados à função. <br/>
+                        Exemplo: random("blue", true, false, 23, 17.56) = 23
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Object</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Cty:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um partido político aleatório do país dado em Cty e devolve um objeto com a abreviação e o nome correspondentes. O nome do país pode ser dado em português ou inglês.<br/>
-                        Exemplo: political_party("Portugal") = { "party_abbr": "BE", "party_name": "Bloco de Esquerda" }
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party_name
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o nome de um partido político aleatório.<br/>
-                        Exemplo: political_party_name() = "Aliança de Paz" 
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party_name
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Object</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Cty:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera o nome de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
-                        Exemplo: political_party_name("Portugal") = "Bloco de Esquerda"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party_abbr
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera a abreviatura de um partido político aleatório.<br/>
-                        Exemplo: political_party_abbr() = "Fr" 
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        political_party_abbr
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Object</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Cty:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera a abreviatura de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
-                        Exemplo: political_party_abbr("Portugal") = "BE"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_entity
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Object</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera uma entidade portuguesa aleatória e devolve um objeto com a sigla e a designação correspondentes.<br/>
-                        Exemplo: pt_entity() = { "abbr": "CMBRG", "name": "Câmara Municipal de Braga" }
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_entity_abbr
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera a sigla de uma entidade portuguesa aleatória.<br/>
-                        Exemplo: pt_entity_abbr() = "CMBRG"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        pt_entity_name
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera a designação de uma entidade portuguesa aleatória.<br/>
-                        Exemplo: pt_entity_name() = "Câmara Municipal de Braga"
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        soccer_club
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>String</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        Nenhum
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um clube de futebol aleatório.<br/>
-                        Exemplo: soccer_club() = "Liverpool FC" 
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row margin-0">
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="propertyname">
-                        soccer_club
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="cell">
-                    <div class="type">
-                        <code>Object</code>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="cell">
-                        *Cty:: <code>String</code>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="cell">
-                    <div class="description">
-                        Gera um clube de futebol aleatório do país dado em Cty.<br/>
-                        O nome do país pode ser dado em português ou em inglês e, para já, só são reconhecidos Portugal, Espanha, Itália, Inglaterra e Alemanha.<br/>
-                        Exemplo: soccer_club("Portugal") = "SC Braga"
-                    </div>
-                </div>
-            </div>
+    </div>
+    <br>
+    <h5>Funções com suporte de datasets:</h5>
+    <div class="method">
+        <div class="row margin-0 list-header hidden-sm hidden-xs">
+            <div class="col-md-2"><div class="header">Moustache</div></div>
+            <div class="col-md-2"><div class="header">Tipo</div></div>
+            <div class="col-md-3"><div class="header">Argumento(s)</div></div>
+            <div class="col-md-5"><div class="header">Descrição</div></div>
         </div>
         <div class="row margin-0">
             <div class="col-md-2">
@@ -1741,6 +1082,64 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                 </div>
             </div>
         </div>
+        <div class="row margin-0"> 
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        firstName
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um nome próprio aleatório. <br/>
+                        Exemplo: firstName() = "Hugo" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0"> 
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        fullName
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um nome completo aleatório. <br/>
+                        Exemplo: surname() = "Isa Filipa Oliveirinha" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row margin-0">
             <div class="col-md-2">
                 <div class="cell">
@@ -1919,6 +1318,180 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
+                        political_party
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um partido político aleatório e devolve um objeto com a abreviação e o nome correspondentes.<br/>
+                        Exemplo: political_party() = { "party_abbr": "Fr", "party_name": "Aliança de Paz" }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        political_party
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Cty:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um partido político aleatório do país dado em Cty e devolve um objeto com a abreviação e o nome correspondentes. O nome do país pode ser dado em português ou inglês.<br/>
+                        Exemplo: political_party("Portugal") = { "party_abbr": "BE", "party_name": "Bloco de Esquerda" }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        political_party_abbr
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera a abreviatura de um partido político aleatório.<br/>
+                        Exemplo: political_party_abbr() = "Fr" 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        political_party_abbr
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Cty:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera a abreviatura de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
+                        Exemplo: political_party_abbr("Portugal") = "BE"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        political_party_name
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera o nome de um partido político aleatório.<br/>
+                        Exemplo: political_party_name() = "Aliança de Paz" 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        political_party_name
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Cty:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera o nome de um partido político aleatório do país dado em Cty. O nome do país pode ser dado em português ou inglês.<br/>
+                        Exemplo: political_party_name("Portugal") = "Bloco de Esquerda"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
                         pt_businessman
                     </div>
                 </div>
@@ -1940,6 +1513,367 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera um empresário português aleatório. <br/>
                         Exemplo: pt_businessman() = "Manuel Cordo Boullosa" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_city
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma cidade portuguesa aleatória.<br/>
+                        Exemplo: pt_city() = "Braga" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_city
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Def:: <code>String</code>, <br/>
+                        *Dist:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma cidade portuguesa aleatória do distrito dado em Dist.<br/>
+                        O primeiro argumento tem de corresponder à`s <i>Strings</i> "district" ou "distrito".<br/>
+                        Exemplo: pt_city("district","Braga") = "Barcelos" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_county
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um concelho português aleatório.<br/>
+                        Exemplo: pt_county() = "Beja" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_county
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Def:: <code>String</code>, <br/>
+                        *Dist:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um concelho português aleatório do distrito dado em Dist.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "distrito".<br/>
+                        Exemplo: pt_county("district","Braga") = "Barcelos" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_county
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Def:: <code>String</code>, <br/>
+                        *Coun:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera o concelho português da freguesia dada em Coun.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "parish" ou "freguesia".<br/>
+                        Exemplo: pt_county("parish","Tadim") = "Braga" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_district
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um distrito português aleatório.<br/>
+                        Exemplo: pt_district() = "Braga" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_district
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Def:: <code>String</code>, <br/>
+                        *Loc:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera o distrito português do concelho, freguesia ou cidade dada em Loc.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "county", "parish" ou "city", que também podem ser dadas em português.<br/>
+                        Exemplo1: pt_district("county","Braga") = "Braga" <br/>
+                        Exemplo2: pt_district("parish","Fermentelos") = "Aveiro" <br/>
+                        Exemplo2: pt_district("city","Torres Vedras") = "Lisboa" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_entity
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma entidade portuguesa aleatória e devolve um objeto com a sigla e a designação correspondentes.<br/>
+                        Exemplo: pt_entity() = { "abbr": "CMBRG", "name": "Câmara Municipal de Braga" }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_entity_abbr
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera a sigla de uma entidade portuguesa aleatória.<br/>
+                        Exemplo: pt_entity_abbr() = "CMBRG"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_entity_name
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera a designação de uma entidade portuguesa aleatória.<br/>
+                        Exemplo: pt_entity_name() = "Câmara Municipal de Braga"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_parish
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma freguesia portuguesa aleatória.<br/>
+                        Exemplo: pt_parish() = "Tadim" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pt_parish
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Def:: <code>String</code>, <br/>
+                        *Loc:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma freguesia portuguesa aleatória do distrito ou concelho dado em Loc.<br/>
+                        O primeiro argumento tem de corresponder às <i>Strings</i> "district" ou "county", que também podem ser dadas em português.<br/>
+                        Exemplo1: pt_parish("district","Braga") = "Macieira de Rates" <br/>
+                        Exemplo2: pt_parish("county","Braga") = "Adaúfe" <br/>
                     </div>
                 </div>
             </div>
@@ -2064,6 +1998,65 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
+                        soccer_club
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um clube de futebol aleatório.<br/>
+                        Exemplo: soccer_club() = "Liverpool FC" 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        soccer_club
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Object</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Cty:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um clube de futebol aleatório do país dado em Cty.<br/>
+                        O nome do país pode ser dado em português ou em inglês e, para já, só são reconhecidos Portugal, Espanha, Itália, Inglaterra e Alemanha.<br/>
+                        Exemplo: soccer_club("Portugal") = "SC Braga"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
                         soccer_player
                     </div>
                 </div>
@@ -2114,6 +2107,35 @@ variável local <code>this</code>, permitindo assim estabelecer relações entre
                     <div class="description">
                         Gera um desporto aleatório. <br/>
                         Exemplo: sport() = "Voleibol" <br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0"> 
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        surname
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um apelido aleatório. <br/>
+                        Exemplo: surname() = "Rodrigues" <br/>
                     </div>
                 </div>
             </div>
@@ -2703,6 +2725,8 @@ combinados: range(5).map((value) => { return value+3 })
     range2: range(1,-8),
     range3: range(-5,20,3)
 }`,
+        grammar16: `int: '{{integer(5,15)}}'.string(),
+bool: '{{boolean()}}'.string()`,
         example1: `<!LANGUAGE pt>
 {
   	cidades: [ 'repeat(100)': {
