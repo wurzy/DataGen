@@ -331,7 +331,7 @@
 
 // ----- 2. DSL Grammar -----
 
-DSL_text = language value:collection_object { return {dataModel: value, components, errors, language} }
+DSL_text = language dataModel:collection_object { return {dataModel, components, errors, language} }
 
 begin_array      = ws "[" ws { ++open_structs; struct_types.push("array"); array_indexes.push(0); values_map.push({type: "array", data: []}) }
 begin_object     = ws "{" ws { ++open_structs; struct_types.push("object"); values_map.push({type: "object", data: {}}) }
