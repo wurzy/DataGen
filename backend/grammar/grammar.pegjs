@@ -98,6 +98,10 @@
         if (args.length == 1) join += ",null,null"
         if (args.length == 2) join += ",null"
       }
+      if (key == "time") {
+        if (args.length == 3) join += ",null"
+        if (args.length == 5) join = `${args[0]},${args[1]},${args[2]},{start: ${args[3]}, end: ${args[4]}}`
+      }
 
       path = "genAPI." + key
       join += !join.length ? "gen.i" : ",gen.i"
@@ -667,6 +671,13 @@ date_format
   / quotation_mark ws format:("MM" date_separator "DD" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format.join(""); }
   / quotation_mark ws format:(("AAAA" / "YYYY") date_separator "MM" date_separator "DD") ws quotation_mark { return format.join(""); }
 
+time_format
+  = quotation_mark ws format:("hh" (":" ("ss" / "mm" (":" "ss")?))?) ws quotation_mark { return format.flat(3).join(""); }
+  / quotation_mark ws format:("mm" (":" "ss")?) ws quotation_mark { return format.flat().join(""); }
+  / quotation_mark ws format:"ss" ws quotation_mark { return format; }
+
+time = quotation_mark ws time:((([01][0-9]) / ("2"[0-3])) ":" [0-5][0-9] ":" [0-5][0-9]) ws quotation_mark { return time.flat().join(""); }
+
 char
   = unescaped
   / escape
@@ -700,6 +711,7 @@ int_or_local = int_neg / int_local_arg
 number_or_local = n:number {return n.data[0]} / num_local_arg
 string_or_local = string_local_arg / string_arg
 date_or_local = date / date_local_arg
+time_or_local = time / time_local_arg
 random_arg = v:(directive / object / array / false / true / number / string / moustaches_value) {return v.data} / local_arg
 
 interpolation 
@@ -793,13 +805,13 @@ gen_moustaches
       data: fillArray("gen", null, "formattedFloat", [min, max, decimals, pad, format])
     }
   }
-  / "position(" ws limits:(lat:(position/pair_local_arg) "," long:(position/pair_local_arg) {return {lat, long} })? ")" {
+  / "position(" ws limits:(lat:(position/pair_local_arg) value_separator long:(position/pair_local_arg) {return {lat, long} })? ")" {
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "position", [!limits ? null : limits.lat, !limits ? null : limits.long])
     }
   }
-  / "pt_phone_number(" ws extension:(true/false)? ws ")" {
+  / "pt_phone_number(" ws extension:("true" {return true} /"false" {return false})? ws ")" {
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "pt_phone_number", [extension])
@@ -809,6 +821,12 @@ gen_moustaches
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "date", [start, end, format])
+    }
+  }
+  / "time(" ws format:time_format value_separator range:("12"/"24") value_separator units:("true" {return true} /"false" {return false}) limits:(value_separator start:time_or_local value_separator end:time_or_local {return {start, end} })? ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "time", [format, range, units, limits])
     }
   }
   / "random(" ws values:(
@@ -1095,10 +1113,7 @@ date_local_arg = arg:local_arg {
     let arr = true
     if (!Array.isArray(arg)) { arg = [arg]; arr = false }
 
-    if (invalid_local_arg) {
-      invalid_local_arg = false
-      return "01/01/1950"
-    }
+    if (invalid_local_arg) { invalid_local_arg = false; return "01/01/1950" }
     else {
       var match = arg.every((val, i, arr) => /(((((0[1-9]|1[0-9]|2[0-8])[./-](0[1-9]|1[012]))|((29|30|31)[./-](0[13578]|1[02]))|((29|30)[./-](0[4,6,9]|11)))[./-](19|[2-9][0-9])[0-9][0-9])|(29[./-]02[./-](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)))/.test(val))
     
@@ -1112,6 +1127,28 @@ date_local_arg = arg:local_arg {
           location: location()
         })
         return "01/01/1950"
+      }
+    }
+  }
+
+time_local_arg = arg:local_arg {
+    let arr = true
+    if (!Array.isArray(arg)) { arg = [arg]; arr = false }
+
+    if (invalid_local_arg) { invalid_local_arg = false; return "00:00:00" }
+    else {
+      var match = arg.every((val, i, arr) => /([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]/.test(val))
+    
+      if (match) {
+        if (!arr) arg = arg[0]
+        return arg
+      }
+      else {
+        errors.push({
+          message: 'A propriedade local que está a referenciar através do "this" não é uma hora válida!',
+          location: location()
+        })
+        return "00:00:00"
       }
     }
   }

@@ -5,6 +5,8 @@ const getRandomValues = require('get-random-values');
 
 function hex(x) { return Math.floor(x).toString(16) }
 
+function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
+
 function getDecimalsCount(min, max) {
     var decimals = 3; //3 caracteres decimais por predefinição
     const maxStr = String(max);
@@ -104,8 +106,7 @@ function letter(lettercase, i) {
 function integer(min, max, i) {
     min = Array.isArray(min) ? min[i] : min
     max = Array.isArray(max) ? max[i] : max
-
-    return Math.floor(Math.random() * ((max+1) - min) + min)
+    return randomize(min,max)
 }
 
 function integerOfSize(size, i) {
@@ -119,7 +120,7 @@ function integerOfSize(size, i) {
     if (size > 1) min[0] = "1"
     min = Number.parseInt(min), max = Number.parseInt(max)
 
-    let rand = Math.floor(Math.random() * ((max+1) - min) + min)
+    let rand = randomize(min, max)
     if (neg) rand = 0 - rand
     return rand
 }
@@ -129,7 +130,7 @@ function formattedInteger(min, max, pad, unit, i) {
     max = Array.isArray(max) ? max[i] : max
     pad = Array.isArray(pad) ? pad[i] : pad
 
-    var rand = Math.floor(Math.random() * ((max+1) - min) + min).toString()
+    var rand = randomize(min, max).toString()
     return padding(rand,pad) + unit
 }
 
@@ -207,11 +208,56 @@ function date(start, end, format, i) {
     return random
 }
 
+function time(format, range, unitsBool, limits, i) {
+    let start, end
+    
+    if (limits == null) { start = "00:00:00"; end = "23:59:59" }
+    else { start = limits.start; end = limits.end }
+
+    start = Array.isArray(start) ? start[i] : start
+    end = Array.isArray(end) ? end[i] : end
+
+    start = start.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,i) => acc + (i==0 ? cur : cur*Math.pow(60,i)), 0),
+    end = end.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,i) => acc + (i==0 ? cur : cur*Math.pow(60,i)), 0)
+
+    let rand = randomize(start, end),
+        randArr = [ padding((rand/3600|0).toString(),2), padding((rand/60%60|0).toString(),2), padding((rand%60).toString(),2) ]
+        units = unitsBool ? ["h","min","s"] : [":",":"],
+        iter = [], AMPM = "", final = ""
+
+    if (range == 12) {
+        if (randArr[0] == 0) { randArr[0] = 12; AMPM = " AM" }
+        else if (randArr[0] == 12) AMPM = " PM"
+        else if (randArr[0] > 12) { randArr[0] = padding((randArr[0]-12).toString(),2); AMPM = " PM" }
+        else AMPM = " AM"
+    }
+    else AMPM = ""
+
+    switch(format) {
+        case "hh:mm:ss": iter = [0,1,2]; break;
+        case "hh:mm": iter = [0,1]; break;
+        case "hh:ss": iter = [0,2]; break;
+        case "mm:ss": iter = [1,2]; break;
+        case "hh": iter = [0]; break;
+        case "mm": iter = [1]; break;
+        case "ss": iter = [2]; break;
+    }
+
+    for (let i = 0; i < iter.length; i++) {
+        final += ((i>0 && unitsBool) ? " " : "")
+        final += randArr[iter[i]] 
+        final += ((!unitsBool && i == iter.length-1) ? "" : units[iter[i]])
+    }
+    final += AMPM
+
+    return final
+}
+
 function lorem(units, min, max, i) {
     min = Array.isArray(min) ? min[i] : min
     max = (max != null && Array.isArray(max)) ? max[i] : max
 
-    if (max != null) min = Math.floor(Math.random() * ((max+1) - min) + min)
+    if (max != null) min = randomize(min, max)
     return loremIpsum({ count: min, units })
 }
 
@@ -255,6 +301,7 @@ module.exports = {
     position,
     pt_phone_number,
     date,
+    time,
     lorem,
     random,
     range

@@ -797,9 +797,9 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        *arg1:: <code>Object</code>,<br/>
+                        *Arg1:: <code>Object</code>,<br/>
                         ...,<br/>
-                        *argN:: <code>Object</code>
+                        *ArgN:: <code>Object</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -807,6 +807,81 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
                     <div class="description">
                         Retorna aleatoriamente um dos argumentos passados à função. <br/>
                         Exemplo: random("blue", true, false, 23, 17.56) = 23
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        time 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Form:: <code>String</code>,<br/>
+                        Inter:: <code>Integer</code>,<br/>
+                        Unid:: <code>Boolean</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma hora do dia aleatória. <br/>
+                        Form corresponde ao formato em termos de horas, minutos e segundos e pode ser um dos seguintes: "hh:mm:ss", "hh:mm", "hh:ss", "hh:mm", "hh", "mm", "ss". <br/>
+                        Inter pode ser 12 ou 24 e representa o intervalo de horas usado. Se for selecionado o formato de relógio de 12 horas, as horas do tempo gerado estarão sempre entre a 01 e as 12, e o tempo virá com "AM" ou "PM" à frente para indicar se é de manhã ou de tarde. <br/>
+                        Unid é um boleano que indica se se pretende unidades no tempo gerado ou não. Em caso afirmativo, em vez do formato "hh:mm:ss", o tempo virá com as unidades "h min s". <br/>
+                        Exemplo1: time("hh:mm:ss", 12, false) = "09:21:01 AM" <br/>
+                        Exemplo2: time("hh:mm:ss", 24, true) = "22h 46min 30s" <br/>
+                        Exemplo3: time("hh:mm", 12, true) = "11h 43min PM"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        time 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Form:: <code>String</code>,<br/>
+                        Inter:: <code>Integer</code>,<br/>
+                        Unid:: <code>Boolean</code>,<br/>
+                        *Init:: <code>String</code>,<br/>
+                        *Fim:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma hora do dia aleatória entre os tempos Init e Fim. <br/>
+                        Form corresponde ao formato em termos de horas, minutos e segundos e pode ser um dos seguintes: "hh:mm:ss", "hh:mm", "hh:ss", "hh:mm", "hh", "mm", "ss". <br/>
+                        Inter pode ser 12 ou 24 e representa o intervalo de horas usado. Se for selecionado o formato de relógio de 12 horas, as horas do tempo gerado estarão sempre entre a 01 e as 12, e o tempo virá com "AM" ou "PM" à frente para indicar se é de manhã ou de tarde. <br/>
+                        Unid é um boleano que indica se se pretende unidades no tempo gerado ou não. Em caso afirmativo, em vez do formato "hh:mm:ss", o tempo virá com as unidades "h min s". <br/>
+                        A <i>String</i> dos argumentos Init e Fim tem de ter o formato "hh:mm:ss" e corresponder a uma hora do dia válida. <br/>
+                        Exemplo1: time("hh:mm:ss", 12, false, "13:30:00", "15:15:15") = "02:18:08 PM" <br/>
+                        Exemplo2: time("hh:mm:ss", 24, true, "13:30:00", "15:15:15") = "14h 43min 03s" <br/>
+                        Exemplo3: time("hh:mm", 24, true, "13:30:00", "15:15:15") = "13h 39min"
                     </div>
                 </div>
             </div>
