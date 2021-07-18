@@ -14,7 +14,7 @@
                     <h4>Aviso</h4>	
                     <p> {{msg}} </p>
                     <button class="color-b1 btn btn-success" data-dismiss="modal"><span>Cancelar <font-awesome-icon icon="undo"/></span></button>
-                    <button class="color-b2 btn btn-success" @click="confirm" data-dismiss="modal" style="margin-left:10px"><span>Eliminar <font-awesome-icon icon="trash"/></span></button>
+                    <button class="color-b2 btn btn-success" @click="confirm" data-dismiss="modal" style="margin-left:10px"><span>Guardar <font-awesome-icon icon="save"/></span></button>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
 </template>
 <script>
 export default {
-    name: "Confirm",
+    name: "ConfirmAlteration",
     props: ['msg', 'id'],
     methods:{
         confirm(){
@@ -92,7 +92,7 @@ export default {
     .modal-confirm .color-b2 {
         color: #fff;
         border-radius: 4px;
-		background: #dc3545;
+		background: #27cc4d;
 		text-decoration: none;
 		transition: all 0.4s;
         line-height: normal;
@@ -117,7 +117,7 @@ export default {
 
 
 	.modal-confirm .color-b2:hover, .modal-confirm .color-b2:focus {
-		background: #b12b38;
+		background: #28a745;
 		outline: none;
 	}
 

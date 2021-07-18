@@ -1,6 +1,7 @@
 <template>
 <div class="container" >
     <Confirm :msg="getConfirmMsg" id="deleteModel_confirm_modal" @confirm="confirm"/>
+    <ConfirmAlteration :msg="getConfirmMsg2" id="alterModel_confirm_modal" @confirm="confirmAlteration"/>
     <h2 style="margin-top:85px" >Modelos Guardados</h2>
     <hr/>
     <div class="input-group">
@@ -40,17 +41,19 @@
                                         (<font-awesome-icon icon="lock"/> Privado)
                                     </span>
                                 </p>
-                                <p>
-                                <router-link :to="{name: 'Home', params: {userModel: model.modelo}}">
-                                  <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
-                                </router-link>
-                                <button  class="btn btn-danger" @click="deleteModel(model._id,model.titulo)"><font-awesome-icon icon="trash"/> Eliminar</button>
-                                </p>
                                 <codemirror
                                     ref="cmEditor"
-                                    :value="model.modelo"
-                                    :options="cmOption"
+                                    v-model="model.modelo"
+                                    :options="cmOption"                                    
                                 />
+                                <br/>
+                                <p>
+                                  <button  class="btn btn-success" style="margin-right: 5px" @click="saveModel(model._id,model.titulo)"><font-awesome-icon icon="save"/> Guardar</button>
+                                  <button  class="btn btn-danger"  style="margin-right: 5px" @click="deleteModel(model._id,model.titulo)"><font-awesome-icon icon="trash"/> Eliminar</button>
+                                  <router-link :to="{name: 'Home', params: {userModel: model.modelo}}">
+                                    <button  class="btn btn-primary" style="margin-right: 5px"><font-awesome-icon icon="external-link-alt"/> Usar Modelo</button>
+                                  </router-link>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -74,6 +77,7 @@
 <script>
 import axios from 'axios'
 import Confirm from '../components/Confirm.vue'
+import ConfirmAlteration from '../components/ConfirmAlteration.vue'
 
 import "codemirror/theme/dracula.css";
 import 'codemirror/keymap/sublime'
@@ -88,7 +92,8 @@ import $ from 'jquery'
 export default {
     name: "UserModels",
     components:{
-      Confirm
+      Confirm,
+      ConfirmAlteration
     },
     data() {
         return {
@@ -100,10 +105,11 @@ export default {
             dateInt: [null, new Date()],
             pages: 1,
             toDelete: {},
+            toSave: {},
             confirmMsg: "Esta ação é irreversível. Tem a certeza que pretende remover o modelo \"-\"?",
+            confirmMsg2: "Esta ação é irreversível. Tem a certeza que pretende alterar o modelo \"-\"?",
             cmOption: {
                 tabSize: 4,
-                readOnly: true,
                 autoRefresh: true,
                 styleActiveLine: true,
                 lineNumbers: true,
@@ -147,14 +153,18 @@ export default {
         isEmpty(){
             return this.userModels==null
         },
-        async toggled(id){
+        toggled(id){
             for(let [k, m] of Object.entries(this.userModels)){
                 if(m._id==id){
                     m.visibilidade = !m.visibilidade
-                    await axios.put('/api/modelos/visibilidade/'+id,{visibilidade: m.visibilidade})
                     return
                 }
             }
+        },
+        async saveModel(id, titulo){
+          this.toSave = {id, titulo}
+          $("#alterModel_confirm_modal").modal("show");
+          $("#alterModel_confirm_modal").css("z-index", "1500");
         },
         deleteModel(id, titulo){
           this.toDelete = {id, titulo}
@@ -167,6 +177,14 @@ export default {
           await axios.delete('/api/modelos/'+this.toDelete.id)
           this.userModels = this.userModels.filter(m=>m._id!=this.toDelete.id)
           this.changePage(this.userModels)
+        },
+        async confirmAlteration(){
+          for(let [k, m] of Object.entries(this.userModels)){
+                if(m._id==this.toSave.id){
+                    await axios.put('/api/modelos/alterar/'+m._id,{visibilidade: m.visibilidade, modelo: m.modelo})
+                    return
+                }
+          }
         },
         clearDate(){
             this.dateInt = [null, new Date()]
@@ -192,6 +210,9 @@ export default {
      },
      getConfirmMsg(){
        return this.confirmMsg.replace("-",this.toDelete.titulo)
+     },
+     getConfirmMsg2(){
+        return this.confirmMsg2.replace("-",this.toSave.titulo)
      }
     }
 }
