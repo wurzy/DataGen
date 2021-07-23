@@ -73,7 +73,7 @@ import axios from 'axios';
 import $ from 'jquery'
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 
-import { jsonToXml, jsonToStrapi } from '../util/conversions.js'
+import { jsonToXml, jsonToStrapi, jsonToCsv } from '../util/conversions.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -81,6 +81,7 @@ import "codemirror/theme/dracula.css";
 import 'codemirror/keymap/sublime'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/xml/xml.js'
+import 'codemirror/mode/q/q.js'
 
 export default {
   name: 'Home',
@@ -207,6 +208,7 @@ export default {
         }
         else { 
           this.grammar_errors = []
+          let ok = true
 
           if (this.output_format == "JSON") {
             this.cmOutput.mode = 'text/javascript'
@@ -216,34 +218,43 @@ export default {
             this.cmOutput.mode = 'text/xml'
             this.result = jsonToXml(generated.dataModel.data)
           }
+          if (this.output_format == "CSV") {
+            ok = false
+            this.cmOutput.mode = 'text/x-q'
+            let result = jsonToCsv(generated.dataModel)
 
-          //console.log(JSON.stringify(generated.dataModel))
-          //console.log(JSON.stringify(generated.components))
-
-          var mkeys = Object.keys(generated.dataModel.model)
-          var ckeys = Object.keys(generated.components)
-          var dkeys = Object.keys(generated.dataModel.data)
-
-          var index
-          for (index = 0; index < mkeys.length; index++) {
-            let mkey = mkeys[index]
-            let ckey = ckeys[index]
-            let dkey = dkeys[index]
-            this.colnames.push(mkey)
-            this.colecoes.push(generated.dataModel.model[`${mkey}`]) 
-            this.componentes.push(generated.components[`${ckey}`]) 
-            let dat = jsonToStrapi(generated.dataModel.data[`${dkey}`])
-
-            this.datasets.push(JSON.stringify(dat, null, 2))
+            if (result === 0) alert("A conversão para CSV só é possível para modelos com uma única coleção! A coleção não pode ter aninhamento de dados nos seus elementos e deve ser estruturada com a primitiva 'repeat'.")
+            else if (result === 1) alert("A conversão para CSV só é possível para coleções sem aninhamento de dados nos seus elementos! O modelo só pode ter uma coleção, que deve ser estruturada com a primitiva 'repeat'.")
+            else if (result === 2) alert("A conversão para CSV só é possível para coleções estruturadas com a primitiva 'repeat'! O modelo só pode ter uma coleção, que não pode ter aninhamentos de dados nos seus elementos.")
+            else { this.result = result; ok = true }
           }
-          this.colname = mkeys[0]
-          this.model = generated.dataModel.model
-          this.components = generated.components
+          
+          if (ok) {
+            var mkeys = Object.keys(generated.dataModel.model)
+            var ckeys = Object.keys(generated.components)
+            var dkeys = Object.keys(generated.dataModel.data)
 
-          //document.getElementById("saveModelButton").disabled = false;
-          document.getElementById("defaultDownloadButton").disabled = false;
-          document.getElementById("generateAPIButton").disabled = false;
-          this.cur_output = this.output_format 
+            var index
+            for (index = 0; index < mkeys.length; index++) {
+              let mkey = mkeys[index]
+              let ckey = ckeys[index]
+              let dkey = dkeys[index]
+              this.colnames.push(mkey)
+              this.colecoes.push(generated.dataModel.model[`${mkey}`]) 
+              this.componentes.push(generated.components[`${ckey}`]) 
+              let dat = jsonToStrapi(generated.dataModel.data[`${dkey}`])
+
+              this.datasets.push(JSON.stringify(dat, null, 2))
+            }
+            this.colname = mkeys[0]
+            this.model = generated.dataModel.model
+            this.components = generated.components
+
+            //document.getElementById("saveModelButton").disabled = false;
+            document.getElementById("defaultDownloadButton").disabled = false;
+            document.getElementById("generateAPIButton").disabled = false;
+            this.cur_output = this.output_format 
+          }
         }
       },
       downloadAPI(){

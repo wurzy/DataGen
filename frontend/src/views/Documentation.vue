@@ -37,7 +37,7 @@ pretenda.</p>
             <li>Número</li>
             <li><i>String</i></li>
             <li><i>Array</i></li>
-            <li>Booleano</li>
+            <li>Boleano</li>
             <li>null</li>
             <li>Objeto DSL</li>
             <li>Função "Moustache"</li>
@@ -131,7 +131,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera um booleano aleatório. <br/>
+                        Gera um boleano aleatório. <br/>
                         Exemplo: boolean() = true <br/>
                     </div>
                 </div>
@@ -2575,6 +2575,11 @@ seguida:</p>
                 <b><code>POST</code> /api/datagen/xml</b>
                 <p>O corpo tem de conter o modelo da gramática (DSL) em formato raw, isto é, não envolvido por aspas.</p>
                 <p>Esta rota retorna apenas o dataset resultante em formato XML.</p>
+            </li>
+            <li>
+                <b><code>POST</code> /api/datagen/csv</b>
+                <p>O corpo tem de conter o modelo da gramática (DSL) em formato raw, isto é, não envolvido por aspas.</p>
+                <p>Esta rota retorna apenas o dataset resultante em formato CSV.</p>
             </li>
         </ul>
         Para além destas rotas, são também disponibilizadas rotas para obter os datasets utilizados na aplicação:

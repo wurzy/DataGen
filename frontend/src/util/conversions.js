@@ -53,6 +53,38 @@ function jsonToStrapi(obj) {
     else res = obj
   
     return res
-  }
+}
 
-module.exports = { jsonToXml, jsonToStrapi }
+const objectDepth = (o) => Object (o) === o ? 1 + Math .max (-1, ... Object .values(o) .map (objectDepth)) : 0
+
+function jsonToCsv(obj) {
+    if (Object.keys(obj.data).length > 1) return 0
+
+    let modelKey = Object.keys(obj.model)[0],
+        dataKey = Object.keys(obj.data)[0],
+        data = obj.data[dataKey]
+        
+    if (objectDepth(data) > 2) return 1
+    if (objectDepth(data) < 2) return 2
+    if (!("attributes" in obj.model[modelKey])) return 2
+
+    let keys = Object.keys(obj.model[modelKey].attributes)
+    let str = dataKey + "\n" + keys.join(",") + "\n"
+
+    if (!keys.length) return 2
+
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < keys.length; j++) {
+            if (keys[j] in data[i]) {
+                if (typeof data[i][keys[j]] == "string") str += '"' + data[i][keys[j]].replace(/"/g, '""') + '"'
+                else str += data[i][keys[j]]
+            }
+            if (j < keys.length-1) str += ","
+        }
+        str += "\n"
+    }
+
+    return str
+}
+
+module.exports = { jsonToXml, jsonToStrapi, jsonToCsv }
