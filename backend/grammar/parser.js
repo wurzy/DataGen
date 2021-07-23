@@ -146,7 +146,7 @@ module.exports = /*
         peg$startRuleFunctions = { DSL_text: peg$parseDSL_text },
         peg$startRuleFunction  = peg$parseDSL_text,
 
-        peg$c0 = function(dataModel) { return {dataModel, components, errors, language} },
+        peg$c0 = function(dataModel) { return {dataModel, components, collection_ids, errors, language} },
         peg$c1 = "[",
         peg$c2 = peg$literalExpectation("[", false),
         peg$c3 = function() { ++open_structs; struct_types.push("array"); array_indexes.push(0); values_map.push({type: "array", data: []}) },
@@ -194,7 +194,7 @@ module.exports = /*
         peg$c45 = peg$literalExpectation("true", false),
         peg$c46 = function() { return {model: {type: "boolean", required: true}, data: Array(nr_copies).fill(true)} },
         peg$c47 = function(members) {
-              var model = {}, data = {}, i = 0
+              var model = {}, data = {}
 
               for (let p in members) {
                 if (!("attributes" in members[p].model)) {
@@ -224,10 +224,9 @@ module.exports = /*
                   }
                 }
                 else {
-                  model = addCollectionModel(model, collections[i], members[p].model.attributes)
+                  model = addCollectionModel(model, collection_ids[p], members[p].model.attributes)
                   data[p] = repeat_keys.includes(p) ? members[p].data : members[p].data[0]
                 }
-                i++
               }
 
               return members !== null ? {data, model} : {}
@@ -314,7 +313,7 @@ module.exports = /*
 
             if (open_structs == 1) {
               cur_collection = member_key + "_" + uuidv4()
-              collections.push(cur_collection)
+              collection_ids[member_key] = cur_collection
               components[cur_collection] = {}
             }
             return member_key
@@ -10539,7 +10538,7 @@ module.exports = /*
       var language = "pt" //"pt" or "en", "pt" by default
       var components = {} //lista de componentes Strapi
 
-      var collections = [] //nomes das coleções
+      var collection_ids = {} //nomes das coleções e ids únicos respetivos
       var cur_collection = "" //nome da coleção atual durante a travessia
 
       var queue = [{value: 1, total: 1}] //queue com {argumento original do repeat, total de cópias que é necessário criar nesse repeat}

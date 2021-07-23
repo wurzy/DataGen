@@ -8,7 +8,7 @@
   var language = "pt" //"pt" or "en", "pt" by default
   var components = {} //lista de componentes Strapi
 
-  var collections = [] //nomes das coleções
+  var collection_ids = {} //nomes das coleções e ids únicos respetivos
   var cur_collection = "" //nome da coleção atual durante a travessia
 
   var queue = [{value: 1, total: 1}] //queue com {argumento original do repeat, total de cópias que é necessário criar nesse repeat}
@@ -335,7 +335,7 @@
 
 // ----- 2. DSL Grammar -----
 
-DSL_text = language dataModel:collection_object { return {dataModel, components, errors, language} }
+DSL_text = language dataModel:collection_object { return {dataModel, components, collection_ids, errors, language} }
 
 begin_array      = ws "[" ws { ++open_structs; struct_types.push("array"); array_indexes.push(0); values_map.push({type: "array", data: []}) }
 begin_object     = ws "{" ws { ++open_structs; struct_types.push("object"); values_map.push({type: "object", data: {}}) }
@@ -373,7 +373,7 @@ true  = "true"  { return {model: {type: "boolean", required: true}, data: Array(
 
 collection_object
   = begin_object members:object_members end_object {
-      var model = {}, data = {}, i = 0
+      var model = {}, data = {}
 
       for (let p in members) {
         if (!("attributes" in members[p].model)) {
@@ -403,10 +403,9 @@ collection_object
           }
         }
         else {
-          model = addCollectionModel(model, collections[i], members[p].model.attributes)
+          model = addCollectionModel(model, collection_ids[p], members[p].model.attributes)
           data[p] = repeat_keys.includes(p) ? members[p].data : members[p].data[0]
         }
-        i++
       }
 
       return members !== null ? {data, model} : {}
@@ -495,7 +494,7 @@ member_key = chars:(([$a-zA-Z_]/[^\x00-\x7F])([$a-zA-Z0-9_]/[^\x00-\x7F])*) {
 
     if (open_structs == 1) {
       cur_collection = member_key + "_" + uuidv4()
-      collections.push(cur_collection)
+      collection_ids[member_key] = cur_collection
       components[cur_collection] = {}
     }
     return member_key

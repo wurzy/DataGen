@@ -221,11 +221,9 @@ export default {
           if (this.output_format == "CSV") {
             ok = false
             this.cmOutput.mode = 'text/x-q'
-            let result = jsonToCsv(generated.dataModel)
+            let result = jsonToCsv(generated.dataModel, generated.collection_ids)
 
-            if (result === 0) alert("A conversão para CSV só é possível para modelos com uma única coleção! A coleção não pode ter aninhamento de dados nos seus elementos e deve ser estruturada com a primitiva 'repeat'.")
-            else if (result === 1) alert("A conversão para CSV só é possível para coleções sem aninhamento de dados nos seus elementos! O modelo só pode ter uma coleção, que deve ser estruturada com a primitiva 'repeat'.")
-            else if (result === 2) alert("A conversão para CSV só é possível para coleções estruturadas com a primitiva 'repeat'! O modelo só pode ter uma coleção, que não pode ter aninhamentos de dados nos seus elementos.")
+            if (typeof result != "string") alert(result.error)
             else { this.result = result; ok = true }
           }
           
