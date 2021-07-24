@@ -372,28 +372,24 @@ export default {
           var typedoc
           let zipped = false
           if (this.cur_output == "XML") {
-            filename = filename + ".xml"
+            filename += ".xml"
             typedoc = "data:text/xml;charset=utf-8," 
           }
           else if (this.cur_output == "JSON"){
-            filename = filename + ".json"
+            filename += ".json"
             typedoc = "data:text/json;charset=utf-8," 
           }
           else{ 
             let resultCSV = this.result.split('\n\n')
             if(resultCSV.length == 1){
-              filename = filename + '.csv'
+              filename += '.csv'
               typedoc = "data:text/csv;charset=utf-8," 
               docdata = resultCSV[0]
             }
             else {
-              filename = filename + ".zip"
+              filename += ".zip"
               const zip = new JSZip()
-              resultCSV.forEach( csv => {
-                let lines = csv.split('\n')
-                let name = lines[0]
-                zip.file(`${name}.csv`, csv)
-              } )
+              resultCSV.forEach( csv => zip.file(`${csv.split('\n')[0]}.csv`, csv) )
               zipped = true
               docdata = await zip.generateAsync({
                 type: "blob",
