@@ -53,6 +53,43 @@ function jsonToStrapi(obj) {
     else res = obj
   
     return res
-  }
+}
 
-module.exports = { jsonToXml, jsonToStrapi }
+const objectDepth = (o) => Object (o) === o ? 1 + Math.max(-1, ...Object.values(o).map(objectDepth)) : 0
+
+function jsonToCsv(obj, ids) {
+    let str = ""
+    const errorDepth = k => `A conversão para CSV só é possível para coleções sem aninhamento de dados nos seus elementos e, neste caso, a coleção "${k}" não cumpre esse requisito! As coleções devem também ser estruturadas com a primitiva 'repeat'.`
+    const errorRepeat = k => `A conversão para CSV só é possível para coleções estruturadas com a primitiva 'repeat' e, neste caso, a coleção "${k}" não cumpre esse requisito! As coleções também não pode ter aninhamento de dados nos seus elementos.`
+    
+    for (let k in obj.data) {
+        if (!(k in ids)) return {error: errorRepeat(k)}
+
+        let depth = objectDepth(obj.data[k])
+        let modelKey = ids[k]
+        
+        if (depth > 2) return {error: errorDepth(k)}
+        if (depth < 2 || !("attributes" in obj.model[modelKey])) return {error: errorRepeat(k)}
+
+        let keys = Object.keys(obj.model[modelKey].attributes)
+        if (!keys.length) return {error: errorRepeat(k)}
+
+        if (str.length > 0) str += "\n"
+        str += k + "\n" + keys.join(",") + "\n"
+
+        for (let i = 0; i < obj.data[k].length; i++) {
+            for (let j = 0; j < keys.length; j++) {
+                if (keys[j] in obj.data[k][i]) {
+                    if (typeof obj.data[k][i][keys[j]] == "string") str += '"' + obj.data[k][i][keys[j]].replace(/"/g, '""') + '"'
+                    else str += obj.data[k][i][keys[j]]
+                }
+                if (j < keys.length-1) str += ","
+            }
+            str += "\n"
+        }
+    }
+
+    return str
+}
+
+module.exports = { jsonToXml, jsonToStrapi, jsonToCsv }

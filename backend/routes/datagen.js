@@ -34,7 +34,7 @@ router.post('/xml', function(req,res){
         data = parser.parse(model)
         xmlData = converter.jsonToXml(data.dataModel.data)
         res.status(201)
-        res.type('application/xml')
+        res.type('text/xml')
         res.write(xmlData)
         res.end()
     } catch (err) {
@@ -42,16 +42,23 @@ router.post('/xml', function(req,res){
         res.status(404).jsonp(err)
     }
 })
-/*
+
 // POST para uso em aplicações
 router.post('/csv', function(req,res){
     let model = req.body 
     try {
         data = parser.parse(model)
-        res.status(201).jsonp(data.dataModel.data)
+        csvData = converter.jsonToCsv(data.dataModel, data.collection_ids)
+        if (typeof csvData != "string") res.status(404).jsonp({error: csvData.error})
+        else { 
+            res.status(201)
+            res.type('text/csv')
+            res.write(csvData)
+            res.end()
+        }
     } catch (err) {
         res.status(404).jsonp(err)
     }
 })
-*/
+
 module.exports = router;

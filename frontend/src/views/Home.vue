@@ -3,6 +3,7 @@
   <SaveModel :model="code"/>
   <Error msg="Ocorreu um erro na geração do API possivelmente devido a um erro no modelo ou a algo inesperado que aconteceu no Strapi." id="error_api_modal"/>
   <Error msg="O Strapi não aceita nomes com letras maiúsculas para atributos compostos! Se pretende gerar uma API para este dataset, por favor escreva os nomes desses atributos em letras minúsculas." id="error_api2_modal"/>
+  <Error :msg="csv_err" id="error_csv_modal"/>
   <Success type="generate_api" msg="API gerada com sucesso! Clique no botão 'Continuar' para abrir num novo separador os links da API. NOTA: Pode demorar um pouco a aparecer a API completa, se for o caso recarregue essa página após alguns segundos." id="success_api_modal" v-on:api_ok="apiOk"/>
     <div class="row row1">
       <div class="col-md-6 col-md-6-1">
@@ -68,6 +69,8 @@ import SaveModel from '../components/SaveModel.vue';
 import GrammarError from '../components/GrammarError.vue'
 import Error from '../components/Error.vue'
 import Success from '../components/Success.vue'
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver';
 
 import axios from 'axios';
 import $ from 'jquery'
@@ -107,6 +110,7 @@ export default {
         datasets: [],
         grammar_errors: [],
         generated_apis: [],
+        csv_err: '',
         code: `<!LANGUAGE pt>
 {
   perfil: [
@@ -223,7 +227,12 @@ export default {
             this.cmOutput.mode = 'text/x-q'
             let result = jsonToCsv(generated.dataModel, generated.collection_ids)
 
-            if (typeof result != "string") alert(result.error)
+            if (typeof result != "string"){
+              this.csv_err = result.error
+              document.getElementById("generateAPIButton").disabled = true;
+              $("#error_csv_modal").modal("show");
+              $("#error_csv_modal").css("z-index", "1500");
+            } 
             else { this.result = result; ok = true }
           }
           
@@ -352,29 +361,56 @@ export default {
           }
         }
       },
-      download(){
+      async download(){
         if(this.result == "") {
           alert("É necessário gerar um Dataset primeiro.")
         }
         else {
+          let docdata = this.result
           var element = document.createElement('a');
           var filename = document.getElementById('filename').value
           var typedoc
+          let zipped = false
           if (this.cur_output == "XML") {
             filename = filename + ".xml"
             typedoc = "data:text/xml;charset=utf-8," 
           }
-          else {
+          else if (this.cur_output == "JSON"){
             filename = filename + ".json"
             typedoc = "data:text/json;charset=utf-8," 
           }
-          element.setAttribute('href', typedoc + encodeURIComponent(this.result));
-          element.setAttribute('download', filename);
-
-          element.style.display = 'none';
-          document.body.appendChild(element);
-          element.click();
-          document.body.removeChild(element);
+          else{ 
+            let resultCSV = this.result.split('\n\n')
+            if(resultCSV.length == 1){
+              let lines = resultCSV[0].split('\n')
+              filename = lines.splice(0,1) + '.csv'
+              typedoc = "data:text/csv;charset=utf-8," 
+              docdata = lines.join('\n')
+            }
+            else {
+              filename = filename + ".zip"
+              const zip = new JSZip()
+              resultCSV.forEach( csv => {
+                let lines = csv.split('\n')
+                let name = lines.splice(0,1)
+                zip.file(`${name}.csv`,lines.join('\n'))
+              } )
+              zipped = true
+              docdata = await zip.generateAsync({
+                type: "blob",
+              })
+              saveAs(docdata,filename)
+            } 
+          }
+          if(!zipped){
+            element.setAttribute('href', typedoc + encodeURIComponent(docdata));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+   
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+          }
         }
       }
     },
