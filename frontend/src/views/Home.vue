@@ -382,18 +382,17 @@ export default {
           else{ 
             let resultCSV = this.result.split('\n\n')
             if(resultCSV.length == 1){
-              let lines = resultCSV[0].split('\n')
-              filename = lines.splice(0,1) + '.csv'
+              filename = filename + '.csv'
               typedoc = "data:text/csv;charset=utf-8," 
-              docdata = lines.join('\n')
+              docdata = resultCSV[0]
             }
             else {
               filename = filename + ".zip"
               const zip = new JSZip()
               resultCSV.forEach( csv => {
                 let lines = csv.split('\n')
-                let name = lines.splice(0,1)
-                zip.file(`${name}.csv`,lines.join('\n'))
+                let name = lines[0]
+                zip.file(`${name}.csv`, csv)
               } )
               zipped = true
               docdata = await zip.generateAsync({
