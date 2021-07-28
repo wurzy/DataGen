@@ -26,7 +26,7 @@
   <h3 align="center">DataGen</h3>
 
   <p align="center">
-    A JSON and XML dataset generator, featuring a Domain Specific Language (DSL) that allows for automatic creation of RESTful APIs on the generated datasets. 
+    A JSON, XML and CSV dataset generator, featuring a Domain Specific Language (DSL) that allows for automatic creation of RESTful APIs on the generated datasets. 
     <br />
     <a href="https://github.com/wurzy/DataGen/tree/main/backend">Back-End</a>
     ·
