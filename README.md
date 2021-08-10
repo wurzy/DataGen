@@ -159,6 +159,8 @@ Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGe
 
 Official University of Minho Repository Entry: [http://repositorium.sdum.uminho.pt/handle/1822/73506](http://repositorium.sdum.uminho.pt/handle/1822/73506)
 
+Official OASIcs paper (Volume 94, SLATE 2021): [https://drops.dagstuhl.de/opus/volltexte/2021/14423/](https://drops.dagstuhl.de/opus/volltexte/2021/14423/)
+
 DataGen is available online for public use, try it now: [https://datagen.di.uminho.pt/](https://datagen.di.uminho.pt/)
 
 
