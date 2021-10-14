@@ -7,6 +7,7 @@
 
 <script>
 import Navbar from './components/Navbar.vue' 
+import axios from 'axios'
 export default {
   name: 'App',
   data() {
@@ -26,6 +27,19 @@ export default {
   },
   components:{
     Navbar
+  },
+  watch: {
+    '$route'() {
+      if(localStorage.getItem('token')!=null){
+        axios.get('/api/utilizadores/verificar/' + localStorage.getItem('token'))
+        .then(dados=>{})
+        .catch(error => {
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          this.forceUpdate()
+        })
+      }
+    }
   }
 }
 </script>

@@ -18,6 +18,7 @@ services:
                 - front-end
     mongo:
         container_name: mongo
+        restart: always
         environment:
             MONGO_INITDB_DATABASE: StrapiAPI
             MONGO_INITDB_DATABASE: LEI2021
@@ -40,6 +41,7 @@ services:
     strapi:
         image: strapi/strapi
         container_name: strapi
+        restart: always
         build: 
             context: ./strapi
             dockerfile: ./Dockerfile

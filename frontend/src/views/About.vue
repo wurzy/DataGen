@@ -145,8 +145,10 @@
             O projeto está disponível em <i>open-source</i> no GitHub sujeito às licenças indicadas. 
         </p>
         <p>
-            Última atualização: {{ this.gitDate | moment('DD/MM/YYYY, hh:mm') }}.
+            Última atualização: {{ this.gitDate | moment('DD/MM/YYYY, hh:mm') }}. 
+            
         </p>
+        <p>Versão Atual: 2.1.</p> 
         <br/><br/>
         <RepositoryCard @gitDate="handleDate"/>
 

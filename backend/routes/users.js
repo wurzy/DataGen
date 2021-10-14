@@ -6,6 +6,16 @@ var router = express.Router();
 const secret = 'LEI2021_SECRET_!_HASH'
 const Blacklist = require('../controllers/blacklist')
 
+// Verifica se token expirado
+router.get('/verificar/:token', function(req,res){
+  jwt.verify(req.params.token,secret,function(e,decoded){
+    if(e){
+      res.status(404).jsonp({error: "O token é inválido: " + e})
+    }
+    else res.status(200).jsonp({msg: "Token válido."})
+  }) 
+})
+
 // login de utilizador
 router.post('/login', passport.authenticate('login-auth'), function(req, res) {
   if (req.user.success) {

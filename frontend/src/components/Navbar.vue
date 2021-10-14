@@ -151,6 +151,15 @@ export default {
     }
   },
   created() {
+    if(localStorage.getItem('token')!=null){
+      axios.get('/api/utilizadores/verificar/' + localStorage.getItem('token'))
+      .then(dados=>{})
+      .catch(error => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        this.$emit('update')
+      })
+    }
     this.user = JSON.parse(localStorage.getItem('user'))
   },
   methods: {
