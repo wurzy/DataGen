@@ -75,7 +75,7 @@ function jsonToCsv(obj, ids) {
         if (!keys.length) return {error: errorRepeat(k)}
 
         if (str.length > 0) str += "\n"
-        str += k + "\n" + keys.join(",") + "\n"
+        str += keys.join(",") + "\n"
 
         for (let i = 0; i < obj.data[k].length; i++) {
             for (let j = 0; j < keys.length; j++) {
