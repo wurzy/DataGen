@@ -661,7 +661,7 @@ letter_case
   / quotation_mark ws word:(("lowercase") / ("min"("ú"/"u")"scula")) ws quotation_mark { return "lowercase" }
 
 date
-  = quotation_mark ws date:((((("0"[1-9]/"1"[0-9]/"2"[0-8])("."/"/"/"-")("0"[1-9]/"1"[012]))/(("29"/"30"/"31")("."/"/"/"-")("0"[13578]/"1"[02]))/(("29"/"30")("."/"/"/"-")("0"[4,6,9]/"11")))("."/"/"/"-")("19"/[2-9][0-9])[0-9][0-9])/("29"("."/"/"/"-")"02"("."/"/"/"-")("19"/[2-9][0-9])("00"/"04"/"08"/"12"/"16"/"20"/"24"/"28"/"32"/"36"/"40"/"44"/"48"/"52"/"56"/"60"/"64"/"68"/"72"/"76"/"80"/"84"/"88"/"92"/"96"))) ws quotation_mark {
+  = quotation_mark ws date:(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws quotation_mark {
     return date.flat(2).join("").replace(/[^\d]/g, "/")
   }
 
@@ -1000,8 +1000,8 @@ repeat_args
     else if (!minArr && !maxArr) {
       if (min < 0 || max < 0) return Array(nr_copies).fill(0)
 
-      let rand = Math.floor(Math.random() * ((max+1) - min) + min)
-      if (rand === 0) return Array(nr_copies).fill(0)
+      let rand = []
+      for (let i = 0; i < nr_copies; i++) rand.push(Math.floor(Math.random() * ((max+1) - min) + min))
       return rand
     }
     else {
@@ -1230,8 +1230,8 @@ reduce
 reduce_args = "(" ws code_key value_separator code_key (value_separator code_key (value_separator code_key)?)? ws ")" ws { return text() }
 
 probability
-  = sign:("missing" / "having" {return text()}) "(" ws probability:([1-9][0-9]?) ws ")" ws obj:object {
-    var prob = parseInt(probability.join(""))/100, data = [], probArr = []
+  = sign:("missing" / "having" {return text()}) "(" ws probability:("0"*("1""0""0"/[1-9][0-9]?)?) ws ")" ws obj:object {
+    var prob = parseInt(probability.flat().join(""))/100, data = [], probArr = []
     values_map.pop()
     
     for (let p in obj.model.attributes) {

@@ -7,11 +7,33 @@ function jsonToXml2(obj, depth) {
 
     for (var prop in obj) {
         if (!Object.prototype.hasOwnProperty.call(obj, prop) || (obj[prop] != null && obj[prop] == undefined)) continue
+        
+        if (prop == "DFS_EMPTY_XML") return xml
 
-        xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop) + ">\n"
-        if (typeof obj[prop] == "object" && obj[prop] != null) xml += jsonToXml2(obj[prop], depth+1)
-        else xml += convertXMLString(obj[prop], 'xml', depth+1)
-        xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop) + ">\n"
+        if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
+        else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
+        else {
+            let prop_name = prop
+
+            if (/^DFS_ATTR__/.test(prop)) {
+                prop_name = prop.replace(/^DFS_ATTR__/, "")
+                
+                let qm = (typeof obj[prop] == "string" && obj[prop].includes('"')) ? "'" : '"'
+                xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
+            }
+            else {   
+                if (/^DFS_\d+__/.test(prop)) prop_name = prop.replace(/^DFS_\d+__/, "")
+            
+                xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                if (typeof obj[prop] == "object" && obj[prop] != null) {
+                    let content = jsonToXml2(obj[prop], depth+1)
+                    if (content[0] == " ") xml = xml.slice(0, -2) // string content começa com atributos
+                    xml += content
+                }
+                else xml += convertXMLString(obj[prop], 'xml', depth+1)
+                xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+            }
+        }
     }
 
     return xml
