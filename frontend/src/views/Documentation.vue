@@ -2333,6 +2333,21 @@ maneira a permitir a integração posterior numa API RESTful.
     </div>
     <hr/>
     <div>
+        <h4>Primitiva 'local_var'</h4>
+        <p>O utilizador pode usar esta diretiva para definir variáveis locais no modelo, que não aparecerão no dataset final.
+Esta ferramenta pode ser útil para codificar raciocínios complexos e preparar valores intermédios "invisíveis", para referenciar noutras propriedades.
+Estas variáveis têm uma <i>scope</i> local, ou seja, se forem declaradas dentro de um objeto, apenas serão accessíveis dentro desse mesmo objeto.
+Além disso, também só poderão ser referenciadas em propriedades que apareçam posteriormente no modelo, e nunca antes (acima).
+        </p>
+        <codemirror 
+                ref="grammar17"
+                :value= "grammar17"
+                :options="cmOption"
+        />
+        <br/>
+    </div>
+    <hr/>
+    <div>
         <h4>Primitiva 'range'</h4>
         <p>Esta implementação da função 'range' é equivalente à implementação do <i>Python</i> e retorna uma sequência de números inteiros. 
         A função tem a seguinte sintaxe: <code>range(start, stop, step)</code>, onde apenas o argumento <i>start</i> é obrigatório.</p>
@@ -2807,6 +2822,16 @@ combinados: range(5).map((value) => { return value+3 })
 }`,
         grammar16: `int: '{{integer(5,15)}}'.string(),
 bool: '{{boolean()}}'.string()`,
+        grammar17: `local_var() {
+	nr_livros: '{{integer(1,10)}}',
+    avaliador: '{{fullName()}}'
+},
+livros: [ 'repeat(this.nr_livros)': {
+	titulo: '{{lorem("words", 1)}}',
+    suporte: '{{random("Físico","Digital")}}',
+    rating: '{{integer(1,5)}}',
+    avaliador(gen) { return this.avaliador }
+} ]`,
         example1: `<!LANGUAGE pt>
 {
   	cidades: [ 'repeat(100)': {
