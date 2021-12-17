@@ -183,16 +183,16 @@
     })
 
     for (let i = 0; i < keys.length; i++) {
+      if (i == 1) local = local[0] //gen.i
+
       if (keys[i] in local) local = local[keys[i]]
       else {
         errors.push({
-          message: `A propriedade ${key} que está a tentar referenciar através do "this" nesta função não existe!`,
+          message: `A propriedade '${key}' que está a tentar referenciar através do "this" nesta função não existe!`,
           location: location()
         })
         return false
       }
-      
-      if (i == 0 && !repeat_keys.includes(keys[i])) local = local[0]
     }
 
     return true
@@ -236,12 +236,13 @@
     return data
   }
 
-  function replicateMapValues() {
+  function replicateMapValues(num) {
     for (let i = 0; i < values_map.length; i++) {
       for (var prop in values_map[i].data) {
-        let arr = [], len = nr_copies/(values_map[i].data[prop].length)
+        let arr = []
         
         for (let j = 0; j < values_map[i].data[prop].length; j++) {
+          let len = Array.isArray(num) ? num[j] : num
           for (let k = 0; k < len; k++) arr.push(values_map[i].data[prop][j])
         }
         if (arr.length) values_map[i].data[prop] = arr
@@ -249,14 +250,18 @@
     }
   }
 
-  function cleanMapValues() {
+  function cleanMapValues(num) {
     for (let i = 0; i < values_map.length; i++) {
       for (var prop in values_map[i].data) {
         if (!("delete" in values_map[i].data[prop])) {
-          let arr = [], step = (values_map[i].data[prop].length)/nr_copies
-          
-          for (let j = 0; j < values_map[i].data[prop].length; j += step)
-            arr.push(values_map[i].data[prop][j])
+          let arr = [], ind_data = 0
+
+          for (let j = 0; j < nr_copies; j++) {
+            let step = Array.isArray(num) ? num[j] : num
+
+            arr.push(values_map[i].data[prop][ind_data])
+            ind_data += step
+          }
 
           if (arr.length) values_map[i].data[prop] = arr
         }
@@ -376,7 +381,7 @@ collection_object
       var model = {}, data = {}
 
       for (let p in members) {
-        if (!("attributes" in members[p].model)) {
+        if ("model" in members[p] && !("attributes" in members[p].model)) {
           data[p] = repeat_keys.includes(p) ? members[p].data : members[p].data[0]
           model[p] = members[p].model
         }
@@ -402,7 +407,7 @@ collection_object
             model = addCollectionModel(model, prop+"_"+uuidv4(), members[p].model[prop])
           }
         }
-        else {
+        else if (!("temp" in members[p])) {
           model = addCollectionModel(model, collection_ids[p], members[p].model.attributes)
           data[p] = repeat_keys.includes(p) ? members[p].data : members[p].data[0]
         }
@@ -437,7 +442,7 @@ object
           }
         }
       }
-      else {
+      else if (!("temp" in members[p])) {
         model.attributes[p] = members[p].model
         for (let i = 0; i < nr_copies; i++) data[i][p] = members[p].data[i]
       }
@@ -455,7 +460,7 @@ object_members
   }
 
 member
-  = probability / function_prop / if / or / at_least
+  = probability / function_prop / if / or / at_least / temp_var
   / name:member_key name_separator value:value_or_interpolation {
     if ("delete" in values_map[values_map.length-1]) values_map.pop()
     
@@ -944,7 +949,7 @@ directive
 
 repeat
   = ws '[' ws num:repeat_signature ws repeat_separator ws val:value_or_interpolation ws ']' func:functional? ws {
-    queue.pop(); nr_copies = queue[queue.length-1].total
+    let queue_popped = queue.pop(); nr_copies = queue[queue.length-1].total
     struct_types.pop(); --open_structs
     
     var model = {attributes: {}}
@@ -974,7 +979,7 @@ repeat
       }
     }
 
-    cleanMapValues()
+    cleanMapValues(queue_popped.value)
     return {data: val.data, model: open_structs > 1 ? model : val.model, repeat: true, component: true}
   }
 
@@ -984,7 +989,7 @@ repeat_signature
     queue.push({ value: num, total: nr_copies })
 
     repeat_keys.push(member_key)
-    replicateMapValues()
+    replicateMapValues(num)
     return num
   }
 
@@ -1258,6 +1263,22 @@ probability
     }
   }
 
+temp_var = "local_var(" ws ")" ws obj:object {
+    values_map.pop()
+
+    for (let prop in obj.model.attributes) {
+      values_map[values_map.length-1].data[prop] = []
+    }
+
+    for (let i = 0; i < nr_copies; i++) {
+      for (let key in obj.data[i]) {
+        values_map[values_map.length-1].data[key].push(obj.data[i][key])
+      }
+    }
+
+    return { name: uuidv4(), value: { temp: true } }
+  }
+
 or = "or(" ws ")" ws obj:object {
     var model = {}, data = []
     values_map.pop()
@@ -1388,11 +1409,13 @@ if_code = ARGS_START str:(gen_call / local_var / not_parentheses / if_code)* ARG
 
 not_code = !CODE_START !CODE_STOP. { return text() }
 
-code_key = key:((key_property / [a-zA-Z_"]/[^\x00-\x7F]) (key_property / ([a-zA-Z0-9_\.]/[^\x00-\x7F]))*) { return key.flat().join("") } 
+code_key = key:((key_property / [a-zA-Z_"]/[^\x00-\x7F]) (key_property / ([a-zA-Z0-9_\.]/[^\x00-\x7F]))*) { return key.flat().join("") }
+
+local_var_code_key = key:((key_property / [a-zA-Z_"]/[^\x00-\x7F]) (key_property / ([a-zA-Z0-9_\.(]/[^\x00-\x7F]))*) { return key.flat().join("") }
 
 key_property = PROP_START str:(([a-zA-Z0-9_"]/[^\x00-\x7F])+) PROP_STOP { return text() }
 
-local_var = "this" char:"."? key:code_key {
+local_var = "this" char:"."? key:local_var_code_key {
     let keySplit
 
     if (char == null) {
@@ -1408,7 +1431,8 @@ local_var = "this" char:"."? key:code_key {
       
     var path = `gen.local${char=="."?".":""}${keySplit[0]}${nr_copies>1?"[gen.i]":""}`
     if (keySplit.length > 1) path += ((keySplit[1][0] != "[" && keySplit[1][0] != ".") ? "." : "") + keySplit[1]
-    
+    if (keySplit[keySplit.length-1].includes("(")) keySplit.pop()
+
     checkLocalVar(keySplit)
     return path
   }
