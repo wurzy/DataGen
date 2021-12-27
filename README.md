@@ -105,10 +105,7 @@ The installation process of the application is relatively simple, assuming you m
 2. Navigate to the repository
 3. Create the service and the containers
    ```sh
-   $ docker-compose build
-   ```
-   ```sh
-   $ docker-compose up -d
+   $ docker-compose up -d --build
    ```
 4. Open http://localhost:12080/ (default port on the docker-compose file)
 5. (Recommended) Create an admin account on the website
