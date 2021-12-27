@@ -1,5 +1,11 @@
 const express = require('express');
 const router = express.Router();
+
+var fs = require('fs')
+const FormData = require('form-data')
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
+
 const parser = require('../grammar/parser')
 const converter = require('../grammar/conversions')
 
@@ -57,6 +63,34 @@ router.post('/csv', function(req,res){
             res.end()
         }
     } catch (err) {
+        res.status(404).jsonp(err)
+    }
+})
+
+// POST para uso em aplicações
+router.post('/dfs', upload.single('model'), function(req,res){
+    let model = fs.readFileSync(req.file.path, "utf8")
+    
+    try {
+        data = parser.parse(model)
+        xmlData = converter.jsonToXml(data.dataModel.data)
+
+        fs.writeFileSync('./output/dataset.txt', xmlData, function (err) {
+            if (err) return console.log(err)
+        });
+      
+        const formData = new FormData()
+        let file = fs.readFileSync('./output/dataset.txt', "utf8")
+        formData.append('dataset', file, "dataset.txt")
+
+        res.writeHead(201, {
+            'Content-Type': 'text/plain',
+            'Content-Disposition': 'attachment; filename=dataset.txt'
+        });
+        res.write(file)
+        res.end()
+    } catch (err) {
+        console.log(err)
         res.status(404).jsonp(err)
     }
 })

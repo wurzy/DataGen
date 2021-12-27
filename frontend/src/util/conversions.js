@@ -2,6 +2,11 @@ function jsonToXml(obj) {
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + jsonToXml2(obj,0)
 }
 
+function denormalizeNameXSD(prop, prop_name) {
+    if (/^DFS_NORMALIZED/.test(prop)) prop_name = prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-")
+    return prop_name
+}
+
 function jsonToXml2(obj, depth) {
     var xml = ''
 
@@ -15,14 +20,18 @@ function jsonToXml2(obj, depth) {
         else {
             let prop_name = prop
 
-            if (/^DFS_ATTR__/.test(prop)) {
-                prop_name = prop.replace(/^DFS_ATTR__/, "")
+            if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
+                prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "")
+                prop_name = denormalizeNameXSD(prop, prop_name)
                 
                 let qm = (typeof obj[prop] == "string" && obj[prop].includes('"')) ? "'" : '"'
                 xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
             }
             else {   
-                if (/^DFS_\d+__/.test(prop)) prop_name = prop.replace(/^DFS_\d+__/, "")
+                if (/^DFS(_NORMALIZED)?_\d+__/.test(prop)) {
+                    prop_name = prop.replace(/^DFS(_NORMALIZED)?_\d+__/, "")
+                    prop_name = denormalizeNameXSD(prop, prop_name)
+                }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
