@@ -1,5 +1,5 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:16 as build-stage
 WORKDIR /datagen
 COPY package*.json /datagen/
 RUN npm install

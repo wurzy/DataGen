@@ -23,7 +23,7 @@
     "jszip": "^3.7.0",
     "moment": "^2.29.1",
     "mongoose": "^5.11.19",
-    "node-sass": "^5.0.0",
+    "node-sass": "^7.0.0",
     "popper.js": "^1.16.1",
     "sass-loader": "^10.1.1",
     "vue": "^2.6.12",
