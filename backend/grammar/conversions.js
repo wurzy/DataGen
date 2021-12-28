@@ -34,17 +34,22 @@ function jsonToXml2(obj, depth) {
                 }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
                     let content = jsonToXml2(obj[prop], depth+1)
-                    if (content[0] == " ") xml = xml.slice(0, -2) // string content começa com atributos
+                    if (content[0] == " ") xml = xml.slice(0, -2) // atributos
                     xml += content
                 }
                 else xml += convertXMLString(obj[prop], 'xml', depth+1)
-                xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+
+                // abreviar elementos só com atributos
+                if (!xml.endsWith("/>\n")) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
             }
         }
     }
 
+    // abreviar elementos só com atributos
+    if (Object.keys(obj).every(prop => /^DFS(_NORMALIZED)?_ATTR__/.test(prop))) xml = xml.slice(0, -2) + "/>\n"
     return xml
 }
 
