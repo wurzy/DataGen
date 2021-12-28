@@ -1,3 +1,7 @@
+const loremIpsum = require("lorem-ipsum").loremIpsum;
+
+function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
+
 function jsonToXml(obj) {
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + jsonToXml2(obj,0)
 }
@@ -9,13 +13,15 @@ function denormalizeNameXSD(prop, prop_name) {
 
 function jsonToXml2(obj, depth) {
     var xml = ''
+    var mixed = false
 
     for (var prop in obj) {
         if (!Object.prototype.hasOwnProperty.call(obj, prop) || (obj[prop] != null && obj[prop] == undefined)) continue
         
         if (prop == "DFS_EMPTY_XML") return xml
 
-        if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
+        if (prop == "DFS_MIXED_CONTENT") mixed = true
+        else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
         else {
             let prop_name = prop
@@ -46,6 +52,8 @@ function jsonToXml2(obj, depth) {
                 if (!xml.endsWith("/>\n")) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
             }
         }
+
+        if (mixed) xml += '\t'.repeat(depth) + loremIpsum({ count: randomize(3,10), units: "words" }) + "\n"
     }
 
     // abreviar elementos só com atributos
