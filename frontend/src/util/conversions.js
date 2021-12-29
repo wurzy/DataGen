@@ -13,14 +13,25 @@ function denormalizeNameXSD(prop, prop_name) {
 
 function jsonToXml2(obj, depth) {
     var xml = ''
-    var mixed = false
+    var mixed = {bool: false, content: null}
+    let keys = Object.keys(obj)
 
+    // se for mixed, para só escrever texto entre partículas depois dos atributos
+    let last_attr = -1
+    for (let i = 0; i < keys.length; i++) {
+        if (/^DFS(_NORMALIZED)?_ATTR__/.test(keys[i])) last_attr = i
+    }
+
+    let i = 0
     for (var prop in obj) {
         if (!Object.prototype.hasOwnProperty.call(obj, prop) || (obj[prop] != null && obj[prop] == undefined)) continue
         
         if (prop == "DFS_EMPTY_XML") return xml
 
-        if (prop == "DFS_MIXED_CONTENT") mixed = true
+        if (/^DFS_MIXED_/.test(prop)) {
+            mixed.bool = true
+            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
+        }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
         else {
@@ -40,8 +51,12 @@ function jsonToXml2(obj, depth) {
                 }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                let onlyAttrs = false
 
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
+                    let child_keys = Object.keys(obj[prop])
+                    onlyAttrs = child_keys.length > 0 && child_keys.every(k => /^DFS(_NORMALIZED)?_ATTR__/.test(k))
+
                     let content = jsonToXml2(obj[prop], depth+1)
                     if (content[0] == " ") xml = xml.slice(0, -2) // atributos
                     xml += content
@@ -49,15 +64,20 @@ function jsonToXml2(obj, depth) {
                 else xml += convertXMLString(obj[prop], 'xml', depth+1)
 
                 // abreviar elementos só com atributos
-                if (!xml.endsWith("/>\n")) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                if (!onlyAttrs) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
             }
         }
 
-        if (mixed) xml += '\t'.repeat(depth) + loremIpsum({ count: randomize(3,10), units: "words" }) + "\n"
+        if (mixed.bool && i >= last_attr) {
+            let mixed_content = mixed.content !== null ? mixed.content : loremIpsum({ count: randomize(3,10), units: "words" })
+            xml += '\t'.repeat(depth) + mixed_content + "\n"
+        }
+        i++
     }
 
     // abreviar elementos só com atributos
-    if (Object.keys(obj).every(prop => /^DFS(_NORMALIZED)?_ATTR__/.test(prop))) xml = xml.slice(0, -2) + "/>\n"
+    if (keys.length > 0 && keys.every(prop => /^DFS(_NORMALIZED)?_ATTR__/.test(prop))) xml = xml.slice(0, -2) + "/>\n"
+
     return xml
 }
 
