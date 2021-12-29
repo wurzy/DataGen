@@ -1263,7 +1263,7 @@ probability
     }
   }
 
-temp_var = "local_var(" ws ")" ws obj:object {
+temp_var = "local_variables(" ws ")" ws obj:object {
     values_map.pop()
 
     for (let prop in obj.model.attributes) {

@@ -1173,8 +1173,8 @@ module.exports = /*
               value: { probability: probArr, model: obj.model.attributes, data }
             }
           },
-        peg$c423 = "local_var(",
-        peg$c424 = peg$literalExpectation("local_var(", false),
+        peg$c423 = "local_variables(",
+        peg$c424 = peg$literalExpectation("local_variables(", false),
         peg$c425 = function(obj) {
             values_map.pop()
 
@@ -8858,9 +8858,9 @@ module.exports = /*
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 10) === peg$c423) {
+      if (input.substr(peg$currPos, 16) === peg$c423) {
         s1 = peg$c423;
-        peg$currPos += 10;
+        peg$currPos += 16;
       } else {
         s1 = peg$FAILED;
         if (peg$silentFails === 0) { peg$fail(peg$c424); }

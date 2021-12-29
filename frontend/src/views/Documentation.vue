@@ -2333,7 +2333,7 @@ maneira a permitir a integração posterior numa API RESTful.
     </div>
     <hr/>
     <div>
-        <h4>Primitiva 'local_var'</h4>
+        <h4>Primitiva 'local_variables'</h4>
         <p>O utilizador pode usar esta diretiva para definir variáveis locais no modelo, que não aparecerão no dataset final.
 Esta ferramenta pode ser útil para codificar raciocínios complexos e preparar valores intermédios "invisíveis", para referenciar noutras propriedades.
 Estas variáveis têm uma <i>scope</i> local, ou seja, se forem declaradas dentro de um objeto, apenas serão accessíveis dentro desse mesmo objeto.
@@ -2822,7 +2822,7 @@ combinados: range(5).map((value) => { return value+3 })
 }`,
         grammar16: `int: '{{integer(5,15)}}'.string(),
 bool: '{{boolean()}}'.string()`,
-        grammar17: `local_var() {
+        grammar17: `local_variables() {
 	nr_livros: '{{integer(1,10)}}',
     avaliador: '{{fullName()}}'
 },
