@@ -51,10 +51,12 @@ function jsonToXml2(obj, depth) {
                 }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
-                let onlyAttrs = false
+                let onlyAttrs = false, empty = false
 
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
                     let child_keys = Object.keys(obj[prop])
+
+                    empty = !child_keys.length
                     onlyAttrs = child_keys.length > 0 && child_keys.every(k => /^DFS(_NORMALIZED)?_ATTR__/.test(k))
 
                     let content = jsonToXml2(obj[prop], depth+1)
@@ -63,8 +65,9 @@ function jsonToXml2(obj, depth) {
                 }
                 else xml += convertXMLString(obj[prop], 'xml', depth+1)
 
-                // abreviar elementos só com atributos
-                if (!onlyAttrs) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                // abreviar elementos só com atributos ou sem conteúdo
+                if (empty) xml = xml.slice(0,-2) + "/>\n"
+                if (!empty && !onlyAttrs) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
             }
         }
 
