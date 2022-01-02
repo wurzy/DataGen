@@ -2,8 +2,9 @@ const loremIpsum = require("lorem-ipsum").loremIpsum;
 
 function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
 
-function jsonToXml(obj) {
-    return '<?xml version="1.0" encoding="UTF-8"?>\n' + jsonToXml2(obj,0)
+function jsonToXml(obj, xml_declaration) {
+    if (xml_declaration === undefined) xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>'
+    return xml_declaration + "\n" + jsonToXml2(obj,0)
 }
 
 function denormalizeNameXSD(prop, prop_name) {

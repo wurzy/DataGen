@@ -73,7 +73,7 @@ router.post('/dfs', upload.single('model'), function(req,res){
     
     try {
         data = parser.parse(model)
-        xmlData = converter.jsonToXml(data.dataModel.data)
+        xmlData = converter.jsonToXml(data.dataModel.data, req.body.xml_declaration)
 
         fs.writeFileSync('./output/dataset.txt', xmlData, function (err) {
             if (err) return console.log(err)
