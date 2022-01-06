@@ -148,7 +148,7 @@
             Última atualização: {{ this.gitDate | moment('DD/MM/YYYY, hh:mm') }}. 
             
         </p>
-        <p>Versão Atual: 2.2.</p> 
+        <p>Versão Atual: 2.3.</p> 
         <br/><br/>
         <RepositoryCard @gitDate="handleDate"/>
 
