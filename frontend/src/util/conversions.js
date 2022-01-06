@@ -1,3 +1,4 @@
+//const utils = require('./DFS_utils')
 const loremIpsum = require("lorem-ipsum").loremIpsum;
 
 function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
@@ -35,6 +36,10 @@ function jsonToXml2(obj, depth) {
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
+        /* else if (/^DFS_UTILS__/.test(prop)) {
+            let value = utils[prop.replace(/^DFS_UTILS__/, "")](...obj[prop].split(";"))
+            xml += convertXMLString(value, 'xml', depth)
+        } */
         else {
             let prop_name = prop
 

@@ -191,13 +191,13 @@ function pt_phone_number(extension, i) {
 }
 
 function newDate(str) {
-    var split = str.split("/")
+    var split = str.replace(/[^\d]/g, "/").split("/")
     return new Date(parseInt(split[2]), parseInt(split[1])-1, parseInt(split[0]))
 }
 
 function date(start, end, format, i) {
     start = Array.isArray(start) ? start[i] : start
-    end = Array.isArray(end) ? end[i] : end
+    end = (end !== null && Array.isArray(end)) ? end[i] : end
     
     start = newDate(start)
     end = !end ? new Date() : newDate(end)
@@ -217,8 +217,8 @@ function time(format, range, unitsBool, limits, i) {
     start = Array.isArray(start) ? start[i] : start
     end = Array.isArray(end) ? end[i] : end
 
-    start = start.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,i) => acc + (i==0 ? cur : cur*Math.pow(60,i)), 0),
-    end = end.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,i) => acc + (i==0 ? cur : cur*Math.pow(60,i)), 0)
+    start = start.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,j) => acc + (j==0 ? cur : cur*Math.pow(60,j)), 0),
+    end = end.split(":").map(x => parseInt(x)).reverse().reduce((acc,cur,j) => acc + (j==0 ? cur : cur*Math.pow(60,j)), 0)
 
     let rand = randomize(start, end),
         randArr = [ padding((rand/3600|0).toString(),2), padding((rand/60%60|0).toString(),2), padding((rand%60).toString(),2) ]
@@ -243,10 +243,10 @@ function time(format, range, unitsBool, limits, i) {
         case "ss": iter = [2]; break;
     }
 
-    for (let i = 0; i < iter.length; i++) {
-        final += ((i>0 && unitsBool) ? " " : "")
-        final += randArr[iter[i]] 
-        final += ((!unitsBool && i == iter.length-1) ? "" : units[iter[i]])
+    for (let j = 0; j < iter.length; j++) {
+        final += ((j>0 && unitsBool) ? " " : "")
+        final += randArr[iter[j]] 
+        final += ((!unitsBool && j == iter.length-1) ? "" : units[iter[j]])
     }
     final += AMPM
 

@@ -69,18 +69,22 @@ function complexGType(base, max, min, list) {
 }
 
 function dateTime(base, max, min, list) {
+    max = JSON.parse(max)
+    min = JSON.parse(min)
+    list = JSON.parse(list)
+
     let str = ""
 
     for (let i = 0; i < rand(list.max,list.min); i++) {
-        let time, date = max !== null ? genAPI.date(min.date[0], max.date[0], "YYYY-MM-DD") : genAPI.date(min.date[0], "YYYY-MM-DD")
-        
+        let time, date = max !== null ? genAPI.date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : genAPI.date(min.date[0], null, "YYYY-MM-DD", 0)
+          
         if (max !== null) max.date[0] = max.date[0].split("/").reverse().join("-")
         min.date[0] = min.date[0].split("/").reverse().join("-")
         
         if (base == "dateTime") {             
-            if (max !== null && date == max.date[0]) time = genAPI.time("hh:mm:ss", 24, false, max.date[1], "23:59:59")
-            else if (date == min.date[0]) time = genAPI.time("hh:mm:ss", 24, false, "00:00:00", min.date[1])
-            else time = genAPI.time("hh:mm:ss", 24, false)
+            if (max !== null && date == max.date[0]) time = genAPI.time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
+            else if (date == min.date[0]) time = genAPI.time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
+            else time = genAPI.time("hh:mm:ss", 24, false, null, 0)
         }
         if ((max !== null && date > max.date[0]) || date < min.date[0]) date = "-" + date
         str += date + (base == "dateTime" ? ("T" + time) : "") + " "
@@ -89,8 +93,49 @@ function dateTime(base, max, min, list) {
     return str.slice(0,-1)
 }
 
+function duration(max, min, list) {
+    max = JSON.parse(max)
+    min = JSON.parse(min)
+    list = JSON.parse(list)
+
+    let str = ""
+
+    for (let i = 0; i < rand(list.max,list.min); i++) {
+        let duration = "P", units = ["Y","M","D","H","M",".","S"], maxPossible = [0, 12, 30, 24, 59, 59, 999]
+        let fstEq = false, random
+        for (let i = 0; i < max.length; i++) {
+            if (!fstEq) {
+                if (max[i] == min[i]) {
+                    if (max[i] != 0) duration += max[i] + units[i]
+                    else if (units[i] == ".") duration += units[i]
+                }
+                else {
+                    fstEq = true
+                    random = {new: rand(max[i], min[i]), inf: min[i], sup: max[i]}
+                    let sum = arr => arr.reduce((c,a) => c+a, 0)
+                    if (max[0] == 1 && !min[0] && !sum(max.slice(1)) && !sum(min.slice(1))) random.new = 0
+                    if (random.new != 0) duration += random.new + units[i]
+                }
+            }
+            else {
+                let next_part
+                if (random.new == random.inf) next_part = rand(maxPossible[i], min[i])
+                else if (random.new == random.sup) next_part = rand(max[i], 0)
+                else next_part = rand(maxPossible[i], 0)
+                if (next_part > 0) duration += next_part + units[i]
+            }
+            if (i == 2) duration += "T"
+        }
+        str += duration + " "
+    }
+
+    return str.slice(0,-1)
+}
+
 module.exports = {
     string,
     hexBinary,
-    complexGType
+    complexGType,
+    dateTime,
+    duration
 }
