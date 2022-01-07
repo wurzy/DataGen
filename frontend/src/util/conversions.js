@@ -1,4 +1,4 @@
-//const utils = require('./DFS_utils')
+const utils = require('./DFS_utils')
 const loremIpsum = require("lorem-ipsum").loremIpsum;
 
 function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
@@ -11,6 +11,12 @@ function jsonToXml(obj, xml_declaration) {
 function denormalizeNameXSD(prop, prop_name) {
     if (/^DFS_NORMALIZED/.test(prop)) prop_name = prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-")
     return prop_name
+}
+
+function callUtils(obj, prop) {
+    let func = prop.replace(/^DFS_UTILS__/, "")
+    let args = func == "list" ? [obj[prop]] : obj[prop].split(";")
+    return utils[func](...args)
 }
 
 function jsonToXml2(obj, depth) {
@@ -36,19 +42,22 @@ function jsonToXml2(obj, depth) {
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
-        /* else if (/^DFS_UTILS__/.test(prop)) {
-            let value = utils[prop.replace(/^DFS_UTILS__/, "")](...obj[prop].split(";"))
-            xml += convertXMLString(value, 'xml', depth)
-        } */
+        else if (/^DFS_UTILS__/.test(prop)) xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
         else {
             let prop_name = prop
 
             if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
                 prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "")
                 prop_name = denormalizeNameXSD(prop, prop_name)
+
+                let value = obj[prop]
+                if (typeof obj[prop] === 'object' && obj[prop] != null) {
+                    let key = Object.keys(obj[prop])[0]
+                    value = callUtils(obj[prop], key)
+                }
                 
-                let qm = (typeof obj[prop] == "string" && obj[prop].includes('"')) ? "'" : '"'
-                xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
+                let qm = (typeof obj[prop] == "string" && value.includes('"')) ? "'" : '"'
+                xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${value}${qm}>\n`
             }
             else {   
                 if (/^DFS(_NORMALIZED)?_\d+__/.test(prop)) {
