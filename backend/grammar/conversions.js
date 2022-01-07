@@ -13,6 +13,12 @@ function denormalizeNameXSD(prop, prop_name) {
     return prop_name
 }
 
+function callUtils(obj, prop) {
+    let func = prop.replace(/^DFS_UTILS__/, "")
+    let args = func == "list" ? [obj[prop]] : obj[prop].split(";")
+    return utils[func](...args)
+}
+
 function jsonToXml2(obj, depth) {
     var xml = ''
     var mixed = {bool: false, content: null}
@@ -36,10 +42,7 @@ function jsonToXml2(obj, depth) {
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
-        else if (/^DFS_UTILS__/.test(prop)) {
-            let value = utils[prop.replace(/^DFS_UTILS__/, "")](...obj[prop].split(";"))
-            xml += convertXMLString(value, 'xml', depth)
-        }
+        else if (/^DFS_UTILS__/.test(prop)) xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
         else {
             let prop_name = prop
 
@@ -48,9 +51,9 @@ function jsonToXml2(obj, depth) {
                 prop_name = denormalizeNameXSD(prop, prop_name)
 
                 let value = obj[prop]
-                if (typeof obj[prop] === 'object') {
+                if (typeof obj[prop] === 'object' && obj[prop] != null) {
                     let key = Object.keys(obj[prop])[0]
-                    value = utils[key.replace(/^DFS_UTILS__/, "")](...obj[prop][key].split(";"))
+                    value = callUtils(obj[prop], key)
                 }
                 
                 let qm = (typeof obj[prop] == "string" && value.includes('"')) ? "'" : '"'

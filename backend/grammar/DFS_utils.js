@@ -1,5 +1,13 @@
 const genAPI = require('./moustaches')
 
+const local = {
+    string: args => string(...args),
+    hexBinary: args => hexBinary(...args),
+    complexGType: args => complexGType(...args),
+    dateTime: args => dateTime(...args),
+    duration: args => duration(...args)
+}
+
 let randomize = len => Math.floor(Math.random() * len)
 let rand = (max,min) => Math.floor(Math.random() * ((max+1) - min) + min)
 
@@ -132,10 +140,25 @@ function duration(max, min, list) {
     return str.slice(0,-1)
 }
 
+function list(elems) {
+    let str = ""
+
+    for (let i = 0; i < elems.length; i++) {
+        if (typeof elems[i] === 'object' && elems[i] != null) {
+            let key = Object.keys(elems[i])[0]
+            str += local[key.replace(/^DFS_UTILS__/, "")](elems[i][key].split(";")) + " "
+        }
+        else str += elems[i] + " "
+    }
+
+    return str.slice(0,-1)
+}
+
 module.exports = {
     string,
     hexBinary,
     complexGType,
     dateTime,
-    duration
+    duration,
+    list
 }
