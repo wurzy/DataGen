@@ -8,7 +8,7 @@ function jsonToXml(obj, xml_declaration) {
     return xml_declaration + "\n" + jsonToXml2(obj,0)
 }
 
-function denormalizeNameXSD(prop, prop_name) {
+function denormalizeNameXML(prop, prop_name) {
     if (/^DFS_NORMALIZED/.test(prop)) prop_name = prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-")
     return prop_name
 }
@@ -17,6 +17,15 @@ function callUtils(obj, prop) {
     let func = prop.replace(/^DFS_UTILS__/, "")
     let args = func == "list" ? [obj[prop]] : obj[prop].split(";")
     return utils[func](...args)
+}
+
+function checkUtilsProp(obj, prop) {
+    let value = obj[prop]
+    if (typeof obj[prop] === 'object' && obj[prop] != null) {
+        let key = Object.keys(obj[prop])[0]
+        value = callUtils(obj[prop], key)
+    }
+    return value
 }
 
 function jsonToXml2(obj, depth) {
@@ -41,28 +50,23 @@ function jsonToXml2(obj, depth) {
             if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
-        else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
+        else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj, prop) + '\n'
         else if (/^DFS_UTILS__/.test(prop)) xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
         else {
             let prop_name = prop
 
             if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
                 prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "")
-                prop_name = denormalizeNameXSD(prop, prop_name)
+                prop_name = denormalizeNameXML(prop, prop_name)
+                let value = checkUtilsProp(obj, prop)
 
-                let value = obj[prop]
-                if (typeof obj[prop] === 'object' && obj[prop] != null) {
-                    let key = Object.keys(obj[prop])[0]
-                    value = callUtils(obj[prop], key)
-                }
-                
                 let qm = (typeof obj[prop] == "string" && value.includes('"')) ? "'" : '"'
                 xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${value}${qm}>\n`
             }
             else {   
                 if (/^DFS(_NORMALIZED)?_\d+__/.test(prop)) {
                     prop_name = prop.replace(/^DFS(_NORMALIZED)?_\d+__/, "")
-                    prop_name = denormalizeNameXSD(prop, prop_name)
+                    prop_name = denormalizeNameXML(prop, prop_name)
                 }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
@@ -114,6 +118,125 @@ function convertXMLString(input, outputFormat, depth) {
     else xml += input
 
     return xml + '\n' //not a string
+}
+
+
+function denormalizeNameJSON(prop, prop_name) {
+    if (/^DFS_NORMALIZED/.test(prop)) prop_name = prop_name.replace(/__(DOT|HYPHEN)__/g, "_")
+    return prop_name
+}
+
+function renameProperty(o, old_key, new_key) {
+    Object.defineProperty(o, new_key, Object.getOwnPropertyDescriptor(o, old_key))
+    delete o[old_key]
+    return o
+}
+
+function parseKeyJSON(original, keys_counter) {
+    let key = original.replace(/^DFS(_NORMALIZED)?_/, "")
+    let iter = parseInt(key)
+    key = key.replace(/^\d+__/, "")
+    
+    if (key in keys_counter) keys_counter[key].count++
+    else keys_counter[key] = {count: 1, map: {}}
+
+    if (iter != keys_counter[key].count) iter = keys_counter[key].count
+    keys_counter[key].map[original] = denormalizeNameJSON(original, key) + iter
+
+    return keys_counter
+}
+
+
+function cleanJson(json) { console.log(json); return cleanJson2(json,0) }
+
+function cleanJson2(json, depth) {
+    let last_attr = -1 // se for mixed, para só escrever texto entre partículas depois dos atributos
+    let keys = Object.keys(json), keys_counter = {}
+
+    for (let i = 0; i < keys.length; i++) {
+        if (/^DFS(_NORMALIZED)?_ATTR__/.test(keys[i])) last_attr = i
+        if (/^DFS(_NORMALIZED)?_\d+__/.test(keys[i])) keys_counter = parseKeyJSON(keys[i], keys_counter)
+    }
+
+    let temp = "", new_props = []
+    var mixed = {bool: false, content: null, counter: 1}
+
+    for (let i = 0; i < keys.length || new_props.length > 0;) {
+        let normal_key = !new_props.length
+        let prop = new_props.length > 0 ? new_props.shift() : keys[i]
+        let prop_name = prop
+        
+        if (prop == "DFS_EMPTY_XML") delete json[prop]
+        
+        if (/^DFS_MIXED_/.test(prop)) {
+            mixed.bool = true
+            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
+            delete json[prop]
+        }
+        else if (/^DFS_TEMP__\d+/.test(prop)) {
+            let new_keys = Object.keys(json[prop])
+
+            for (let j = 0; j < new_keys.length; j++) {
+                if (/^DFS(_NORMALIZED)?_\d+__/.test(new_keys[j])) {
+                    keys_counter = parseKeyJSON(new_keys[j], keys_counter)
+
+                    let key = new_keys[j].replace(/^DFS(_NORMALIZED)?_\d+__/, "")
+                    let new_prop = keys_counter[key].map[new_keys[j]]
+
+                    json[new_prop] = json[prop][new_keys[j]]
+                    new_props.push(new_prop)
+                }
+            }
+            delete json[prop]
+        }
+        else if (/^DFS_EXTENSION__SC/.test(prop)) {
+            if (typeof json[prop] === 'object' && json[prop] != null) {
+                let key = Object.keys(json[prop])[0]
+                json[prop] = callUtils(json[prop], key)
+            }
+            
+            if (Object.keys(json).length == 1) temp = prop
+            else json = renameProperty(json, prop, "value")
+        }
+        else if (/^DFS_UTILS__/.test(prop)) {
+            temp = prop
+            json[prop] = callUtils(json, prop)
+        }
+        else {
+            if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
+                prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "Attr_")
+                prop_name = denormalizeNameJSON(prop, prop_name)
+
+                if (typeof json[prop] === 'object' && json[prop] != null) {
+                    let key = Object.keys(json[prop])[0]
+                    json[prop] = callUtils(json[prop], key)
+                }
+                json = renameProperty(json, prop, prop_name)
+            }
+            else { 
+                if (typeof json[prop] == "object" && json[prop] != null) {
+                    let res = cleanJson2(json[prop], depth+1)
+                    json[prop] = res.temp.length > 0 ? res.json[res.temp] : res.json
+                }
+
+                if (/^DFS(_NORMALIZED)?_\d+__/.test(prop)) {
+                    let key = prop.replace(/^DFS(_NORMALIZED)?_\d+__/, "")
+                    prop_name = keys_counter[key].map[prop]
+                    if (keys_counter[key].count == 1) prop_name = prop_name.slice(0,-1)
+                    json = renameProperty(json, prop, prop_name)
+                }
+            }
+        }
+
+        if (mixed.bool && i >= last_attr) {
+            let mixed_content = mixed.content !== null ? mixed.content : loremIpsum({ count: randomize(3,10), units: "words" })
+            let mixed_key = "text" + ((mixed.counter == 1 && !(i+1 < keys.length || new_props.length)) ? "" : mixed.counter++)
+            json[mixed_key] = mixed_content
+        }
+        if (normal_key) i++
+    }
+
+    return !depth ? json : {json, temp}
 }
 
 
@@ -174,4 +297,4 @@ function jsonToCsv(obj, ids) {
     return str
 }
 
-module.exports = { jsonToXml, jsonToStrapi, jsonToCsv }
+module.exports = { cleanJson, jsonToXml, jsonToStrapi, jsonToCsv }

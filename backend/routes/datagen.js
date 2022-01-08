@@ -73,9 +73,11 @@ router.post('/dfs', upload.single('model'), function(req,res){
     
     try {
         data = parser.parse(model)
-        if (req.body.output_format == "XML") xmlData = converter.jsonToXml(data.dataModel.data, req.body.xml_declaration)
 
-        fs.writeFileSync('./output/dataset.txt', xmlData, function (err) {
+        if (req.body.output_format == "JSON") data = converter.cleanJson(data.dataModel.data)
+        if (req.body.output_format == "XML") data = converter.jsonToXml(data.dataModel.data, req.body.xml_declaration)
+
+        fs.writeFileSync('./output/dataset.txt', JSON.stringify(data), function (err) {
             if (err) return console.log(err)
         });
       
