@@ -26,7 +26,7 @@ router.post('/json', function(req,res){
     let model = req.body 
     try {
         data = parser.parse(model)
-        res.status(201).jsonp(data.dataModel.data)
+        res.status(201).jsonp(converter.cleanJson(data.dataModel.data))
     } catch (err) {
         console.log(err)
         res.status(404).jsonp(err)
@@ -38,10 +38,9 @@ router.post('/xml', function(req,res){
     let model = req.body 
     try {
         data = parser.parse(model)
-        xmlData = converter.jsonToXml(data.dataModel.data)
         res.status(201)
         res.type('text/xml')
-        res.write(xmlData)
+        res.write(converter.jsonToXml(data.dataModel.data))
         res.end()
     } catch (err) {
         console.log(err)
@@ -51,7 +50,7 @@ router.post('/xml', function(req,res){
 
 // POST para uso em aplicações
 router.post('/csv', function(req,res){
-    let model = req.body 
+    let model = req.body
     try {
         data = parser.parse(model)
         csvData = converter.jsonToCsv(data.dataModel, data.collection_ids)

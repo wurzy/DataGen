@@ -37,7 +37,10 @@ function callUtils(obj, prop) {
 }
 
 
-function cleanJson(json) { return cleanJson2(json,0) }
+function cleanJson(json) {
+    // condição para evitar processamento desnecessário, se não for um JSON a partir de XML Schema
+    return /^DFS(_NORMALIZED)?_\d+__/.test(Object.keys(json)[0]) ? cleanJson2(json,0) : json
+}
 
 function cleanJson2(json, depth) {
     let last_attr = -1 // se for mixed, para só escrever texto entre partículas depois dos atributos
