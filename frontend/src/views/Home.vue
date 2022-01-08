@@ -76,7 +76,7 @@ import axios from 'axios';
 import $ from 'jquery'
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 
-import { jsonToXml, jsonToStrapi, jsonToCsv } from '../util/conversions.js'
+import { cleanJson, jsonToXml, jsonToStrapi, jsonToCsv } from '../util/conversions.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -216,7 +216,7 @@ export default {
 
           if (this.output_format == "JSON") {
             this.cmOutput.mode = 'text/javascript'
-            this.result = JSON.stringify(generated.dataModel.data, null, 2)
+            this.result = JSON.stringify(cleanJson(generated.dataModel.data), null, 2)
           }
           if (this.output_format == "XML") {
             this.cmOutput.mode = 'text/xml'

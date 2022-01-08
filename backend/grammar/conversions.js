@@ -60,7 +60,7 @@ function cleanJson2(json, depth) {
         
         if (/^DFS_MIXED_/.test(prop)) {
             mixed.bool = true
-            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
+            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = json[prop]
             delete json[prop]
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) {
@@ -96,7 +96,7 @@ function cleanJson2(json, depth) {
         }
         else {
             if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
-                prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "Attr_")
+                prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "attr_")
                 prop_name = denormalizeNameJSON(prop, prop_name)
 
                 if (typeof json[prop] === 'object' && json[prop] != null) {
@@ -138,8 +138,8 @@ function denormalizeNameXML(prop, prop_name) {
     return /^DFS_NORMALIZED/.test(prop) ? prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-") : prop_name
 }
 
-function checkUtilsProp(obj, prop) {
-    return (typeof value === 'object' && value != null) ? callUtils(value, Object.keys(value)[0]) : obj[prop]
+function checkUtilsProp(value) {
+    return (typeof value === 'object' && value != null) ? callUtils(value, Object.keys(value)[0]) : value
 }
 
 function convertXMLString(input, outputFormat, depth) {
@@ -185,7 +185,7 @@ function jsonToXml2(obj, depth) {
             if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
-        else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj, prop) + '\n'
+        else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj[prop]) + '\n'
         else if (/^DFS_UTILS__/.test(prop)) xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
         else {
             let prop_name = prop
@@ -193,7 +193,7 @@ function jsonToXml2(obj, depth) {
             if (/^DFS(_NORMALIZED)?_ATTR__/.test(prop)) {
                 prop_name = prop.replace(/^DFS(_NORMALIZED)?_ATTR__/, "")
                 prop_name = denormalizeNameXML(prop, prop_name)
-                let value = checkUtilsProp(obj, prop)
+                let value = checkUtilsProp(obj[prop])
 
                 let qm = (typeof obj[prop] == "string" && value.includes('"')) ? "'" : '"'
                 xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${value}${qm}>\n`
