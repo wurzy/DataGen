@@ -63,7 +63,7 @@ function cleanJson2(json, depth) {
         
         if (/^DFS_MIXED_/.test(prop)) {
             mixed.bool = true
-            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = json[prop]
+            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = checkUtilsProp(json[prop])
             delete json[prop]
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) {
@@ -185,7 +185,7 @@ function jsonToXml2(obj, depth) {
 
         if (/^DFS_MIXED_/.test(prop)) {
             mixed.bool = true
-            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = obj[prop]
+            if (prop == "DFS_MIXED_RESTRICTED") mixed.content = checkUtilsProp(obj[prop])
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj[prop]) + '\n'
