@@ -1,4 +1,4 @@
-// Gramática para "DataGen from Schemas" -----
+// Gramática de XML Schema para "DataGen from Schemas" -----
 
 {
   // Variáveis gerais ------------------------------

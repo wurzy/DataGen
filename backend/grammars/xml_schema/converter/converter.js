@@ -63,7 +63,7 @@ function normalizeName(name, end_prefix) {
 }
 
 
-function convertXSD(xsd, st, ct, max_settings) {
+function convert(xsd, st, ct, max_settings) {
    let str = "<!LANGUAGE pt>\n{\n"
    let depth = 1
    
@@ -462,4 +462,4 @@ function parseCT_child_content(parent, str, content, depth, keys) {
 }
 
 
-module.exports = { convertXSD }
+module.exports = { convert }

@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var axios = require('axios');
-var fs = require('fs');
 
 const dslParser = require('../grammars/datagen_dsl/parser')
 const xmlParser = require('../grammars/xml_schema/parser')
@@ -25,7 +23,7 @@ router.post('/', (req, res) => {
     }
 
     // criar modelo DSL a partir dos dados da schemas
-    let model = xmlConverter.convertXSD(data.xsd, data.simpleTypes, data.complexTypes, req.body.settings)
+    let model = xmlConverter.convert(data.xsd, data.simpleTypes, data.complexTypes, req.body.settings)
     console.log('modelo criado')
     // gerar dataset
     let dataset = dslParser.parse(model)
