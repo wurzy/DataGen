@@ -137,6 +137,8 @@ function cleanJson2(json, depth) {
 
 // JSON -> XML --------------------------------------------------------------------------------------------------------
 
+let last_dfsUtils = false
+
 function denormalizeNameXML(prop, prop_name) {
     return /^DFS_NORMALIZED/.test(prop) ? prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-") : prop_name
 }
@@ -189,7 +191,10 @@ function jsonToXml2(obj, depth) {
         }
         else if (/^DFS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
         else if (/^DFS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj[prop]) + '\n'
-        else if (/^DFS_UTILS__/.test(prop)) xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
+        else if (/^DFS_UTILS__/.test(prop)) {
+            xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
+            last_dfsUtils = true
+        }
         else {
             let prop_name = prop
 
@@ -208,8 +213,8 @@ function jsonToXml2(obj, depth) {
                 }
             
                 xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
-                let onlyAttrs = false, empty = false
-
+                let onlyAttrs = false, empty = false, newlineClose = true
+                
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
                     let child_keys = Object.keys(obj[prop])
 
@@ -218,13 +223,33 @@ function jsonToXml2(obj, depth) {
 
                     let content = jsonToXml2(obj[prop], depth+1)
                     if (content[0] == " ") xml = xml.slice(0, -2) // atributos
-                    xml += content
+                    
+                    if (content[0] != " " && last_dfsUtils) {
+                        if (content.length > 100) xml += content
+                        else {
+                            xml = xml.slice(0, -1) + content.slice(0, -1).replace(/^\t*/, "")
+                            newlineClose = false
+                        }
+                        last_dfsUtils = false
+                    }
+                    else xml += content
                 }
-                else xml += convertXMLString(obj[prop], 'xml', depth+1)
+                else {
+                    let value = convertXMLString(obj[prop], 'xml', depth+1)
+                    
+                    if (obj[prop].length > 100) xml += value
+                    else {
+                        xml = xml.slice(0, -1) + value.slice(0, -1).replace(/^\t*/, "")
+                        newlineClose = false
+                    }
+                }
 
                 // abreviar elementos só com atributos ou sem conteúdo
                 if (empty) xml = xml.slice(0,-2) + "/>\n"
-                if (!empty && !onlyAttrs) xml += '\t'.repeat(depth) + "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                if (!empty && !onlyAttrs) {
+                    xml += newlineClose ? '\t'.repeat(depth) : ""
+                    xml += "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                }
             }
         }
 

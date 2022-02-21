@@ -1,4 +1,4 @@
-// DSL Grammar
+// DataGen Grammar
 // ============
 
 {

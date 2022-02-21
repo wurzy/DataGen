@@ -10,6 +10,7 @@ var usersRouter = require('./routes/users');
 var modelsRouter = require('./routes/models');
 var datagenRouter = require('./routes/datagen');
 var datasetRouter = require('./routes/datasets');
+var xmlSchemaRouter = require('./routes/xml_schemas')
 
 var app = express();
 
@@ -116,6 +117,7 @@ app.use('/api/utilizadores', usersRouter);
 app.use('/api/modelos', modelsRouter);
 app.use('/api/datagen', datagenRouter);
 app.use('/api/dataset', datasetRouter);
+app.use('/api/xml_schema', xmlSchemaRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

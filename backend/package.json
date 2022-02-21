@@ -30,6 +30,7 @@
     "multer": "^1.4.4",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "randexp": "^0.5.3",
     "rimraf": "^3.0.2",
     "uuid": "^8.3.2",
     "zlib": "^1.0.5"

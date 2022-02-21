@@ -6,8 +6,8 @@ const FormData = require('form-data')
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 
-const parser = require('../grammar/parser')
-const converter = require('../grammar/conversions')
+const parser = require('../grammars/datagen_dsl/parser')
+const converter = require('../grammars/datagen_dsl/conversions')
 
 // POST front-end route para obter a informação toda
 router.post('/', function(req,res){
@@ -75,6 +75,7 @@ router.post('/dfs', upload.single('model'), function(req,res){
 
         if (req.body.output_format == "JSON") data = converter.cleanJson(data.dataModel.data)
         if (req.body.output_format == "XML") data = converter.jsonToXml(data.dataModel.data, req.body.xml_declaration)
+        console.log(data)
 
         fs.writeFileSync('./output/dataset.txt', JSON.stringify(data), function (err) {
             if (err) return console.log(err)
