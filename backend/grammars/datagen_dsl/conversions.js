@@ -39,10 +39,12 @@ function callUtils(obj, prop) {
 
 function cleanJson(json) {
     // condição para evitar processamento desnecessário, se não for um JSON a partir de XML Schema
-    return /^DFXS(_NORMALIZED)?_\d+__/.test(Object.keys(json)[0]) ? cleanJson2(json,0) : json
+    let first_key = Object.keys(json)[0]
+    if (/^DFXS(_NORMALIZED)?_\d+__/.test(first_key)) return cleanJsonFromXsd(json,0)
+    return json
 }
 
-function cleanJson2(json, depth) {
+function cleanJsonFromXsd(json, depth) {
     let last_attr = -1 // se for mixed, para só escrever texto entre partículas depois dos atributos
     let keys = Object.keys(json), keys_counter = {}
 
@@ -110,7 +112,7 @@ function cleanJson2(json, depth) {
             }
             else { 
                 if (typeof json[prop] == "object" && json[prop] != null) {
-                    let res = cleanJson2(json[prop], depth+1)
+                    let res = cleanJsonFromXsd(json[prop], depth+1)
                     json[prop] = res.temp.length > 0 ? res.json[res.temp] : res.json
                 }
 
