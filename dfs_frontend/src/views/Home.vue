@@ -58,7 +58,8 @@ export default {
     async generate() {
       let {data} = await axios.post('/api/xml_schema/', {xsd: this.input, settings: this.settings})
 
-      this.output = typeof data == "string" ? data : "ERRO!!\n\n" + data.message
+      let dataset = data.dataset
+      this.output = typeof dataset == "string" ? dataset : "ERRO!!\n\n" + dataset.message
     }
   },
   watch: {

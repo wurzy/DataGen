@@ -35,12 +35,7 @@ router.post('/', (req, res) => {
     if (format == "XML") dataset = dslConverter.jsonToXml(dataset.dataModel.data, data.xml_declaration)
     console.log('dataset convertido')
 
-    res.status(201)
-    if (format == "JSON") res.type('application/json')
-    if (format == "XML") res.type('application/xhtml+xml')
-    res.write(dataset)
-    res.end()
-
+    res.status(201).jsonp({dataset})
   } catch (err) {
     res.status(404).jsonp(err)
   }
