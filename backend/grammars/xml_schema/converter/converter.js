@@ -52,7 +52,7 @@ function getTypeInfo(type) {
 }
 
 function normalizeName(name, end_prefix) {
-   let prefix = "DFS_"
+   let prefix = "DFXS_"
 
    if (/\.|\-/.test(name)) {
       prefix += "NORMALIZED_"
@@ -76,7 +76,7 @@ function convert(xsd, st, ct, max_settings) {
    ids = 0
 
    let elements = xsd.content.filter(x => x.element == "element")
-   if (!elements.length) str += indent(depth) + "DFS_EMPTY_XML: true\n"
+   if (!elements.length) str += indent(depth) + "DFXS_EMPTY_XML: true\n"
    else {
       //for (let i = 0; i < elements.length; i++) {
          let {elem_str, _} = parseElement(elements[0], depth, {}, true)
@@ -131,7 +131,7 @@ function parseElement(el, depth, keys, schemaElem) {
 
       if (!("ref" in el.attrs)) {
          // completa a string DSL com a chave e formatação
-         if (!parsed.length) parsed = "{ DFS_EMPTY_XML: true }"
+         if (!parsed.length) parsed = "{ DFXS_EMPTY_XML: true }"
          elem_str += normalizeName(name, keys[name]++ + "__") + parsed + (i < occurs-1 ? `,\n${indent(depth)}` : "")
       }
       else {
@@ -153,7 +153,7 @@ function parseElementAux(el, depth) {
    /* if ("abstract" in attrs) */
    if ("nillable" in attrs) {
       // se "nillable" for true, dar uma probabilidade de 30% de o conteúdo do elemento no XML ser nil
-      if (attrs.nillable && Math.random() < 0.3) return "{ DFS_ATTR__nil: true }"
+      if (attrs.nillable && Math.random() < 0.3) return "{ DFXS_ATTR__nil: true }"
    }
    if ("fixed" in attrs) return '"' + attrs.fixed + '"'
    if ("default" in attrs && Math.random() > 0.4) return '"' + attrs.default + '"'
@@ -221,13 +221,13 @@ function parseComplexType(el, depth) {
    let empty = !parsed.attrs.length && !parsed.content.length
 
    if ("mixed" in el.attrs && el.attrs.mixed) {
-      if (!("mixed_type" in el)) str += `${indent(depth+1)}DFS_MIXED_DEFAULT: true${empty ? "" : ",\n"}`
+      if (!("mixed_type" in el)) str += `${indent(depth+1)}DFXS_MIXED_DEFAULT: true${empty ? "" : ",\n"}`
       else {
          let base_st = el.mixed_type.content[0]
          let mixed_content = parseSimpleType({built_in_base: base_st.built_in_base, content: base_st.content}, ids, depth)
          
          ids = mixed_content.ids
-         str += `${indent(depth+1)}DFS_MIXED_RESTRICTED: ${mixed_content.str}${empty ? "" : ",\n"}`
+         str += `${indent(depth+1)}DFXS_MIXED_RESTRICTED: ${mixed_content.str}${empty ? "" : ",\n"}`
       }
    }
    else if (empty) return "{ missing(100) {empty: true} }"
@@ -293,8 +293,8 @@ function parseExtensionSC(el, depth) {
       if (parsed.content.length > 0) str += ",\n" + indent(depth)
    }
    
-   if (parsed.content.startsWith("{DFS_UTILS__")) str += parsed.content.slice(1,-1)
-   else str += "DFS_EXTENSION__SC: " + parsed.content
+   if (parsed.content.startsWith("{DFXS_UTILS__")) str += parsed.content.slice(1,-1)
+   else str += "DFXS_EXTENSION__SC: " + parsed.content
 
    return str + `\n${indent(depth-1)}}`
 }
@@ -322,7 +322,7 @@ function parseGroup(el, depth, keys) {
             if (parsed.str.length > 0) {
                // ajustar a formatação e remover o \n no fim para meter uma vírgula antes
                parsed.str = parsed.str.replace(/\n\t+/g, "\n" + "\t".repeat(depth+2)).replace(/\t+}/, "\t".repeat(depth+1) + "}")
-               parsed.str = `${indent(depth)}DFS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},`
+               parsed.str = `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},`
             }
             break;
          case "choice": parsed = parseChoice(el.content[0], depth, keys); parsed.str += ","; break;
@@ -437,7 +437,7 @@ function parseCT_child_content(parent, str, content, depth, keys) {
                // para uma sequence dentro de uma choice, queremos escolher a sequência inteira e não apenas um dos seus elementos
                // por isso, cria-se um objeto na DSL com uma chave especial que posteriormente é removido na tradução para XML
                parsed.str = "\t" + parsed.str.replace(/\n\t/g, "\n\t\t").slice(0, -1)
-               str += `${indent(depth)}DFS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},\n`
+               str += `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},\n`
             }
             else str += parsed.str + "\n"
          }

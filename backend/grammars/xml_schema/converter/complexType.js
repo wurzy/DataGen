@@ -35,7 +35,7 @@ function parseComplexType(el, depth) {
  
 function parseAttribute(el, depth) {
     let attrs = el.attrs
-    let str = `DFS_ATTR__${attrs.name}: `, value = ""
+    let str = `DFXS_ATTR__${attrs.name}: `, value = ""
  
     // parsing dos atributos -----
     if (attrs.use == "prohibited") return ""
@@ -83,7 +83,7 @@ function parseGroup(el, depth, keys) {
              if (parsed.str.length > 0) {
                 // ajustar a formatação e remover o \n no fim para meter uma vírgula antes
                 parsed.str = parsed.str.replace(/\n\t+/g, "\n" + "\t".repeat(depth+2)).replace(/\t+}/, "\t".repeat(depth+1) + "}")
-                parsed.str = `${indent(depth)}DFS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},`
+                parsed.str = `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},`
              }
              break;
           case "choice": parsed = parseChoice(el.content[0], depth, keys); parsed.str += ","; break;
@@ -192,7 +192,7 @@ function parseCT_child_content(parent, str, content, depth, keys) {
                 // para uma sequence dentro de uma choice, queremos escolher a sequência inteira e não apenas um dos seus elementos
                 // por isso, cria-se um objeto na DSL com uma chave especial que posteriormente é removido na tradução para XML
                 parsed.str = "\t" + parsed.str.replace(/\n\t/g, "\n\t\t").slice(0, -1)
-                str += `${indent(depth)}DFS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},\n`
+                str += `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},\n`
              }
              else str += parsed.str + "\n"
           }
