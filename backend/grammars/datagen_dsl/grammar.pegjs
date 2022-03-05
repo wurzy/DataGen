@@ -366,9 +366,7 @@ value
   / true
   / number
   / string
-
-simple_value
-  = val:(false / null / true / number / string / interpolation_signature) { return val.data[0] }
+  / pattern
 
 false = "false" { return {model: {type: "boolean", required: true}, data: Array(nr_copies).fill(false)} }
 null  = "null"  { return {model: {type: "string", required: false, default: null}, data: Array(nr_copies).fill(null)} }
@@ -682,6 +680,8 @@ time_format
 
 time = quotation_mark ws time:((([01][0-9]) / ("2"[0-3])) ":" [0-5][0-9] ":" [0-5][0-9]) ws quotation_mark { return time.flat().join(""); }
 
+pattern = quotation_mark pattern:[^"]* quotation_mark { return {model: {type: "string", required: true}, data: Array(nr_copies).fill(pattern.join(""))} }
+
 char
   = unescaped
   / escape
@@ -847,6 +847,12 @@ gen_moustaches
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "lorem", [units, min, max])
+    }
+  }
+  / "pattern(" ws pattern:string_or_local ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "pattern", [pattern])
     }
   }
 

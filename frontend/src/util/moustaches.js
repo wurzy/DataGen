@@ -1,7 +1,8 @@
-const loremIpsum = require("lorem-ipsum").loremIpsum;
+const loremIpsum = require("lorem-ipsum").loremIpsum
 const moment = require('moment')
 const _ = require('lodash')
-const getRandomValues = require('get-random-values');
+const getRandomValues = require('get-random-values')
+const RandExp = require('randexp')
 
 function hex(x) { return Math.floor(x).toString(16) }
 
@@ -287,6 +288,11 @@ function range(init, end, step, i) {
     return range
 }
 
+function pattern(pattern, i) {
+    pattern = Array.isArray(pattern) ? pattern[i] : pattern
+    return new RandExp(pattern).gen()
+}
+
 module.exports = {
     objectId,
     guid,
@@ -304,5 +310,6 @@ module.exports = {
     time,
     lorem,
     random,
-    range
+    range,
+    pattern
 }
