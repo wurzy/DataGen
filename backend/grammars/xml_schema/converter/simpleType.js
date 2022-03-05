@@ -1,5 +1,3 @@
-const RandExp = require('randexp');
-
 // Funções auxiliares ----------
 
 // verifica se a base é um dos tipos cujo valor é gerado por função anónima do DataGen
@@ -269,7 +267,7 @@ function parseDateTimeType(c, base, list, has) {
  
 function parseLanguage(c, has) {
     let langs = ["af","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","az","be","bg","bn","ca","cs","da","de-at","de-ch","de-li","de-lu","de","div","el","en-au","en-bz","en-ca","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","en","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-gt","es-hn","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","fi","fo","fr-be","fr-ca","fr-ch","fr-lu","fr-mc","fr","gd","gl","gu","he","hi","hr","hu","hy","id","is","it-ch","it","ja","ka","kk","kn","ko","kok","kz","lt","lv","mk","ml","mn","mr","ms","mt","nb-no","ne","nl-be","nl","nn-no","no","or","pa","pl","pt-br","pt","rm","ro-md","ro","ru-md","ru","sa","sb","sk","sl","sq","sr","sv-fi","sv","sw","sx","syr","ta","te","th","tn","tr","ts","tt","uk","ur","uz","vi","xh","yi","zh-cn","zh-hk","zh-mo","zh-sg","zh-tw","zh","zu"]
-    if ("pattern" in c && c.pattern != "([a-zA-Z]{2}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*") return new RandExp(c.pattern).gen()
+    if ("pattern" in c && c.pattern != "([a-zA-Z]{2}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*") return `{{pattern(${c.pattern})}}`
  
     let max = null, min = null
  
@@ -299,7 +297,7 @@ function parseRestriction(content, base, list) {
    let has = facet => facet in content
    
    if (has("enumeration")) return `{{random("${content.enumeration.join('","')}")}}`
-   if ((typeof base != "string" || !base.includes("ID") && base != "language") && has("pattern")) return new RandExp(content.pattern).gen()
+   if ((typeof base != "string" || !base.includes("ID") && base != "language") && has("pattern")) return `{{pattern(${content.pattern})}}`
 
    switch (base) {
       case "anyURI": return "http://www.w3.org/2001/XMLSchema"
