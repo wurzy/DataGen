@@ -638,6 +638,35 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
+                        multipleOf 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>Float</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Num:: <code>Float</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um múltiplo do argumento.<br/>
+                        Exemplo: multipleOf(5.5) = 511.5
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
                         objectID 
                     </div>
                 </div>
@@ -659,6 +688,35 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
                     <div class="description">
                         Gera um ID aleatório com 24 bytes. <br/>
                         Exemplo: objectID() = "6048e87b9281fc9a1afe8e61"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        pattern 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Regex:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string em conformidade com a expressão regular dada como argumento. <br/>
+                        Exemplo: pattern("^(\([0-9]{3}\))?[0-9]{3}-[0-9]{4}$") = "(157)289-5490"
                     </div>
                 </div>
             </div>
@@ -805,8 +863,37 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Retorna aleatoriamente um dos argumentos passados à função. <br/>
+                        Retorna aleatoriamente um dos argumentos passados à função.<br/>
                         Exemplo: random("blue", true, false, 23, 17.56) = 23
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        stringOfSize 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Num:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string <i>lorem ipsum</i> com o comprimento dado como argumento.<br/>
+                        Exemplo: stringOfSize(25) = "Consectetur sint non eius"
                     </div>
                 </div>
             </div>
