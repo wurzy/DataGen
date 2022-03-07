@@ -855,6 +855,18 @@ gen_moustaches
       data: fillArray("gen", null, "pattern", [pattern])
     }
   }
+  / "multipleOf(" ws num:number_or_local ws ")" {
+    return {
+      model: {type: "float", required: true},
+      data: fillArray("gen", null, "multipleOf", [num])
+    }
+  }
+  / "stringOfSize(" ws chars:int_or_local ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "stringOfSize", [chars])
+    }
+  }
 
 api_moustaches
   = simple_api_key

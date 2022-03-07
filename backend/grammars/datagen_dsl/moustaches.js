@@ -293,6 +293,19 @@ function pattern(pattern, i) {
     return new RandExp(pattern).gen()
 }
 
+function multipleOf(num, i) {
+    num = Array.isArray(num) ? num[i] : num
+    return num * randomize(0,1000)
+}
+
+function stringOfSize(chars, i) {
+    chars = Array.isArray(chars) ? chars[i] : chars
+
+    let str = ""
+    while (str.length < chars) str += loremIpsum({ count: 1, units: "sentences" }) + " "
+    return str.slice(0, chars)
+}
+
 module.exports = {
     objectId,
     guid,
@@ -311,5 +324,7 @@ module.exports = {
     lorem,
     random,
     range,
-    pattern
+    pattern,
+    multipleOf,
+    stringOfSize
 }
