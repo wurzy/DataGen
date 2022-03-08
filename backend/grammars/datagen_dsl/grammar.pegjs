@@ -102,6 +102,9 @@
         if (args.length == 3) join += ",null"
         if (args.length == 5) join = `${args[0]},${args[1]},${args[2]},{start: ${args[3]}, end: ${args[4]}}`
       }
+      if (key == "stringOfSize") {
+        if (args.length == 1) join += ",null"
+      }
 
       path = "genAPI." + key
       join += !join.length ? "gen.i" : ",gen.i"
@@ -861,10 +864,10 @@ gen_moustaches
       data: fillArray("gen", null, "multipleOf", [num])
     }
   }
-  / "stringOfSize(" ws chars:int_or_local ws ")" {
+  / "stringOfSize(" ws fst:int_or_local ws snd:("," ws max:int_or_local ws { return max })? ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "stringOfSize", [chars])
+      data: fillArray("gen", null, "stringOfSize", [fst, snd])
     }
   }
 

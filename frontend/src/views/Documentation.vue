@@ -886,7 +886,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        *Num:: <code>Integer</code>
+                        *Len:: <code>Integer</code>
                 </div>
             </div>
             <div class="col-md-5">
@@ -894,6 +894,36 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
                     <div class="description">
                         Gera uma string <i>lorem ipsum</i> com o comprimento dado como argumento.<br/>
                         Exemplo: stringOfSize(25) = "Consectetur sint non eius"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        stringOfSize 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        *Min:: <code>Integer</code>,
+                        *Max:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string <i>lorem ipsum</i> com comprimento entre Min e Max.<br/>
+                        Exemplo: stringOfSize(5,25) = "Magna nulla"
                     </div>
                 </div>
             </div>

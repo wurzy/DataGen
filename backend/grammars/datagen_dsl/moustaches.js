@@ -295,15 +295,18 @@ function pattern(pattern, i) {
 
 function multipleOf(num, i) {
     num = Array.isArray(num) ? num[i] : num
-    return num * randomize(0,1000)
+    return num * randomize(0,100)
 }
 
-function stringOfSize(chars, i) {
-    chars = Array.isArray(chars) ? chars[i] : chars
+function stringOfSize(min, max, i) {
+    min = Array.isArray(min) ? min[i] : min
+    if (max !== null) max = Array.isArray(max) ? max[i] : max
+
+    let length = max === null ? min : randomize(min, max)
 
     let str = ""
-    while (str.length < chars) str += loremIpsum({ count: 1, units: "sentences" }) + " "
-    return str.slice(0, chars)
+    while (str.length < length) str += loremIpsum({ count: 1, units: "sentences" }) + " "
+    return str.slice(0, length)
 }
 
 module.exports = {
