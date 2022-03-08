@@ -293,7 +293,7 @@ function parseExtensionSC(el, depth) {
       if (parsed.content.length > 0) str += ",\n" + indent(depth)
    }
    
-   if (parsed.content.startsWith("{DFXS_UTILS__")) str += parsed.content.slice(1,-1)
+   if (parsed.content.startsWith("{DFS_UTILS__")) str += parsed.content.slice(1,-1)
    else str += "DFXS_EXTENSION__SC: " + parsed.content
 
    return str + `\n${indent(depth-1)}}`

@@ -27,8 +27,8 @@ function parseStringType(c, base, has) {
       length = randomize(min, max)
    }
    
-   if (base == "hexBinary") return `{DFXS_UTILS__hexBinary: "${length}"}`
-   return `{DFXS_UTILS__string: "${base};${length}"}`
+   if (base == "hexBinary") return `{DFS_UTILS__hexBinary: "${length}"}`
+   return `{DFS_UTILS__string: "${base};${length}"}`
 }
  
 function parseNumberType(c, base, has) {
@@ -143,7 +143,7 @@ function parseComplexGType(c, base, list, has) {
    else if (max == null) max = base == "gMonthDay" ? {month: 12, day: 31} : {year: min.year + 100, month: 12}
    else if (min == null) min = base == "gMonthDay" ? {month: 1, day: 1} : {year: max.year - 100, month: 1}
 
-   return `{DFXS_UTILS__complexGType: '${base};${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
+   return `{DFS_UTILS__complexGType: '${base};${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
 }
  
 function parseDateTimeType(c, base, list, has) {
@@ -241,7 +241,7 @@ function parseDateTimeType(c, base, list, has) {
          min = {date: [`${maxDate[0]}/${maxDate[1]}/${year > 1000 ? (year-1000).toString().padStart(4,"0") : "0000"}`, "00:00:00"], neg: false}
       }
 
-      return `{DFXS_UTILS__dateTime: '${base};${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
+      return `{DFS_UTILS__dateTime: '${base};${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
    }
  
    if (base == "time") {
@@ -261,7 +261,7 @@ function parseDateTimeType(c, base, list, has) {
          else min = [0,0,0,0,0,0,0]
       }
 
-      return `{DFXS_UTILS__duration: '${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
+      return `{DFS_UTILS__duration: '${JSON.stringify(max)};${JSON.stringify(min)};${JSON.stringify(list)}'}`
    }
 }
  
@@ -352,7 +352,7 @@ function parseList(st, depth) {
       }
    }
    else {
-      str = `{\n${indent(depth++)}DFXS_UTILS__list: gen => {\n${indent(depth)}let elems = []\n`
+      str = `{\n${indent(depth++)}DFS_UTILS__list: gen => {\n${indent(depth)}let elems = []\n`
       let type_len = st.content.length - 1
 
       for (let i = 0; i < randomize(min,max); i++) {
