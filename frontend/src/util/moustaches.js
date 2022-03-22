@@ -7,6 +7,7 @@ const RandExp = require('randexp')
 function hex(x) { return Math.floor(x).toString(16) }
 
 function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
+function randomizeToLen(len) { return Math.floor(Math.random() * len) }
 
 function getDecimalsCount(min, max) {
     var decimals = 3; //3 caracteres decimais por predefinição
@@ -309,6 +310,157 @@ function stringOfSize(min, max, i) {
     return str.slice(0, length)
 }
 
+function xsd_string(base, length, i) {
+    length = Array.isArray(length) ? length[i] : length
+
+    //[".",":","-","_"]
+    let alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","z","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    let alphanumerical = [...alphabet,"0","1","2","3","4","5","6","7","8","9"]
+ 
+    let space = ["normalizedString","string","token"].includes(base)
+    if (base == "base64Binary") alphanumerical.push("+").push("/")
+ 
+    let str = ""
+    for (let j = 0; j < length; j++) {
+        let arr = (!j && ["Name","NCName","ENTITY","ID","IDREF","NOTATION","QName"].includes(base)) ? alphabet : alphanumerical
+        if (space && j>0 && j != length-1) arr.push(" ")
+        str += arr[randomizeToLen(arr.length)]
+    }
+    return str
+}
+
+function hexBinary(length, i) {
+    length = Array.isArray(length) ? length[i] : length
+
+    let hexChars = [...Array(60).keys()].map(i => i + 20)
+    hexChars = hexChars.concat(["2","3","4","5","6","7"].map(x => ["A","B","C","D","E","F"].map(y => x+y)).flat())
+    hexChars.pop()
+
+    let str = ""
+    for (let j = 0; j < length; j++) str += hexChars[randomizeToLen(hexChars.length)]
+    return str
+}
+
+function xsd_complexGType(base, max, min, list, i) {
+    let str = ""
+    let left = base == "gMonthDay" ? "month" : "year"
+    let right = base == "gMonthDay" ? "day" : "month"
+    
+    let right_lower_bound = {
+       month: x => 12,
+       day: x => {
+          if ([1,3,5,7,8,10,12].includes(x)) return 31
+          if ([4,6,9,11].includes(x)) return 30
+          return 29
+       }
+    }
+
+    for (let j = 0; j < randomize(list.max, list.min); j++) {
+       let right_val, left_val = randomize(max[left], min[left])
+       
+       if (left_val == max[left]) right_val = randomize(max[right], 1)
+       else if (left_val == min[left]) right_val = randomize(min[right], right_lower_bound[right](left_val))
+       else right_val = randomize(1, right_lower_bound[right](left_val))
+
+       let hyphens = {gMonthDay: 2, gYearMonth: 0}
+       let pad = base == "gMonthDay" ? [2,2] : [4,2]
+
+       str += "-".repeat(hyphens[base]) + left_val.toString().padStart(pad[0],"0") + "-" + right_val.toString().padStart(pad[1],"0") + " "
+    }
+
+    return str.slice(0,-1)
+}
+
+function xsd_dateTime(base, max, min, list, i) {
+    let str = ""
+
+    for (let j = 0; j < randomize(list.max,list.min); j++) {
+        let timee, datee = max !== null ? date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : date(min.date[0], null, "YYYY-MM-DD", 0)
+          
+        if (max !== null) max.date[0] = max.date[0].split("/").reverse().join("-")
+        min.date[0] = min.date[0].split("/").reverse().join("-")
+        
+        if (base == "dateTime") {             
+            if (max !== null && datee == max.date[0]) timee = time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
+            else if (datee == min.date[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
+            else timee = time("hh:mm:ss", 24, false, null, 0)
+        }
+        if ((max !== null && date > max.date[0]) || datee < min.date[0]) datee = "-" + datee
+        str += datee + (base == "dateTime" ? ("T" + timee) : "") + " "
+    }
+    
+    return str.slice(0,-1)
+}
+
+function xsd_duration(max, min, list, i) {
+    let str = ""
+
+    for (let j = 0; j < randomize(list.max,list.min); j++) {
+        let duration = "P", units = ["Y","M","D","H","M",".","S"], maxPossible = [0, 12, 30, 24, 59, 59, 999]
+        let fstEq = false, random
+        for (let k = 0; k < max.length; k++) {
+            if (!fstEq) {
+                if (max[k] == min[k]) {
+                    if (max[k] != 0) duration += max[k] + units[k]
+                    else if (units[k] == ".") duration += units[k]
+                }
+                else {
+                    fstEq = true
+                    random = {new: randomize(max[k], min[k]), inf: min[k], sup: max[k]}
+                    let sum = arr => arr.reduce((c,a) => c+a, 0)
+                    if (max[0] == 1 && !min[0] && !sum(max.slice(1)) && !sum(min.slice(1))) random.new = 0
+                    if (random.new != 0) duration += random.new + units[k]
+                }
+            }
+            else {
+                let next_part
+                if (random.new == random.inf) next_part = randomize(maxPossible[k], min[k])
+                else if (random.new == random.sup) next_part = randomize(max[k], 0)
+                else next_part = randomize(maxPossible[k], 0)
+                if (next_part > 0) duration += next_part + units[k]
+            }
+            if (k == 2) duration += "T"
+        }
+        str += duration + " "
+    }
+
+    return str.slice(0,-1)
+}
+
+function regex() {
+    let regexs = [
+        "^\d+$",
+        "^\d*\.\d+$",
+        "^\d*(\.\d+)?$",
+        "^-?\d*(\.\d+)?$",
+        "[-]?[0-9]+[,.]?[0-9]*([\/][0-9]+[,.]?[0-9]*)*",
+        "^[a-zA-Z0-9]*$",
+        "^[a-zA-Z0-9 ]*$",
+        "^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$",
+        "^[a-z0-9_-]{3,16}$",
+        "/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#()?&//=]*)",
+        "([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))",
+        "^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$",
+        "^(0?[1-9]|1[0-2]):[0-5][0-9]$",
+        "((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))",
+        "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$",
+        "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$",
+        "(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",
+        "<\/?[\w\s]*>|<.+[\W]>",
+        "\bon\w+=\S+(?=.*>)",
+        `(?:<[^>]+\s)(on\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?`,
+        "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "(\b\w+\b)(?=.*\b\1\b)",
+        "^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$",
+        "((\/|\\|\/\/|https?:\\\\|https?:\/\/)[a-z0-9 _@\-^!#$%&+={}.\/\\\[\]]+)+\.[a-z]+$",
+        "^(.+)/([^/]+)$",
+        "^[\w,\s-]+\.[A-Za-z]{3}$",
+        "^[A-PR-WY][1-9]\d\s?\d{4}[1-9]$"
+    ]
+
+    return regexs[randomize(regexs.length)]
+}
+
 module.exports = {
     objectId,
     guid,
@@ -329,5 +481,11 @@ module.exports = {
     range,
     pattern,
     multipleOf,
-    stringOfSize
+    stringOfSize,
+    xsd_string,
+    hexBinary,
+    xsd_complexGType,
+    xsd_dateTime,
+    xsd_duration,
+    regex
 }

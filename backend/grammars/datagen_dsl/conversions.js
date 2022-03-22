@@ -1,4 +1,3 @@
-const utils = require('./DFS_utils')
 const loremIpsum = require("lorem-ipsum").loremIpsum;
 
 function randomize(min, max) { return Math.floor(Math.random() * ((max+1) - min) + min) }
@@ -30,18 +29,12 @@ function parseKeyJSON(original, keys_counter) {
     return keys_counter
 }
 
-function callUtils(obj, prop) {
-    let func = prop.replace(/^DFS_UTILS__/, "")
-    let args = func == "list" ? [obj[prop]] : obj[prop].split(";")
-    return utils[func](...args)
-}
-
 
 function cleanJson(json) {
     // condição para evitar processamento desnecessário, se não for um JSON a partir de XML Schema
     let first_key = Object.keys(json)[0]
     if (/^DFXS(_NORMALIZED)?_\d+__/.test(first_key)) return cleanJsonFromXsd(json,0)
-    return json
+    return cleanJsonFromJsonSchema(json)
 }
 
 function cleanJsonFromXsd(json, depth) {
@@ -65,7 +58,7 @@ function cleanJsonFromXsd(json, depth) {
         
         if (/^DFXS_MIXED_/.test(prop)) {
             mixed.bool = true
-            if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = checkUtilsProp(json[prop])
+            if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = json[prop]
             delete json[prop]
         }
         else if (/^DFXS_TEMP__\d+/.test(prop)) {
@@ -87,27 +80,13 @@ function cleanJsonFromXsd(json, depth) {
             delete json[prop]
         }
         else if (/^DFXS_EXTENSION__SC/.test(prop)) {
-            if (typeof json[prop] === 'object' && json[prop] != null) {
-                let key = Object.keys(json[prop])[0]
-                json[prop] = callUtils(json[prop], key)
-            }
-            
             if (Object.keys(json).length == 1) temp = prop
             else json = renameProperty(json, prop, "value")
-        }
-        else if (/^DFS_UTILS__/.test(prop)) {
-            temp = prop
-            json[prop] = callUtils(json, prop)
         }
         else {
             if (/^DFXS(_NORMALIZED)?_ATTR__/.test(prop)) {
                 prop_name = prop.replace(/^DFXS(_NORMALIZED)?_ATTR__/, "attr_")
                 prop_name = denormalizeNameJSON(prop, prop_name)
-
-                if (typeof json[prop] === 'object' && json[prop] != null) {
-                    let key = Object.keys(json[prop])[0]
-                    json[prop] = callUtils(json[prop], key)
-                }
                 json = renameProperty(json, prop, prop_name)
             }
             else { 
@@ -136,17 +115,30 @@ function cleanJsonFromXsd(json, depth) {
     return !depth ? json : {json, temp}
 }
 
+function cleanJsonFromJsonSchema(json, depth) {
+    let keys = Object.keys(json)
+
+    for (let i = 0; i < keys.length; i++) {
+        let prop = keys[i]
+        
+        if (prop == "DFJS_EMPTY_JSON") delete json[prop]
+
+        if (prop == "DFJS_NOT_OBJECT") {
+            if (typeof json[prop] == "object" && !Array.isArray(json[prop]) && json[prop] !== null) 
+                json = cleanJsonFromJsonSchema(json[prop], depth)
+            return json
+        }
+        else if (typeof json[prop] == "object" && json[prop] != null) cleanJsonFromJsonSchema(json[prop], depth+1)
+    }
+
+    return json
+}
+
 
 // JSON -> XML --------------------------------------------------------------------------------------------------------
 
-let last_dfxsUtils = false
-
 function denormalizeNameXML(prop, prop_name) {
     return /^DFXS_NORMALIZED/.test(prop) ? prop_name.replace(/__DOT__/g, ".").replace(/__HYPHEN__/g, "-") : prop_name
-}
-
-function checkUtilsProp(value) {
-    return (typeof value === 'object' && value != null) ? callUtils(value, Object.keys(value)[0]) : value
 }
 
 function convertXMLString(input, outputFormat, depth) {
@@ -189,24 +181,19 @@ function jsonToXml2(obj, depth) {
 
         if (/^DFXS_MIXED_/.test(prop)) {
             mixed.bool = true
-            if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = checkUtilsProp(obj[prop])
+            if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = obj[prop]
         }
         else if (/^DFXS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
-        else if (/^DFXS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + checkUtilsProp(obj[prop]) + '\n'
-        else if (/^DFS_UTILS__/.test(prop)) {
-            xml += convertXMLString(callUtils(obj, prop), 'xml', depth)
-            last_dfxsUtils = true
-        }
+        else if (/^DFXS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
         else {
             let prop_name = prop
 
             if (/^DFXS(_NORMALIZED)?_ATTR__/.test(prop)) {
                 prop_name = prop.replace(/^DFXS(_NORMALIZED)?_ATTR__/, "")
                 prop_name = denormalizeNameXML(prop, prop_name)
-                let value = checkUtilsProp(obj[prop])
 
-                let qm = (typeof obj[prop] == "string" && value.includes('"')) ? "'" : '"'
-                xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${value}${qm}>\n`
+                let qm = (typeof obj[prop] == "string" && obj[prop].includes('"')) ? "'" : '"'
+                xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
             }
             else {   
                 if (/^DFXS(_NORMALIZED)?_\d+__/.test(prop)) {
@@ -225,16 +212,7 @@ function jsonToXml2(obj, depth) {
 
                     let content = jsonToXml2(obj[prop], depth+1)
                     if (content[0] == " ") xml = xml.slice(0, -2) // atributos
-                    
-                    if (content[0] != " " && last_dfxsUtils) {
-                        if (content.length > 100) xml += content
-                        else {
-                            xml = xml.slice(0, -1) + content.slice(0, -1).replace(/^\t*/, "")
-                            newlineClose = false
-                        }
-                        last_dfxsUtils = false
-                    }
-                    else xml += content
+                    xml += content
                 }
                 else {
                     let value = convertXMLString(obj[prop], 'xml', depth+1)

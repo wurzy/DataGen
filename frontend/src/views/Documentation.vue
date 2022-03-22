@@ -431,6 +431,35 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             <div class="col-md-2">
                 <div class="cell">
                     <div class="propertyname">
+                        hexBinary 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    *Len:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera o número indicado de caracteres hexadecimais aleatórios.<br/>
+                        Exemplo: hexBinary(5) = "4D3E764128"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
                         index 
                     </div>
                 </div>
@@ -999,6 +1028,310 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
                         Exemplo1: time("hh:mm:ss", 12, false, "13:30:00", "15:15:15") = "02:18:08 PM" <br/>
                         Exemplo2: time("hh:mm:ss", 24, true, "13:30:00", "15:15:15") = "14h 43min 03s" <br/>
                         Exemplo3: time("hh:mm", 24, true, "13:30:00", "15:15:15") = "13h 39min"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_duration
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>duration</code>, nativo de <i>XML Schema</i>, correspondente a uma duração.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "PnYnMnDTnHnMnS".<br/>
+                        Exemplo: xsd_duration("P1Y2M", "P2Y3DT4H4M20.123S") = "P2Y1DT2H3M15.59S"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gDay
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gDay</code>, nativo de <i>XML Schema</i>, correspondente a um dia do mês.<br/>
+                        Exemplo: xsd_gDay() = "---05"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gDay
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gDay</code>, nativo de <i>XML Schema</i>, correspondente a um dia do mês.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "---DD".<br/>
+                        Exemplo: xsd_gDay("---05", "---20") = "---17"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gMonth
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gMonth</code>, nativo de <i>XML Schema</i>, correspondente a um mês do ano.<br/>
+                        Exemplo: xsd_gMonth() = "--05"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gMonth
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gMonth</code>, nativo de <i>XML Schema</i>, correspondente a um mês do ano.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "--MM".<br/>
+                        Exemplo: xsd_gMonth("--03", "--10") = "--06"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gMonthDay
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gMonthDay</code>, nativo de <i>XML Schema</i>, correspondente a um dia de um mês.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "--MM-DD".<br/>
+                        Exemplo: xsd_gMonthDay("--02-15", "--07-10") = "--04-09"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gYear
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Nenhum
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gYear</code>, nativo de <i>XML Schema</i>, correspondente a um ano.<br/>
+                        Exemplo: xsd_gYear() = "1970"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gYear
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gYear</code>, nativo de <i>XML Schema</i>, correspondente a um ano.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "YYYY".<br/>
+                        Exemplo: xsd_gYear("1950", "2017") = "1997"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_gYearMonth
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Min:: <code>String</code>,
+                        Max:: <code>String</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera um valor do tipo de dados <code>gYearMonth</code>, nativo de <i>XML Schema</i>, correspondente a um mês de um ano.<br/>
+                        Os argumentos correspondem aos limites entre os quais o valor deve ser gerado, e devem estar no formato em questão: "YYYY-MM".<br/>
+                        Exemplo: xsd_gYearMonth("2002-02", "2008-05") = "2005-04"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_string 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Tipo:: <code>String</code>,
+                        *Len:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string do tipo de dados textual nativo de <i>XML Schema</i> indicado, com o comprimento dado.<br/>
+                        O primeiro argumento tem de ser um dos seguintes tipos: <code>ENTITY</code>, <code>Name</code>, <code>NCName</code>, <code>NMTOKEN</code>, <code>normalizedString</code>, <code>NOTATION</code>, <code>QName</code>, <code>string</code> ou <code>token</code>.<br/>
+                        Exemplo: xsd_string("normalizedString", 10) = "gc97 nI 50"
                     </div>
                 </div>
             </div>

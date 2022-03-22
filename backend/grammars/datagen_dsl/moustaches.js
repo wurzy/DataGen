@@ -375,18 +375,18 @@ function xsd_dateTime(base, max, min, list, i) {
     let str = ""
 
     for (let j = 0; j < randomize(list.max,list.min); j++) {
-        let time, date = max !== null ? genAPI.date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : genAPI.date(min.date[0], null, "YYYY-MM-DD", 0)
+        let timee, datee = max !== null ? date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : date(min.date[0], null, "YYYY-MM-DD", 0)
           
         if (max !== null) max.date[0] = max.date[0].split("/").reverse().join("-")
         min.date[0] = min.date[0].split("/").reverse().join("-")
         
         if (base == "dateTime") {             
-            if (max !== null && date == max.date[0]) time = genAPI.time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
-            else if (date == min.date[0]) time = genAPI.time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
-            else time = genAPI.time("hh:mm:ss", 24, false, null, 0)
+            if (max !== null && datee == max.date[0]) timee = time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
+            else if (datee == min.date[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
+            else timee = time("hh:mm:ss", 24, false, null, 0)
         }
-        if ((max !== null && date > max.date[0]) || date < min.date[0]) date = "-" + date
-        str += date + (base == "dateTime" ? ("T" + time) : "") + " "
+        if ((max !== null && date > max.date[0]) || datee < min.date[0]) datee = "-" + datee
+        str += datee + (base == "dateTime" ? ("T" + timee) : "") + " "
     }
     
     return str.slice(0,-1)

@@ -292,11 +292,8 @@ function parseExtensionSC(el, depth) {
       str += parsed.attrs
       if (parsed.content.length > 0) str += ",\n" + indent(depth)
    }
-   
-   if (parsed.content.startsWith("{DFS_UTILS__")) str += parsed.content.slice(1,-1)
-   else str += "DFXS_EXTENSION__SC: " + parsed.content
 
-   return str + `\n${indent(depth-1)}}`
+   return `${str}DFXS_EXTENSION__SC: ${parsed.content}\n${indent(depth-1)}}`
 }
 
 function parseGroup(el, depth, keys) {
