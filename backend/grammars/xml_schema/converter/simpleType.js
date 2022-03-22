@@ -245,11 +245,11 @@ function parseDateTimeType(c, base, list, has) {
    }
  
    if (base == "time") {
-      if (max === null) max = {time: "23:59:59", ms: "999"}
-      if (min === null) min = {time: "00:00:00", ms: "000"}
+      if (max === null) max = {time: "23:59:59", ms: 999}
+      if (min === null) min = {time: "00:00:00", ms: 0}
 
-      let str = `{{time("hh:mm:ss", 24, false, "${max.time}", "${min.time}")}}`
-      if (!max.ms || !min.ms) str += `.{{integer(${max.ms}, ${min.ms})}}`
+      let str = `{{time("hh:mm:ss", 24, false, "${min.time}", "${max.time}")}}`
+      if (max.ms > 0 || min.ms > 0) str += `.{{integer(${min.ms}, ${max.ms})}}`
       return str
    }
 

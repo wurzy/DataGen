@@ -667,23 +667,40 @@ letter_case
   / quotation_mark ws word:(("lowercase") / ("min"("ú"/"u")"scula")) ws quotation_mark { return "lowercase" }
 
 date
-  = quotation_mark ws date:(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws quotation_mark {
-    return date.flat(2).join("").replace(/[^\d]/g, "/")
+  = quotation_mark ws date:$(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws quotation_mark {
+    return date.replace(/[^\d]/g, "/")
   }
 
 date_format
-  = quotation_mark ws format:("DD" date_separator "MM" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format.join(""); }
-  / quotation_mark ws format:("MM" date_separator "DD" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format.join(""); }
-  / quotation_mark ws format:(("AAAA" / "YYYY") date_separator "MM" date_separator "DD") ws quotation_mark { return format.join(""); }
+  = quotation_mark ws format:$("DD" date_separator "MM" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format }
+  / quotation_mark ws format:$("MM" date_separator "DD" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format }
+  / quotation_mark ws format:$(("AAAA" / "YYYY") date_separator "MM" date_separator "DD") ws quotation_mark { return format }
 
 time_format
-  = quotation_mark ws format:("hh" (":" ("ss" / "mm" (":" "ss")?))?) ws quotation_mark { return format.flat(3).join(""); }
-  / quotation_mark ws format:("mm" (":" "ss")?) ws quotation_mark { return format.flat().join(""); }
-  / quotation_mark ws format:"ss" ws quotation_mark { return format; }
+  = quotation_mark ws format:$("hh" (":" ("ss" / "mm" (":" "ss")?))?) ws quotation_mark { return format }
+  / quotation_mark ws format:$("mm" (":" "ss")?) ws quotation_mark { return format }
+  / quotation_mark ws format:"ss" ws quotation_mark { return format }
 
-time = quotation_mark ws time:((([01][0-9]) / ("2"[0-3])) ":" [0-5][0-9] ":" [0-5][0-9]) ws quotation_mark { return time.flat().join(""); }
+time = quotation_mark ws time:$((([01][0-9]) / ("2"[0-3])) ":" [0-5][0-9] ":" [0-5][0-9]) ws quotation_mark { return time }
 
-pattern = quotation_mark pattern:[^"]* quotation_mark { return {model: {type: "string", required: true}, data: Array(nr_copies).fill(pattern.join(""))} }
+pattern = quotation_mark pattern:$[^"]* quotation_mark { return {model: {type: "string", required: true}, data: Array(nr_copies).fill(pattern)} }
+
+xsd_string_base = quotation_mark ws base:("ENTITY" / "Name" / "NCName" / "NMTOKEN" / "normalizedString" / "NOTATION" / "QName" / "string" / "token") ws quotation_mark { return base }
+
+gYear = quotation_mark year:$("-"? DIGIT DIGIT DIGIT DIGIT DIGIT?) quotation_mark { return parseInt(year) }
+gYearMonth = quotation_mark year:$("-"? DIGIT DIGIT DIGIT DIGIT DIGIT?) "-" month:$("0" digit1_9 / "1"[02]) quotation_mark { return {year: parseInt(year), month: parseInt(month)} }
+gDay = quotation_mark "---" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation_mark { return parseInt(day) }
+gMonth = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) quotation_mark { return parseInt(month) }
+gMonthDay = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) "-" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation_mark { return {month: parseInt(month), day: parseInt(day)} }
+
+xsd_dateTime_arg = v:$("{" ws '"date"' ws ":" ws "[" date:$(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws "," ws time:time ws "]" ws "," "neg" ws ":" ("true"/"false") ws "}") { return JSON.parse(v) }
+
+duration = quotation_mark "-"? "P" Y:$(DIGIT+ "Y")? M:$(DIGIT+ "M")? D:$(DIGIT+ "D")? 
+           T:("T" h:$(DIGIT+ "H")? m:$(DIGIT+ "M")? s:duration_seconds? {return [h,m].concat(s===null ? [0,0] : s)})? quotation_mark { return [Y,M,D].concat(T===null ? [0,0,0,0] : T).map(x => x==="" ? 0 : parseInt(x))}
+
+duration_seconds = s:(s:(s:$DIGIT+ ss:$("." DIGIT+)? {return [s, ss.slice(1)]} / "." ss:$DIGIT+ {return [0, ss.slice(1)]}) "S" {return s})? {return s}
+
+xsd_list_arg = "{" ws '"max"' ws":" max:$digit1_9+ ws "," ws '"min"' ws ":" min:$digit1_9+ ws "}" { return {max: parseInt(max), min: parseInt(min)} }
 
 char
   = unescaped
@@ -770,6 +787,7 @@ gen_moustaches
   = "objectId(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "objectId", []) } }
   / "guid(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "guid", []) } }
   / "boolean(" ws ")" { return { model: {type: "boolean", required: true}, data: fillArray("gen", null, "boolean", []) } }
+  / "regex(" ws ")" { return { model: {type: "string", required: true}, data: fillArray("gen", null, "regex", []) } }
   / "index(" ws offset:(i:int_or_local ws { return i })? ")" {
       return {
         model: {type: "integer", required: true},
@@ -868,6 +886,60 @@ gen_moustaches
     return {
       model: {type: "string", required: true},
       data: fillArray("gen", null, "stringOfSize", [fst, snd])
+    }
+  }
+  / "xsd_string(" ws base:xsd_string_base ws "," ws len:natural_or_local ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_string", [base, len])
+    }
+  }
+  / "hexBinary(" ws len:natural_or_local ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "hexBinary", [len])
+    }
+  }
+  / "xsd_gDay(" ws min:gDay ws "," ws max:gDay ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "formattedInteger", [min, max, 2, ""]).map(x => "---" + x)
+    }
+  }
+  / "xsd_gMonth(" ws min:gMonth ws "," ws max:gMonth ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "formattedInteger", [min, max, 2, ""]).map(x => "--" + x)
+    }
+  }
+  / "xsd_gYear(" ws min:gYear ws "," ws max:gYear ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "formattedInteger", [min, max, 4, ""])
+    }
+  }
+  / "xsd_gMonthDay(" ws min:gMonthDay ws "," ws max:gMonthDay ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_complexGType", ["gMonthDay", max, min, list===null ? {max:1,min:1} : list])
+    }
+  }
+  / "xsd_gYearMonth(" ws min:gYearMonth ws "," ws max:gYearMonth ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_complexGType", ["gYearMonth", max, min, list===null ? {max:1,min:1} : list])
+    }
+  }
+  / "xsd_duration(" ws min:duration ws "," ws max:duration ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_duration", [max, min, list===null ? {max:1,min:1} : list])
+    }
+  }
+  / "xsd_dateTime(" ws base:("date"/"dateTime") ws "," ws max:xsd_dateTime_arg ws "," ws min:xsd_dateTime_arg ws "," ws list:xsd_list_arg ws ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_dateTime", [base, max, min, list])
     }
   }
 
