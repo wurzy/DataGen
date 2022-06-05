@@ -37,13 +37,13 @@ passport.use('login-auth', new LocalStrategy(
       User.consultar(email)
         .then(dados => {
           const user = dados
-          if(!user) { return done(null, {strat: 'login-auth', success: false, invalidInput: 'email', message: 'Combinação inválida de e-mail e/ou password.\n'})}
+          if(!user) { return done(null, {strat: 'login-auth', success: false, invalidInput: 'email', message: 'Combinação inválida de e-mail e password.\n'})}
           bcrypt.compare(password, user.password, function(err, result) {
             if(result) {
               done(null, {strat: 'login-auth', success: true, user})
             }
             else {
-              done(null, {strat: 'login-auth', success: false, invalidInput: 'password', message: 'Combinação inválida de e-mail e/ou password.\n'})
+              done(null, {strat: 'login-auth', success: false, invalidInput: 'password', message: 'Combinação inválida de e-mail e password.\n'})
             }
           });
         })
@@ -57,7 +57,7 @@ passport.use('signup-auth', new LocalStrategy(
   (req, email, password, done) => {
     User.consultar(email)
       .then(dados => {
-        if (dados) return done(null, {strat: 'signup-auth', success: false, invalidInput: 'email', message: 'Email já se encontra utilizado.\n'})
+        if (dados) return done(null, {strat: 'signup-auth', success: false, invalidInput: 'email', message: 'Email já se encontra em utilização.\n'})
         else {
           var date = new Date().toISOString().substr(0,19)
           bcrypt.hash(password, 10, function(err, hash) {

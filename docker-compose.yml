@@ -38,6 +38,20 @@ services:
             default:
               aliases:
                 - back-end
+    dfs-front-end:
+        container_name: dfs-front-end
+        restart: always
+        build:
+            context: ./dfs_frontend
+            dockerfile: ./Dockerfile
+        ports: 
+            - "8080:80"
+        links:
+            - back-end
+        networks:
+            default:
+              aliases:
+                - back-end
     strapi:
         image: strapi/strapi
         container_name: strapi

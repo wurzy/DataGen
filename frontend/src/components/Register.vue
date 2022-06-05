@@ -23,7 +23,7 @@
                               required="required">
                       </div>
                       <div class="form-group">
-                          <input v-model="password" type="password" class="form-control" name="password" placeholder="Palavra-passe"
+                          <input v-model="password" type="password" class="form-control" name="password" placeholder="Palavra-passe" minlength="8"
                               required="required">
                       </div>
                       <div class="form-group">

@@ -421,7 +421,7 @@ export default {
       }
     },
     mounted() {
-      if(this.$props.userModel) this.code = this.$props.userModel
+      if (this.$props.userModel) this.code = this.$props.userModel
       this.codemirror.setSize("100%", "100%")
       this.codemirror2.setSize("100%", "100%")
     }
