@@ -67,14 +67,14 @@ router.post('/csv', function(req,res){
 })
 
 // POST para uso em aplicações
-router.post('/dfs', upload.single('model'), function(req,res){
+/* router.post('/dfs', upload.single('model'), function(req,res){
     let model = fs.readFileSync(req.file.path, "utf8")
     
     try {
         data = parser.parse(model)
 
         if (req.body.output_format == "JSON") data = converter.cleanJson(data.dataModel.data)
-        if (req.body.output_format == "XML") data = converter.jsonToXml(data.dataModel.data, req.body.xml_declaration)
+        if (req.body.output_format == "XML") data = converter.jsonToXml(data.dataModel.data, {xml_declaration: req.body.xml_declaration})
         console.log(data)
 
         fs.writeFileSync('./output/dataset.txt', JSON.stringify(data), function (err) {
@@ -95,6 +95,6 @@ router.post('/dfs', upload.single('model'), function(req,res){
         console.log(err)
         res.status(404).jsonp(err)
     }
-})
+}) */
 
 module.exports = router;

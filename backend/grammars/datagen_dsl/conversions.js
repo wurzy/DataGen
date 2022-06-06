@@ -122,11 +122,9 @@ function cleanJsonFromJsonSchema(json, depth) {
         let prop = keys[i]
         
         if (prop == "DFJS_EMPTY_JSON") delete json[prop]
-
-        if (prop == "DFJS_NOT_OBJECT") {
-            if (typeof json[prop] == "object" && !Array.isArray(json[prop]) && json[prop] !== null) 
-                json = cleanJsonFromJsonSchema(json[prop], depth)
-            return json
+        else if (prop == "DFJS_NOT_OBJECT") {
+            if (typeof json[prop] == "object" && json[prop] !== null) json[prop] = cleanJsonFromJsonSchema(json[prop], depth)
+            return json[prop]
         }
         else if (typeof json[prop] == "object" && json[prop] != null) cleanJsonFromJsonSchema(json[prop], depth+1)
     }
@@ -144,7 +142,7 @@ function denormalizeNameXML(prop, prop_name) {
 function convertXMLString(input, outputFormat, depth) {
     var xml = '\t'.repeat(depth)
     
-    if (input == null) xml += "null"
+    if (input === null) xml += "null"
     else if (typeof input === 'string') {
         if (outputFormat === 'xml') {
             xml += input.replace(/(&)/g, '&amp;').replace(/(<)/g, '&lt;').replace(/(>)/g, '&gt;').replace(/(')/g, '&apos;')
@@ -159,8 +157,24 @@ function convertXMLString(input, outputFormat, depth) {
 }
 
 
-function jsonToXml(obj, xml_declaration) {
-    if (xml_declaration === undefined) xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>'
+function jsonToXml(obj, settings) {
+    let xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>'
+
+    if (settings !== undefined) {
+        if ("xml_declaration" in settings) xml_declaration = settings.xml_declaration
+        if ("root_name" in settings) {
+            let key = "DFJS_NOT_OBJECT"
+            let xml = xml_declaration + `\n<${settings.root_name}>`
+
+            if (Object.keys(obj)[0] == key) {
+                if (Array.isArray(obj[key])) xml += "\n" //arrays
+                if (typeof obj[key] == "string" && obj[key].length > 100) xml += "\n" //tipos elementares
+            }
+            else if (typeof obj == "object") xml += "\n" //objetos
+            
+            return xml + jsonToXml2(obj,1) + `</${settings.root_name}>`
+        }
+    } 
     return xml_declaration + "\n" + jsonToXml2(obj,0)
 }
 
@@ -176,7 +190,6 @@ function jsonToXml2(obj, depth) {
     let i = 0
     for (var prop in obj) {
         if (!Object.prototype.hasOwnProperty.call(obj, prop) || (obj[prop] != null && obj[prop] == undefined)) continue
-        
         if (prop == "DFXS_EMPTY_XML") return xml
 
         if (/^DFXS_MIXED_/.test(prop)) {
@@ -195,14 +208,15 @@ function jsonToXml2(obj, depth) {
                 let qm = (typeof obj[prop] == "string" && obj[prop].includes('"')) ? "'" : '"'
                 xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
             }
-            else {   
+            else {
+                if (prop_name == "DFJS_EMPTY_JSON") return xml
                 if (/^DFXS(_NORMALIZED)?_\d+__/.test(prop)) {
                     prop_name = prop.replace(/^DFXS(_NORMALIZED)?_\d+__/, "")
                     prop_name = denormalizeNameXML(prop, prop_name)
                 }
             
-                xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
-                let onlyAttrs = false, empty = false, newlineClose = true
+                if (prop_name != "DFJS_NOT_OBJECT") xml += '\t'.repeat(depth) + "<" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                let onlyAttrs = false, empty = false, newlineClose = true, next_depth = depth + (prop_name != "DFJS_NOT_OBJECT" ? 1 : 0)
                 
                 if (typeof obj[prop] == "object" && obj[prop] != null) {
                     let child_keys = Object.keys(obj[prop])
@@ -210,25 +224,27 @@ function jsonToXml2(obj, depth) {
                     empty = !child_keys.length
                     onlyAttrs = child_keys.length > 0 && child_keys.every(k => /^DFXS(_NORMALIZED)?_ATTR__/.test(k))
 
-                    let content = jsonToXml2(obj[prop], depth+1)
+                    let content = jsonToXml2(obj[prop], next_depth)
                     if (content[0] == " ") xml = xml.slice(0, -2) // atributos
                     xml += content
                 }
                 else {
-                    let value = convertXMLString(obj[prop], 'xml', depth+1)
+                    let value = convertXMLString(obj[prop], 'xml', next_depth)
                     
-                    if (obj[prop].length > 100) xml += value
+                    if (typeof obj[prop] == "string" && obj[prop].length > 100) xml += value
                     else {
                         xml = xml.slice(0, -1) + value.slice(0, -1).replace(/^\t*/, "")
                         newlineClose = false
                     }
                 }
 
-                // abreviar elementos só com atributos ou sem conteúdo
-                if (empty) xml = xml.slice(0,-2) + "/>\n"
-                if (!empty && !onlyAttrs) {
-                    xml += newlineClose ? '\t'.repeat(depth) : ""
-                    xml += "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                if (prop_name != "DFJS_NOT_OBJECT") {
+                    // abreviar elementos só com atributos ou sem conteúdo
+                    if (empty) xml = xml.slice(0,-2) + "/>\n"
+                    if (!empty && !onlyAttrs) {
+                        xml += newlineClose ? '\t'.repeat(depth) : ""
+                        xml += "</" + (Array.isArray(obj) ? `elem_${parseInt(prop)+1}` : prop_name) + ">\n"
+                    }
                 }
             }
         }
