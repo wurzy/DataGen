@@ -92,10 +92,8 @@ export default {
             this.emitChange(this.new_format)
         },
         emitChange(new_format) {
-            let old_format = this.format
+            window.dispatchEvent(new CustomEvent("reset_schemas"))
             this.$emit('changed', new_format)
-
-            window.dispatchEvent(new CustomEvent("reset_schemas", {detail: { storage: {format: old_format.toLowerCase()} }}))
         },
         logout() {
             axios.post('/api/utilizadores/logout', {token: this.token})

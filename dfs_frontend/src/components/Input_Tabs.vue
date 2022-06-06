@@ -32,14 +32,12 @@ export default {
   data() {
     return {
       content: "",
-      tab: "",
+      tab: "schema_1",
       created_tabs: 1,
       newTab_upload: false
     };
   },
   mounted() {
-    this.tab = this.hover
-    this.created_tabs = this.tabs.length
     this.content = this.tabs.find(t => t.key == this.tab).content
   },
   watch: {

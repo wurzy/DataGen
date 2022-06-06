@@ -18,6 +18,7 @@
     >
       Deseja gerar o dataset a partir de que schema?
       <v-select class="select-schema"
+        :key="choose_schema"
         v-model="main_schema"
         :items="input_mode=='xml' ? xml_schemas[0].elements : json_schemas"
         item-text="label"
@@ -25,6 +26,7 @@
         label="Selecionar"
         outlined
         single-line
+        return-object
         style="padding-top: 10px;"
       ></v-select>
     </Modal>
@@ -139,7 +141,7 @@
             :key="input_mode"
             :input_mode="input_mode" 
             :loading="loading"
-            :hover="input_mode=='xml' ? xml_tab : json_tab" 
+            :hover="input_mode=='xml' ? xml_tab.key : json_tab.key" 
             :tabs="input_mode=='xml' ? xml_tabs : json_tabs"
             @updateContent="updateContent" 
             @updateTabs="updateTabs" 
@@ -154,7 +156,7 @@
         <v-container>
           <GrammarError v-if="grammar_errors.length>0" :errors="grammar_errors"/>
             
-          <div v-else class="fill-height">
+          <div class="fill-height">
             <div v-if="no_datasets" class="no-tabs" :style="`background-color: var(--${input_mode}-primary);`"/> 
             <vue-tabs-chrome v-else class="tabs" ref="tab" v-model="dataset_tab" :tabs="dataset_tabs" :on-close="closeDataset" :style="`background-color: var(--${input_mode}-primary);`"/>
             <Codemirror :key="output_key" type="output" :mode="tab_format" :text="dataset" @changed="onChangeDataset"/>
@@ -200,7 +202,7 @@ export default {
       // from XML schemas
       xml_tabs: [{ label: "Schema", key: "schema_1", content: "", closable: false }],
       xml_schemas: [{ label: "Schema", key: "schema_1", elements: [] }],
-      xml_tab: "schema_1",
+      xml_tab: {label: "Schema", key: "schema_1"},
       xml_element: {},
       xml_settings: {
         recursiv: {lower: 0, upper: 3},
@@ -210,7 +212,7 @@ export default {
       // from JSON schemas
       json_tabs: [{ label: "Schema 1", key: "schema_1", content: "", closable: false }],
       json_schemas: [{ label: "Schema 1", key: "schema_1" }],
-      json_tab: "schema_1",
+      json_tab: {label: "Schema 1", key: "schema_1"},
       json_settings: {
         recursiv: {lower: 0, upper: 3},
         prob_if: 50,
@@ -259,16 +261,17 @@ export default {
       this.tab_format = this.output_mode
     })
 
-    window.addEventListener('reset_schemas', (event) => {
-      let format = event.detail.storage.format
-      this[format + "_tabs"] = [{ label: "Schema 1", key: "schema_1", content: "", closable: false }]
-      this[format + "_schemas"] = [{ label: "Schema 1", key: "schema_1" }]
-      this[format + "_main_schema"] = "schema_1"
+    window.addEventListener('reset_schemas', () => {
+      this.json_tabs = [{ label: "Schema 1", key: "schema_1", content: "", closable: false }]
+      this.json_schemas = [{ label: "Schema 1", key: "schema_1" }]
+      this.json_tab = {label: "Schema 1", key: "schema_1"}
 
-      if (format == "xml") {
-        this.xml_schemas[0].elements = []
-        this.xml_element = {}
-      }
+      this.xml_tabs = [{ label: "Schema", key: "schema_1", content: "", closable: false }]
+      this.xml_schemas = [{ label: "Schema", key: "schema_1" }]
+      this.xml_tab = {label: "Schema", key: "schema_1"}
+
+      this.xml_schemas[0].elements = []
+      this.xml_element = {}
 
       this.dataset_tabs = [{ label: "", key: "dataset_1", dataset: "", model: "", filename: "", format: "" }]
       this.dataset_tab = "dataset_1"
@@ -310,13 +313,15 @@ export default {
       this.error = true
     },
     updateMain(key) {
-      let main_schema = this.schemas.find(s => s.key == key).key
+      let main_schema = this.schemas.find(s => s.key == key)
       if (this.input_mode == "xml") this.xml_tab = main_schema
       else this.json_tab = main_schema
     },
     updateContent(index, content) {
-      let tabs = this.input_mode == "xml" ? this.xml_tabs : this.json_tabs, new_label
+      let tabs = this.input_mode == "xml" ? this.xml_tabs : this.json_tabs
+      let tab = this.input_mode == "xml" ? this.xml_tab : this.json_tab
       
+      let new_label
       if (this.input_mode == "javascript") new_label = aux.searchJsonSchemaId(content, tabs[index].key)
       else new_label = "Schema"
 
@@ -325,6 +330,7 @@ export default {
       if (new_label != tabs[index].label) {
         tabs[index].label = new_label
         this.schemas[index].label = new_label
+        if (tab.key == tabs[index].key) tab.label = new_label
       }
       tabs[index].content = content
 
@@ -393,13 +399,16 @@ export default {
           }]
         }
         else {
+          this.xml_schemas[0].elements = []
+          this.xml_element = {}
+          
           if (data.elements.length == 1) {
             this.xml_element = {label: data.elements[0], key: "elem_1"}
             this.generate()
           }
           else {
             data.elements.map((e,i) => {
-              let elem = {label: e, key: "elem_"+i}
+              let elem = {label: e, key: "elem_"+(i+1)}
               this.xml_schemas[0].elements.push(elem)
               if (!("key" in this.xml_element) && !i) this.xml_element = elem
             })
@@ -430,11 +439,11 @@ export default {
       else {
         let other_schemas = []
         if (this.json_tabs.length > 1) {
-          let tabs = aux.removeRepeatedSchemas(_.cloneDeep(this.json_tabs), this.json_tab)
-          other_schemas = tabs.filter(s => s.key != this.json_tab && s.content.length > 0)
+          let tabs = aux.removeRepeatedSchemas(_.cloneDeep(this.json_tabs), this.json_tab.key)
+          other_schemas = tabs.filter(s => s.key != this.json_tab.key && s.content.length > 0)
         }
         
-        let main_schema = this.json_tabs.find(t => t.key == this.json_tab)
+        let main_schema = this.json_tabs.find(t => t.key == this.json_tab.key)
         filename = main_schema.label
         result = await this.sendGenRequest("json", {schemas: [main_schema, ...other_schemas], settings})
       }
