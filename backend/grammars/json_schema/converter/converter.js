@@ -23,14 +23,14 @@ let a = x => console.log(JSON.stringify(x))
 function convert(json, user_settings) {
     original_json = json
     SETTINGS = user_settings
-    return "<!LANGUAGE pt>\n" + parseJSON(json.schema, 1)
+    return "<!LANGUAGE pt>\n" + parseJSON(json.schema, 1, 1)
 }
 
-function parseJSON(json, depth) {
+function parseJSON(json, depth, arr_offset) {
     // processar refs que tenham sido substítuidas dentro de chaves de composição de schemas
     if ("undef" in json.type) structureUndefType(json)
 
-    let str = parseType(json, depth)
+    let str = parseType(json, depth, arr_offset)
     if (depth==1 && str[0] != "{") str = "{\n" + indent(depth) + `DFJS_NOT_OBJECT: ${str}\n}`
     return str
 }
@@ -79,7 +79,7 @@ function arrayfyContains(json) {
     json.contains = [{contains: json.contains, minContains, maxContains}]
 }
 
-function parseType(json, depth) {
+function parseType(json, depth, arr_offset) {
     let predefinedValue = arr => `gen => { return gen.random(...${JSON.stringify(arr)}) }`
     let possibleTypes = Object.keys(json.type)
 
@@ -104,7 +104,7 @@ function parseType(json, depth) {
             case "null": value = "null"; break
             case "boolean": value = "'{{boolean()}}'"; break
             case "string": value = parseStringType(json.type.string); break
-            case "array": value = parseArrayType(json.type.array, depth+1); break
+            case "array": value = parseArrayType(json.type.array, depth + arr_offset); break
             case "number": value = parseNumericType(json.type.number, depth); break
         }
 
@@ -282,7 +282,7 @@ function parseObjectType(json, only_req, depth) {
     if (only_req && Object.keys(obj).length >= minProps) return obj
 
     // adicionar uma propriedade nova ao objeto final
-    let addProperty = (k,v) => obj[k] = parseJSON(v, depth+1)
+    let addProperty = (k,v) => obj[k] = parseJSON(v, depth+1, 0)
     
     // para verificar se é preciso fazer a propriedade recursiva ASAP ou se se pode fazer pela ordem natural
     let recursive_index = ("recursive" in json && json.recursive.key == "properties") ? (Object.keys(json.properties).findIndex(x => x == json.recursive.prop) + 1) : 0
@@ -439,7 +439,7 @@ function objectSize(json, required) {
 // adicionar um conjunto de propriedades ao objeto final
 function addProperties(json, obj, props, depSchemas, depSchemas_objects, depth) {
     // adicionar uma propriedade nova
-    let addProperty = (k,v) => obj[k] = parseJSON(v, depth+1)
+    let addProperty = (k,v) => obj[k] = parseJSON(v, depth+1, 0)
     
     for (let i = 0; i < props.length; i++) {
         let k = props[i]
@@ -511,13 +511,13 @@ function parseArrayType(json, depth) {
     
     // gerar os elementos prefixados do array
     let prefixedLen = prefixed > arrLen.len ? arrLen.len : prefixed
-    for (let i = 0; i < prefixedLen; i++) arr.push(parseJSON(json.prefixItems[i], depth))
+    for (let i = 0; i < prefixedLen; i++) arr.push(parseJSON(json.prefixItems[i], depth, 0))
 
     // só gerar elementos do contains se forem permitidos itens extra
     if ("contains" in json && (!("items" in json || "unevaluatedItems" in json) || additionalItems)) {
         if (!("maxItems" in json) || prefixed < arrLen.maxItems) {
             if (prefixedLen < prefixed) {
-                for (let i = prefixedLen; i < prefixed; i++) arr.push(parseJSON(json.prefixItems[i], depth))
+                for (let i = prefixedLen; i < prefixed; i++) arr.push(parseJSON(json.prefixItems[i], depth, 0))
             }
 
             json.contains.map(c => {
@@ -529,7 +529,7 @@ function parseArrayType(json, depth) {
                 let sumLen = arr.length + containsLen
                 let final_len = !("maxItems" in json) ? sumLen : (sumLen <= arrLen.maxItems ? sumLen : arrLen.maxItems)
     
-                for (let i = arr.length; i < final_len; i++) arr.push(parseJSON(containsSchema, depth))
+                for (let i = arr.length; i < final_len; i++) arr.push(parseJSON(containsSchema, depth, 0))
             })
         }
     }
@@ -547,12 +547,15 @@ function parseArrayType(json, depth) {
         }
     }
 
-    for (let i = arr.length; i < arrLen.len; i++) arr.push(parseJSON(nonPrefixedSchema, depth))
+    for (let i = arr.length; i < arrLen.len; i++) arr.push(parseJSON(nonPrefixedSchema, depth, 0))
 
     // converter o array final para string da DSL
     if (!("uniqueItems" in json && !arr.some(x => /^({\n|\[|gen => {( \/\/[^u])?\n)/.test(x)))) {
         let str = "[\n"
-        arr.map(x => str += `${indent(depth)}${x},\n`)
+        arr.map((x,i) => {
+            if (/^({\n|\[)/.test(x)) arr[i] = x.replace(/\n/g, "\n\t")
+            str += `${indent(depth)}${arr[i]},\n`
+        })
         return str == "[\n" ? "[]" : `${str.slice(0, -2)}\n${indent(depth-1)}]`
     }
     else {
