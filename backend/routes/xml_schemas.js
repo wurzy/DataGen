@@ -110,7 +110,7 @@ router.post('/:output', (req, res) => {
       res.status(500).send(translateMsg(err, null))
     }
   }
-  else res.status(500).send(`O corpo do pedido deve ter apenas três propriedades: 'schema', 'element' e 'settings', onde 'element' é o elemento de raiz da schema que se pretende gerar.\nAs definições devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
+  else res.status(500).send(`O corpo do pedido deve ter apenas três propriedades: 'schema', 'element' e 'settings', onde 'element' é o elemento-raiz da schema que se pretende gerar.\nAs definições devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
 });
 
 module.exports = router;
