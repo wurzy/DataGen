@@ -87,8 +87,8 @@ function translateMsg(error) {
 
         error.message = error.message.replace("Expected", "Era esperado")
                                      .replace(/,? or/, " ou")
-                                     .replace("but end of input found", "mas o input chegou ao fim")
-                                     .replace("but", "mas foi encontrado")
+                                     .replace(" but end of input found", " mas o input chegou ao fim")
+                                     .replace(" but", " mas foi encontrado")
                                      .replace(" found", "")
     }
     return error

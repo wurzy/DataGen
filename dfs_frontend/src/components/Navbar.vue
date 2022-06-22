@@ -23,6 +23,11 @@
             <span class="title"> Schemas</span>
             <v-spacer></v-spacer>
 
+            <v-btn color="#9b66f4" style="margin-right:10px;" :disabled="loading" @click="datagen">
+                <span>DataGen</span>
+                <v-icon right>mdi-arrow-top-right-bold-box-outline</v-icon>
+            </v-btn>
+
             <div v-if="!session" class="btns">
                 <v-btn :color="color('secondary')" :disabled="loading" @click="user_auth=true">
                     <span>Entrar</span>
@@ -73,6 +78,7 @@ export default {
         window.addEventListener('loading', (event) => { this.loading = event.detail.storage.loading })
     },
     methods: {
+        datagen() { window.open("https://datagen.di.uminho.pt/") },
         color(type) { return `var(--${this.format.toLowerCase()}-${type})` },
         update(format) {
             if (this.no_input == true) { this.emitChange(format) }

@@ -3,7 +3,7 @@
         <v-row>
             <v-col cols="12" sm="6">
                 <v-text-field
-                    v-model="new_settings.recursiv.lower"
+                    v-model="new_settings.recursivity.lower"
                     :rules="[rules.required, rules.nonNegative, rules.lessThanUpper]"
                     type="number"
                     label="Limite inferior de recursividade"
@@ -11,7 +11,7 @@
             </v-col>
             <v-col cols="12" sm="6">
                 <v-text-field
-                    v-model="new_settings.recursiv.upper"
+                    v-model="new_settings.recursivity.upper"
                     :rules="[rules.required, rules.nonNegative, rules.moreThanLower]"
                     type="number"
                     label="Limite superior de recursividade"
@@ -40,14 +40,14 @@ export default {
         return {
             valid: true,
             new_settings: {
-                recursiv: {lower: 0, upper: 3},
+                recursivity: {lower: 0, upper: 3},
                 unbounded: 10
             },
             rules: {
                 required: v => !!v || "Valor obrigatório.",
                 nonNegative: v => parseInt(v) >= 0 || "O valor não pode ser negativo.",
-                lessThanUpper: v => parseInt(v) <= parseInt(this.new_settings.recursiv.upper) || "Não pode ser maior que o limite superior.",
-                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursiv.lower) || "Não pode ser menor que o limite inferior."
+                lessThanUpper: v => parseInt(v) <= parseInt(this.new_settings.recursivity.upper) || "Não pode ser maior que o limite superior.",
+                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursivity.lower) || "Não pode ser menor que o limite inferior."
             }
         }
     },

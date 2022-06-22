@@ -92,14 +92,14 @@ function extendNumeric(json, schema) {
 }
 
 function extendObject(json, schema, SETTINGS) {
-    assignProperties(json, schema, ["properties","patternProperties"], SETTINGS.extend_propSchema)
-    assignSchemaObject(json, schema, ["additionalProperties","unevaluatedProperties","propertyNames"], SETTINGS.extend_schemaObj)
+    assignProperties(json, schema, ["properties","patternProperties"], SETTINGS.extend_objectProperties)
+    assignSchemaObject(json, schema, ["additionalProperties","unevaluatedProperties","propertyNames"], SETTINGS.extend_schemaProperties)
     extendSizeKeys(json, schema, "minProperties", "maxProperties")
     extendArrayKey(json, schema, ["required","notRequired","notAdditionalProperties","notUnevaluatedProperties"])
 }
 
 function extendArray(json, schema, SETTINGS) {
-    assignSchemaObject(json, schema, ["items","unevaluatedItems"], SETTINGS.extend_schemaObj)
+    assignSchemaObject(json, schema, ["items","unevaluatedItems"], SETTINGS.extend_schemaProperties)
     extendSizeKeys(json, schema, "minItems", "maxItems")
     extendArrayKey(json, schema, ["contains","notContains","notContainsTypes","notItems","notUnevaluatedItems"])
     if ("uniqueItems" in schema) json.uniqueItems = schema.uniqueItems

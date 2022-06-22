@@ -8,7 +8,7 @@ function resolve_refs(data, settings) {
 			let subschema = data[i].subschemas[j]
 			
 			if (subschema.refs.length > 0) {
-				let resolved = resolve_localRefs(subschema.schema, subschema.id, subschema.refs, subschema.anchors, data[i].pn_refs, settings.recursiv)
+				let resolved = resolve_localRefs(subschema.schema, subschema.id, subschema.refs, subschema.anchors, data[i].pn_refs, settings.recursivity)
 				if (resolved !== true) return resolved
 			}
 			

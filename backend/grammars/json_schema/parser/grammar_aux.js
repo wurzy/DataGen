@@ -52,7 +52,7 @@ function checkAllOfTypes(value, error) {
     }
   }
 
-  if (!types.length) return error("As schemas da chave 'allOf' devem ter pelo menos um tipo de dados em comum, caso contrário não é possível gerar um valor que respeite todas elas!")
+  if (!types.length) return error("As schemas da chave 'allOf' devem ter pelo menos um tipo de dados em comum, caso contrário não é possível gerar um valor em conformidade com todas elas!")
   return types
 }
 

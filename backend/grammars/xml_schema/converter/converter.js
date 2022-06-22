@@ -120,10 +120,10 @@ function parseElement(el, depth, keys, schemaElem) {
       if (el.attrs.type in recursiv.complexType) recursiv.complexType[el.attrs.type]++
       else recursiv.complexType[el.attrs.type] = 1
 
-      if (recursiv.complexType[el.attrs.type] > SETTINGS.recursiv.upper) occurs = 0
+      if (recursiv.complexType[el.attrs.type] > SETTINGS.recursivity.upper) occurs = 0
    }
    
-   for (let i = 0; i < (recursiv.element[name] > SETTINGS.recursiv.upper ? 0 : occurs); i++) {
+   for (let i = 0; i < (recursiv.element[name] > SETTINGS.recursivity.upper ? 0 : occurs); i++) {
       // converte o valor do elemento para string DSL
       let parsed = parseElementAux(el, depth)
 
@@ -304,7 +304,7 @@ function parseGroup(el, depth, keys) {
    if (el.attrs.name in recursiv.group) recursiv.group[el.attrs.name]++
    else recursiv.group[el.attrs.name] = 1
 
-   let occurs = recursiv.group[el.attrs.name] > SETTINGS.recursiv.upper ? 0 : randomize(el.attrs.minOccurs, el.attrs.maxOccurs)
+   let occurs = recursiv.group[el.attrs.name] > SETTINGS.recursivity.upper ? 0 : randomize(el.attrs.minOccurs, el.attrs.maxOccurs)
 
    // repetir os filhos um nr aleatório de vezes, entre os limites dos atributos max/minOccurs
    for (let i = 0; i < occurs; i++) {

@@ -102,6 +102,13 @@
             </li>
           </router-link>
         </div>
+        <div style="text-align: right;">
+          <router-link to="" class="nav-link" @click.native="dfs">
+            <li class="nav-item">
+              <font-awesome-icon icon="external-link-alt"/> DataGen From Schemas
+            </li>
+          </router-link>
+        </div>
       </ul>
     </div>
   </div>
@@ -163,6 +170,7 @@ export default {
     this.user = JSON.parse(localStorage.getItem('user'))
   },
   methods: {
+    dfs() { window.open("https://datagenfromschemas.di.uminho.pt/") },
     login(){
       $("#login_modal").modal("show");
       $("#login_modal").css("z-index", "1500");
