@@ -79,7 +79,7 @@ function cleanJsonFromXsd(json, depth) {
             }
             delete json[prop]
         }
-        else if (/^DFXS_EXTENSION__SC/.test(prop)) {
+        else if (/^DFXS_SIMPLE_CONTENT/.test(prop)) {
             if (Object.keys(json).length == 1) temp = prop
             else json = renameProperty(json, prop, "value")
         }
@@ -197,7 +197,7 @@ function jsonToXml2(obj, depth) {
             if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = obj[prop]
         }
         else if (/^DFXS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
-        else if (/^DFXS_EXTENSION__SC/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
+        else if (/^DFXS_SIMPLE_CONTENT/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
         else {
             let prop_name = prop
 

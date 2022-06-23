@@ -61,7 +61,7 @@
   // verificar se não foi definido um prefixo para a schema
   const noSchemaPrefix = () => default_prefix === null
   // verificar se o prefixo usado foi declarado na definição da schema
-  const existsPrefix = p => prefixes.includes(p) ? p : error(`O prefixo '${p}' não foi declarado no início da schema!`)
+  const existsPrefix = p => prefixes.includes(p) ? p : error(`O prefixo <b>${p}</b> não foi declarado no início da schema!`)
   // verificar se as aspas/apóstrofes são fechados consistentemente - se sim, retorna o objeto {attr,val} em que foram usadas (ou apenas true, para as invocações da declaração XML)
   const checkQM = (q1,q2,attr,val) => q1 === q2 ? (attr===null ? true : {attr,val}) : error("Deve encapsular o valor em aspas ou em apóstrofes. Não pode usar um de cada!")
   // executar todas as invocações guardadas na queue para ver se são válidas
@@ -102,14 +102,15 @@
           return unions[i].args[1][0].attrs.memberTypes.length > 0
         })
 
-        let r_error = `\t- algum dos tipos {'${r.map(x => x.base).join("', '")}'} referenciados no atributo "base" dos elementos <restriction> (simpleType)`
-        let l_error = `\t- algum dos tipos {'${lists.map(x => x.args[1][0].attrs.itemType).join("', '")}'} referenciados no atributo "itemType" dos elementos <list>`
-        let u_error = `\t- algum dos tipos {'${unions.map(x => x.args[1][0].attrs.memberTypes.join("', '")).join(", ")}'} referenciados no atributo "memberTypes" dos elementos <union>`
+        let ws = "‏‏‎ ‎"
+        let r_error = `${ws}${ws}- algum dos tipos {<b>${r.map(x => x.base).join("</b>, <b>")}</b>} referenciados no atributo <b>base</b> dos elementos <b>&#60;restriction&#62;</b> (simpleType)`
+        let l_error = `${ws}${ws}- algum dos tipos {<b>${lists.map(x => x.args[1][0].attrs.itemType).join("</b>, <b>")}</b>} referenciados no atributo <b>itemType</b> dos elementos <b>&#60;list&#62;</b>`
+        let u_error = `${ws}${ws}- algum dos tipos {<b>${unions.map(x => x.args[1][0].attrs.memberTypes.join("</b>, <b>")).join(", ")}</b>} referenciados no atributo <b>memberTypes</b> dos elementos <b>&#60;union&#62;</b>`
 
-        let err = "Existe uma referência a um tipo inválido que é:\n"
+        let err = "Existe uma referência a um tipo inválido que é:<br>"
         if (r.length > 0) err += r_error
-        if (lists.length > 0) err += (err[err.length-1] == "\n" ? "" : ";\n") + l_error
-        if (unions.length > 0) err += (err[err.length-1] == "\n" ? "" : ";\n") + u_error
+        if (lists.length > 0) err += (err[err.length-1] == "<br>" ? "" : ";<br>") + l_error
+        if (unions.length > 0) err += (err[err.length-1] == "<br>" ? "" : ";<br>") + u_error
 
         return error(err + ".")
       }
@@ -225,11 +226,12 @@
         e = ct_queue.extension.filter(x => !parsed_types.includes(getBase(x))).map(x => getBase(x))
         r = ct_queue.restriction.filter(x => !parsed_types.includes(getBase(x))).map(x => getBase(x))
 
-        let error_msg = (el, bases) => `\t- algum dos tipos {'${bases.join("', '")}'} referenciados no atributo "base" dos elementos <${el}> (complexType)`
+        let ws = "‏‏‎ ‎"
+        let error_msg = (el, bases) => `${ws}${ws}- algum dos tipos {<b>${bases.join("</b>, <b>")}</b>} referenciados no atributo <b>base</b> dos elementos <b>&#60;${el}&#62;</b> (complexType)`
 
-        let err = "Existe uma referência a um complexType inválido que é:\n"
+        let err = "Existe uma referência a um complexType inválido que é:<br>"
         if (e.length > 0) err += error_msg("extension", e)
-        if (r.length > 0) err += (err[err.length-1] == "\n" ? "" : ";\n") + error_msg("restriction", r)
+        if (r.length > 0) err += (err[err.length-1] == "<br>" ? "" : ";<br>") + error_msg("restriction", r)
 
         return error(err + ".")
       }
@@ -274,7 +276,7 @@
   // funções invocadas pela queue
   const queueFuncs = {
     // validar se o atributo "ref" está a referenciar um <element/attribute> global válido da schema ou de uma schema importada (só se valida o prefixo, neste caso)
-    ref: (ref, el_name) => (ref.includes(":") || names[el_name].includes(ref)) ? true : error(`Está a tentar referenciar um elemento <${el_name}> inexistente! Só é possível referenciar elementos globais.`),
+    ref: (ref, el_name) => (ref.includes(":") || names[el_name].includes(ref)) ? true : error(`Está a tentar referenciar um elemento <b>&#60;${el_name}&#62;</b> inexistente! Só é possível referenciar elementos globais.`),
     // verificar que o tipo local que está a ser referenciado existe
     type: (type, prefix, curr_any_type, curr_type, curr_el) => {
       if (/ID(REF(S)?)?/.test(type)) id_types[type]++
@@ -284,7 +286,7 @@
         C: "complexType"
       }
 
-      if (curr_any_type == "BS" && type in complexTypes) return error(`Neste local, só pode referenciar um ${error_msg[curr_any_type]}, mas está a tentar referenciar o complexType '${type}'!`)
+      if (curr_any_type == "BS" && type in complexTypes) return error(`Neste local, só pode referenciar um ${error_msg[curr_any_type]}, mas está a tentar referenciar o complexType <b>${type}</b>!`)
 
       if (curr_any_type != "C" && stAPI.built_in_types(simpleTypes).includes(type)) {
         if (prefix === default_prefix || (prefix === null && existsLocalType(curr_any_type, type))) return true
@@ -292,8 +294,8 @@
       }
           
       if (prefix == null || prefix == default_prefix) {
-        if (!existsLocalType(curr_any_type, type)) return error(`O tipo '${prefix===null ? "" : prefix+":"}${type}' não existe! Tem de referenciar um ${error_msg[curr_any_type]} válido!`)
-        if (!curr_el && type === curr_type) return error(`Definições circulares detetadas para o tipo '${type}'! Isto significa que o '${type}' está contido na sua própria hierarquia, o que é um erro.`)
+        if (!existsLocalType(curr_any_type, type)) return error(`O tipo <b>${prefix===null ? "" : prefix+":"}${type}</b> não existe! Tem de referenciar um ${error_msg[curr_any_type]} válido!`)
+        if (!curr_el && type === curr_type) return error(`Definições circulares detetadas para o tipo <b>${type}</b>! Isto significa que o <b>${type}</b> está contido na sua própria hierarquia, o que é um erro.`)
       }
       return true
     }
@@ -341,8 +343,8 @@
   function check_elTags(el_name, prefix, close) {
     // merged é um boleano que indica se a abertura e fecho são feitos no mesmo elemento ou não
     if (!close.merged) {
-      if (el_name !== close.name) return error(`Os elementos de abertura <${el_name}> e de fecho <${close.name}> devem dizer respeito ao mesmo elemento!`)
-      if (prefix !== close.prefix) return error(`O prefixo do elemento de fecho do <${el_name}> tem de ser igual ao prefixo do elemento de abertura!`)
+      if (el_name !== close.name) return error(`Os elementos de abertura <b>&#60;${el_name}&#62;</b> e de fecho <b>&#60;${close.name}&#62;</b> devem dizer respeito ao mesmo elemento!`)
+      if (prefix !== close.prefix) return error(`O prefixo do elemento de fecho do <b>&#60;${el_name}&#62;</b> tem de ser igual ao prefixo do elemento de abertura!`)
     }
     
     if (prefix !== null && prefix !== default_prefix) return error("Prefixo inválido!")
@@ -367,20 +369,20 @@
     for (let el in els_obj) {
       // verificar se há nomes repetidos para cada tipo de elemento
       let duplicates = els_obj[el].filter((item, index) => els_obj[el].indexOf(item) !== index)
-      if (duplicates.length > 0) return error(`Os elementos <${el}> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o elemento <${parent}> tem mais do que um <${el}> com o nome '${duplicates[0]}'.`)
+      if (duplicates.length > 0) return error(`Os elementos <b>&#60;${el}&#62;</b> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o elemento <b>&#60;${parent}&#62;</b> tem mais do que um <b>&#60;${el}&#62;</b> com o nome <i>${duplicates[0]}</i>.`)
     }
     return true
   }
 
   // verificar que o filho de um <group> não tem os atributos 'max/minOccurs'
   function check_groupContent(attrs, content) {
-    if (!atRoot() && content.length > 0) return error("Os elementos <group> devem ser definidos globalmente e referenciados dentro de outros elementos!")
+    if (!atRoot() && content.length > 0) return error("Os elementos <b>&#60;group&#62;</b> devem ser definidos globalmente e referenciados dentro de outros elementos!")
 
     if (content.some(x => "maxOccurs" in x.attrs || "minOccurs" in x.attrs))
-      return error(`O elemento filho de um <group> não podem possuir os atributos 'maxOccurs' ou 'minOccurs'! Só o elemento <group> em si.`)
+      return error(`Um elemento-filho de um <b>&#60;group&#62;</b> não podem possuir os atributos <b>maxOccurs</b> ou <b>minOccurs</b>! Só o elemento <b>&#60;group&#62;</b> em si.`)
 
-    if ("ref" in attrs) { if (content.length > 0) return error("Um elemento <group> com o atributo 'ref' não pode ter nenhum elemento filho!") }
-    else if (!content.length) return error("Um elemento <group> sem o atributo 'ref' não pode ter conteúdo vazio!")
+    if ("ref" in attrs) { if (content.length > 0) return error("Um elemento <b>&#60;group&#62;</b> com o atributo <b>ref</b> não pode ter nenhum elemento filho!") }
+    else if (!content.length) return error("Um elemento <b>&#60;group&#62;</b> sem o atributo <b>ref</b> não pode ter conteúdo vazio!")
       
     if (content.length > 0) {
       content[0].attrs.maxOccurs = 1
@@ -396,13 +398,13 @@
   // juntar todos os atributos do elemento num só objeto
   const getAttrs = objArr => objArr === null ? {} : cleanContent(objArr).reduce(((r,c) => { r[c.attr] = c.val; return r }), {})
   // verificar se o array de atributos tem algum atributo repetido
-  const check_repeatedAttrs = (arr, attrs, el_name) => (Object.keys(attrs).length == arr.length) ? attrs : error(`O elemento <${el_name}> não pode possuir atributos repetidos!`)
+  const check_repeatedAttrs = (arr, attrs, el_name) => (Object.keys(attrs).length == arr.length) ? attrs : error(`O elemento <b>&#60;${el_name}&#62;</b> não pode possuir atributos repetidos!`)
   // verificar se o atributo em questão está presente
-  const check_requiredAttr = (attrs, el_name, attr_name) => attr_name in attrs ? attrs : error(`Um elemento <${el_name}> requer o atributo '${attr_name}'!`)
+  const check_requiredAttr = (attrs, el_name, attr_name) => attr_name in attrs ? attrs : error(`Um elemento <b>&#60;${el_name}&#62;</b> requer o atributo <b>${attr_name}</b>!`)
   // validar um elemento <element/attribute> básico - verificar que tem os atributos essenciais
   const validateLocalEl = attrs => "ref" in attrs || "name" in attrs
   // verificar se o novo id é único na schema
-  const validateID = id => !ids.includes(id) ? true : error(`O valor do atributo 'id' deve ser único na schema! Existe mais do que um elemento na schema com o id '${id}'!`)
+  const validateID = id => !ids.includes(id) ? true : error(`O valor do atributo <b>id</b> deve ser único na schema! Existe mais do que um elemento na schema com o id <b>${id}</b>!`)
 
   // guardar o valor do atributo 'minOccurs' na estrutura de dados, se 'maxOccurs' for "unbounded"
   function getUnboundedMin(attrs) {
@@ -421,11 +423,11 @@
     // verificar que são elementos globais
     if (atRoot()) {
       if (!names[el_name].includes(name)) {names[el_name].push(name); return true}
-      return error(`Todos os elementos <${el_name}> ${el_name != "notation" ? "definidos globalmente " : ""}devem ter nomes únicos!`)
+      return error(`Todos os elementos <b>&#60;${el_name}&#62;</b> ${el_name != "notation" ? "definidos globalmente " : ""}devem ter nomes únicos!`)
     }
     if (["key","keyref","unique"].includes(el_name)) {
       if (!names.elem_constraint.includes(name)) {names.elem_constraint.push(name); return true}
-      return error(`Todos os elementos <key>, <keyref> e <unique> devem ter nomes únicos!`)
+      return error(`Todos os elementos <b>&#60;key&#62;</b>, <b>&#60;keyref&#62;</b> e <b>&#60;unique&#62;</b> devem ter nomes únicos!`)
     }
     return true
   }
@@ -439,7 +441,7 @@
   // validar o valor do atributo "namespace" de um elemento <any/anyAttribute>, se não for ##any nem ##other
   function check_namespace(l) {
     let arr = l.split(/[ \t\n\r]+/)
-    let error_msg = "O valor do atributo 'namespace' deve corresponder a ((##any | ##other) | Lista de (referência_URI | (##targetNamespace | ##local)))!"
+    let error_msg = "O valor do atributo <b>namespace</b> deve corresponder a ((##any | ##other) | Lista de (referência_URI | (##targetNamespace | ##local)))!"
 
     // verificar que não tem mais do que 1 URI
     if (arr.filter(x => x != "##local" && x != "##targetNamespace").length > 1) return error(error_msg)
@@ -449,20 +451,20 @@
 
   // validar as tags e verificar se o atributo "base" está presente
   function check_requiredBase(el_name, parent_el, prefix, attrs, close) {
-    if (!("base" in attrs)) return error(`O atributo 'base' é requirido num elemento <${el_name}> (${parent_el})!`)
+    if (!("base" in attrs)) return error(`O atributo <b>base</b> é requirido num elemento <b>&#60;${el_name}&#62;</b> (${parent_el})!`)
     return check_elTags(el_name, prefix, close) && check_repeatedNames(el_name, /attribute(Group)?/, close.content)
   }
   
   // verificar que um elemento <element> não tem o atributo "ref" e um dos elementos filhos mutualmente exclusivos com esse
   function check_elemMutex(attrs, content) {
     if ("ref" in attrs && content.some(x => ["simpleType","complexType","key","keyref","unique"].includes(x.element)))
-      return error(`Se o atributo 'ref' está presente num elemento <element>, o seu conteúdo não pode conter nenhum elemento <simpleType>, <complexType>, <key>, <keyref> ou <unique>!`)
+      return error(`Se o atributo <b>ref</b> está presente num elemento <b>&#60;element&#62;</b>, o seu conteúdo não pode conter nenhum elemento <b>&#60;simpleType&#62;</b>, <b>&#60;complexType&#62;</b>, <b>&#60;key&#62;</b>, <b>&#60;keyref&#62;</b> ou <b>&#60;unique&#62;</b>!`)
     return true
   }
 
   // verificar que um elemento <attribute> não tem um elemento filho <simpleType> e um dos atributos mutualmente exclusivos com esse
   function check_attrMutex(attrs, content) {
-    let error_msg = attr => `O atributo '${attr}' só pode estar presente no elemento <attribute> quando o seu conteúdo não contém um elemento <simpleType>!`
+    let error_msg = attr => `O atributo <b>${attr}</b> só pode estar presente no elemento <b>&#60;attribute&#62;</b> quando o seu conteúdo não contém um elemento <b>&#60;simpleType&#62;</b>!`
 
     if (content.some(x => x.element === "simpleType")) {
       if ("type" in attrs) return error(error_msg("type"))
@@ -474,13 +476,13 @@
 
   // verificar que um elemento <attributeGroup> não tem conteúdo se tiver o atributo "ref"
   function check_attrGroupMutex(attrs, content) {
-    if (!atRoot() && content.length > 0) return error("Os elementos <attributeGroup> devem ser definidos globalmente e referenciados dentro de outros elementos!")
+    if (!atRoot() && content.length > 0) return error("Os elementos <b>&#60;attributeGroup&#62;</b> devem ser definidos globalmente e referenciados dentro de outros elementos!")
 
     if ("ref" in attrs && content.some(x => x.element != "annotation"))
-      return error("Se um elemento <attributeGroup> tiver o atributo 'ref' especificado, o seu conteúdo só pode ser, no máximo, um elemento <annotation>!")
+      return error("Se um elemento <b>&#60;attributeGroup&#62;</b> tiver o atributo <b>ref</b> especificado, o seu conteúdo só pode ser, no máximo, um elemento <b>&#60;annotation&#62;</b>!")
 
     if (atRoot() && content.some(x => x.element == "attributeGroup" && "ref" in x.attrs && x.attrs.ref == attrs.name))
-      return error(`Definições circulares detetadas para o grupo de atributos '${attrs.name}'! Um <attributeGroup> não se pode incluir recursivamente na sua própria hierarquia!`)
+      return error(`Definições circulares detetadas para o grupo de atributos <b>${attrs.name}</b>! Um <b>&#60;attributeGroup&#62;</b> não se pode incluir recursivamente na sua própria hierarquia!`)
 
     return true
   }
@@ -488,10 +490,10 @@
   // verificar que um elemento <complexType> não tem o atributo "mixed" e um elemento filho simpleContent
   function check_complexTypeMutex(attrs, content) {
     if (attrs.mixed && content.some(x => x.element == "simpleContent"))
-      return error("Se um elemento <complexType> tiver um elemento filho <simpleContent>, não é permitido o atributo 'mixed'!")
+      return error("Se um elemento <b>&#60;complexType&#62;</b> tiver um elemento filho <b>&#60;simpleContent&#62;</b>, não é permitido o atributo <b>mixed</b>!")
 
     if (content.filter(x => ["simpleContent","complexContent","group","sequence","choice","all"].includes(x.element)).length > 1)
-      return error('Um elemento <complexType> só pode conter apenas um dos seguintes elementos: <simpleContent>, <complexContent>, <group>, <sequence>, <choice> ou <all>!')
+      return error('Um elemento <b>&#60;complexType&#62;</b> só pode conter apenas um dos seguintes elementos: <b>&#60;simpleContent&#62;</b>, <b>&#60;complexContent&#62;</b>, <b>&#60;group&#62;</b>, <b>&#60;sequence&#62;</b>, <b>&#60;choice&#62;</b> ou <b>&#60;all&#62;</b>!')
     
     if ("name" in attrs && content.some(x => x.element == "simpleContent")) local_types.simpleContent.push(attrs.name)
     return true
@@ -506,12 +508,12 @@
                                                    (curr_any_type == "C" && local_types.complexType.includes(type))
   // validar um elemento <union> - verificar que referencia algum tipo
   const validateUnion = (attrs,content) => ("memberTypes" in attrs ? attrs.memberTypes.length : 0) + content.filter(e => e.element === "simpleType").length > 0 ? true : 
-                                           error(`Um elemento <union> deve ter o atributo 'memberTypes' não vazio e/ou pelo menos um elemento filho <simpleType>!`)
+                                           error(`Um elemento <b>&#60;union&#62;</b> deve ter o atributo <b>memberTypes</b> não vazio e/ou pelo menos um elemento filho <b>&#60;simpleType&#62;</b>!`)
 
   // verificar se o nome do novo tipo já existe e adicioná-lo à lista de nomes respetiva caso seja único
   function newLocalType(name, kind) {
     let local_names = Object.values(local_types).flat()
-    if (local_names.includes(name)) return error(`Já existe um simpleType/complexType com o nome '${name}' nesta schema!`)
+    if (local_names.includes(name)) return error(`Já existe um simpleType/complexType com o nome <b>${name}</b> nesta schema!`)
     local_types[kind].push(name)
 
     if (stAPI.built_in_types(simpleTypes).includes(name) || Object.values(modTypeNames).includes(name)) {
@@ -529,9 +531,9 @@
   // validar o tipo de um elemento de derivação - tem de ter ou o atributo de referência ou um elemento filho <simpleType>
   function check_derivingType(elem, attr, attrs, content) {
     if (attr in attrs && content.some(x => x.element === "simpleType"))
-      return error(`A utilização do elemento filho <simpleType> e do atributo '${attr}' é mutualmente exclusiva no elemento <${elem}>!`)
+      return error(`A utilização do elemento filho <b>&#60;simpleType&#62;</b> e do atributo <b>${attr}</b> é mutualmente exclusiva no elemento <b>&#60;${elem}&#62;</b>!`)
     if (!(attr in attrs) && !content.filter(x => x.element == "simpleType").length)
-      return error(`Um elemento <${elem}> deve ter o atributo '${attr}' ou um elemento filho <simpleType> para indicar o tipo a derivar!`)
+      return error(`Um elemento <b>&#60;${elem}&#62;</b> deve ter o atributo <b>${attr}</b> ou um elemento filho <b>&#60;simpleType&#62;</b> para indicar o tipo a derivar!`)
     return true
   }
 }
@@ -565,14 +567,14 @@ schema = comments (p:open_XSD_el {default_prefix = p}) el_name:"schema" attrs:sc
     complexTypes[complexKeys[i]].content = complete_refs(complexTypes[complexKeys[i]].content, complexTypes[complexKeys[i]].content, "schema")
   }
 
-  if ((id_types.IDREF + id_types.IDREFS) > 0 && !id_types.ID) return error("A schema possui 1 ou mais elementos com tipo 'IDREF(S)', mas nenhum com tipo 'ID', pelo que não é possível fazer esta referenciação!")
+  if ((id_types.IDREF + id_types.IDREFS) > 0 && !id_types.ID) return error("A schema possui 1 ou mais elementos com tipo <b>IDREF(S)</b>, mas nenhum com tipo <b>ID</b>, pelo que não é possível fazer esta referenciação!")
   return {element: el_name, prefix: default_prefix, attrs, content}
 }
 
 close_schema = prefix:close_XSD_prefix "schema" ws ">" ws &{
   if (!noSchemaPrefix() && prefix === null) return error("Precisa de prefixar o elemento de fecho da schema!")
   if (noSchemaPrefix() && prefix !== null) return error("Não pode usar um prefixo aqui porque não predefiniu um prefixo para o namespace da schema!")
-  if (prefix !== default_prefix) return error ("Precisa de prefixar o elemento de fecho da schema com o prefixo predefinido do seu namespace!")
+  if (prefix !== default_prefix) return error("Precisa de prefixar o elemento de fecho da schema com o prefixo predefinido do seu namespace!")
   return true
 }
 
@@ -629,7 +631,7 @@ redefine_content = c:(annotation / (simpleType / complexType / group / attribute
 
 element = comments prefix:open_XSD_el el_name:$("element" {any_type = "BSC"; curr.element = true}) attrs:element_attrs ws
           close:(merged_close / openEl content:element_content close_el:close_XSD_el {return {merged: false, ...close_el, content}}) &{
-  if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um elemento local deve ter, pelo menos, o atributo 'name' ou 'ref'!")
+  if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um elemento local deve ter, pelo menos, o atributo <b>name</b> ou <b>ref</b>!")
   return check_elTags(el_name, prefix, close) && check_elemMutex(attrs, close.content)
 } {return {element: el_name, attrs, content: close.content}}
 
@@ -715,7 +717,7 @@ keyref_refer = ws2 attr:"refer" ws "=" q1:QMo val:QName q2:QMc {return checkQM(q
 
 attribute = comments prefix:open_XSD_el el_name:$("attribute" {any_type = "BS"}) attrs:attribute_attrs ws
             close:(merged_close / openEl content:attribute_content close_el:close_XSD_el {return {merged: false, ...close_el, content}}) &{
-  if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um atributo local deve ter, pelo menos, o atributo 'name' ou 'ref'!")
+  if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um atributo local deve ter, pelo menos, o atributo <b>name</b> ou <b>ref</b>!")
   return check_elTags(el_name, prefix, close) && check_attrMutex(attrs, close.content)
 } {return {element: el_name, attrs, content: close.content}}
 
@@ -1178,8 +1180,8 @@ QName = prefix:(p:NCName ":" {return existsPrefix(p)})? name:NCName {
   if (prefix === null) return name
   else {
     if (target_prefixes.includes(prefix)) return name
-    else if (prefix == default_prefix) return error(`'${`${prefix}:${name}`}' não é um elemento válido da XMLSchema! Não estará a tentar referenciar um elemento local?`)
-    else return error(`Esta aplicação suporta apenas referências à XMLSchema (prefixo '${default_prefix}') e à schema local${target_prefixes.length>0 ? ` (prefixo '${target_prefixes[0]}', opcional)` : ""}, por isso não consegue resolver a referência '${`${prefix}:${name}`}'!`)
+    else if (prefix == default_prefix) return error(`<b>${`${prefix}:${name}`}</b> não é um elemento válido da XMLSchema! Não estará a tentar referenciar um elemento local?`)
+    else return error(`Esta aplicação suporta apenas referências à XMLSchema (prefixo <b>${default_prefix}</b>) e à schema local${target_prefixes.length>0 ? ` (prefixo <b>${target_prefixes[0]}</b>, opcional)` : ""}, por isso não consegue resolver a referência <b>${`${prefix}:${name}`}</b>!`)
   }
 }
 
@@ -1202,7 +1204,7 @@ constrFacet_values = $("length" / ("max"/"min")"Length" / ("max"/"min")("Ex"/"In
 
 // um tipo válido tem de ser um dos seguintes: tipo built-in (com ou sem prefixo da schema); tipo de outra schema importada, com o prefixo respetivo; simple/complexType local
 type_value = type:(p:NCName ":" name:NCName &{return existsPrefix(p)} {
-  if (!target_prefixes.includes(p) && p != default_prefix) return error(`Esta aplicação suporta apenas referências à XMLSchema (prefixo '${default_prefix}') e à schema local${target_prefixes.length>0 ? ` (prefixo '${target_prefixes[0]}', opcional)` : ""}, por isso não consegue resolver a referência '${`${p}:${name}`}'!`)
+  if (!target_prefixes.includes(p) && p != default_prefix) return error(`Esta aplicação suporta apenas referências à XMLSchema (prefixo <b>${default_prefix}</b>) e à schema local${target_prefixes.length>0 ? ` (prefixo <b>${target_prefixes[0]}</b>, opcional)` : ""}, por isso não consegue resolver a referência <b>${`${p}:${name}`}</b>!`)
   queue.push({attr: "type", args: [name, p, any_type, current_type, Object.values(curr).some(x=>x)]})
   return {p: target_prefixes.includes(p) ? null : p, name}
 } / name:NCName {
@@ -1218,7 +1220,7 @@ type_value = type:(p:NCName ":" name:NCName &{return existsPrefix(p)} {
 
 finalDefault_values = "#all" / finalDefault_listOfValues
 finalDefault_list_val = "extension" / "restriction" / "list" / "union"
-finalDefault_listOfValues = l:$(finalDefault_list_val (ws2 finalDefault_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo "finalDefault" deve corresponder a (#all | Lista de (extension | restriction | list | union))!')}
+finalDefault_listOfValues = l:$(finalDefault_list_val (ws2 finalDefault_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo <b>finalDefault</b> deve corresponder a (#all | Lista de (extension | restriction | list | union))!')}
 
 elem_final_values = "#all" / "extension" ws "restriction" / "restriction" ws "extension" / "extension" / "restriction"
 
@@ -1226,11 +1228,11 @@ list_types = ws fst:type_value? others:(ws2 n:type_value {return n})* ws {if (fs
 
 block_values = "#all" / block_listOfValues
 block_list_val = "extension" / "restriction" / "substitution"
-block_listOfValues = l:$(block_list_val (ws2 block_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo "block" deve corresponder a (#all | Lista de (extension | restriction | substitution))!')}
+block_listOfValues = l:$(block_list_val (ws2 block_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo<b>"block</b> deve corresponder a (#all | Lista de (extension | restriction | substitution))!')}
 
 simpleType_final_values = "#all" / simpleType_final_listOfValues
 simpleType_final_list_val = "list" / "union" / "restriction"
-simpleType_final_listOfValues = l:$(simpleType_final_list_val (ws2 simpleType_final_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo "final" do elemento <simpleType> deve corresponder a (#all | Lista de (list | union | restriction))!')}
+simpleType_final_listOfValues = l:$(simpleType_final_list_val (ws2 simpleType_final_list_val)*) &{return validate_listOfValues(l, 'O valor do atributo <b>final</b> do elemento <b>&#60;simpleType&#62;</b> deve corresponder a (#all | Lista de (list | union | restriction))!')}
 
 
 namespace_values = (namespace_values_Q / namespace_values_A) {return text().slice(1,-1)}

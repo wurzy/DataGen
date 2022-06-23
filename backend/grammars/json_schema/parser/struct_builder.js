@@ -15,15 +15,15 @@ function structureSchemaData(obj, boolean, vars) {
   if (boolean === false && current_key != "if") return boolean
 
   if (obj === null) {
-    if (boolean !== false && current_key == "not") return error("Uma subschema dentro da chave 'not' não pode ser true ou {}, pois a sua negação impede a geração de qualquer valor!")
+    if (boolean !== false && current_key == "not") return error("Uma subschema dentro da chave <b>not</b> não pode ser <i>true</i> ou <i>{}</i>, pois a sua negação impede a geração de qualquer valor!")
     else obj = {type: ["string","integer","number","boolean","null","array","object"], booleanSchema: boolean}
   }
-  else if (["string","number","boolean","null","array","object"].every(t => obj.type.includes(t)) && current_key == "not") return error("Uma subschema dentro da chave 'not' não pode ser true ou {}, pois a sua negação impede a geração de qualquer valor!")
+  else if (["string","number","boolean","null","array","object"].every(t => obj.type.includes(t)) && current_key == "not") return error("Uma subschema dentro da chave <b>not</b> não pode ser <i>true</i> ou <i>{}</i>, pois a sua negação impede a geração de qualquer valor!")
   else if ("not" in obj && obj.not === false) {
     if (!obj.type.length) obj.type = ["string","integer","number","boolean","null","array","object"]
     delete obj.not
   }
-  else if ("$ref" in obj && (Object.keys(obj).length > 2 || obj.type.length > 0)) return error("O DataGen From Schemas não permite que uma schema com uma '$ref' possua qualquer outra chave!")
+  else if ("$ref" in obj && (Object.keys(obj).length > 2 || obj.type.length > 0)) return error("O DataGen From Schemas não permite que uma schema com uma <b>$ref</b> possua qualquer outra chave!")
 
   let schema = {type: {}}
 
@@ -146,7 +146,7 @@ function schemaComp_specific(obj, schema) {
   
   // verificar se é possível cumprir as chaves de composição de schemas presentes
   for (let i = 0; i < schemaComp_keys.length; i++) {
-    if (!checkKeyExistence(obj, schema, schemaComp_keys[i], 0)) return error(`Com a schema em questão, é impossível cumprir a chave '${schemaComp_keys[i]}', dado que não é possível gerar nenhum dos tipos de dados das suas subschemas!`)
+    if (!checkKeyExistence(obj, schema, schemaComp_keys[i], 0)) return error(`Com a schema em questão, é impossível cumprir a chave <b>${schemaComp_keys[i]}</b>, dado que não é possível gerar nenhum dos tipos de dados das suas subschemas!`)
   }
 
   return true
@@ -253,7 +253,7 @@ function checkNumericKeys(obj) {
     upper = Math.floor(max/multipleOf)
     lower = Math.ceil(min/multipleOf)
     
-    if (upper - lower < 0) return error(`Não existem múltiplos do número '${multipleOf}' no intervalo de valores especificado com as chaves de alcance!`)
+    if (upper - lower < 0) return error(`Não existem múltiplos do número <i>${multipleOf}</i> no intervalo de valores especificado com as chaves de alcance!`)
     else if (frac && "integer" in obj) {
       let decimal_part = parseFloat((multipleOf % 1).toFixed(4))
 
@@ -261,7 +261,7 @@ function checkNumericKeys(obj) {
         if ((decimal_part * i) % 1 == 0) int_multiples.push(i)
       }
 
-      if (!int_multiples.length) return error(`Não existem múltiplos inteiros do número '${multipleOf}' no intervalo de valores especificado com as chaves de alcance!`)
+      if (!int_multiples.length) return error(`Não existem múltiplos inteiros do número <i>${multipleOf}</i> no intervalo de valores especificado com as chaves de alcance!`)
     }
   }
   

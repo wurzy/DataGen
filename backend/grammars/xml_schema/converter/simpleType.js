@@ -29,7 +29,7 @@ function parseStringType(c, base, has) {
 }
  
 function parseNumberType(c, base, has) {
-   // verificar se o tipo base é um tipo de números inteiros
+   // verificar se o tipo-base é um tipo de números inteiros
    let intBase = () => !["decimal","double","float"].includes(base)
 
    let min = null, max = null
@@ -140,7 +140,10 @@ function parseComplexGType(c, base, list, has) {
    else if (max == null) max = base == "gMonthDay" ? {month: 12, day: 31} : {year: min.year + 100, month: 12}
    else if (min == null) min = base == "gMonthDay" ? {month: 1, day: 1} : {year: max.year - 100, month: 1}
 
-   return `{{xsd_${base}(${JSON.stringify(min)},${JSON.stringify(max)},${JSON.stringify(list)})}}`
+   max = base == "gMonthDay" ? `"--${String(max.month).padStart(2,"0")}-${String(max.day).padStart(2,"0")}"` : `"${String(max.year).padStart(4,"0")}-${String(max.month).padStart(2,"0")}"`
+   min = base == "gMonthDay" ? `"--${String(min.month).padStart(2,"0")}-${String(min.day).padStart(2,"0")}"` : `"${String(min.year).padStart(4,"0")}-${String(min.month).padStart(2,"0")}"`
+
+   return `{{xsd_${base}(${min},${max},${JSON.stringify(list)})}}`
 }
  
 function parseDateTimeType(c, base, list, has) {

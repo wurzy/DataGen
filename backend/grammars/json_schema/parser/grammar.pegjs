@@ -10,9 +10,9 @@
   let propertyNames_refs = []
 
   // chave só permitida na raiz
-  const atRoot = kw => !depth[depth.length-1] ? true : error(`A chave '${kw}' só é permitida ao nível da raiz da (sub)schema!`)
+  const atRoot = kw => !depth[depth.length-1] ? true : error(`A chave <b>${kw}</b> só é permitida ao nível da raiz da (sub)schema!`)
   // todos os ids devem ser únicos
-  const newId = id => !ids.includes(id) ? true : error(`Todas as propriedades '$id' devem ser únicas! Há mais do que uma (sub)schema cujo '$id' é '${id}'.`)
+  const newId = id => !ids.includes(id) ? true : error(`Todas as propriedades <b>$id</b> devem ser únicas! Há mais do que uma (sub)schema cujo <b>$id</b> é <i>${id}</i>.`)
 }
 
 // ----- Dialect -----
@@ -134,7 +134,7 @@ structuring_keyword = kw_schema / kw_id / kw_anchor / kw_ref / kw_defs
 
 kw_schema = QM key:"$schema" QM name_separator value:schema_value &{return atRoot(key)} {return null}//{key, value}}
 schema_value = QM v:$("http://json-schema.org/draft-0"[467]"/schema#" / "https://json-schema.org/draft/20"("19-09"/"20-12")"/schema") QM
-               &{return v == "https://json-schema.org/draft/2020-12/schema" ? true : error("Esta ferramenta implementa apenas a sintaxe do draft 2020-12!")} {return v}
+               &{return v == "https://json-schema.org/draft/2020-12/schema" ? true : error("Esta ferramenta implementa apenas a sintaxe do <b>draft 2020-12</b>!")} {return v}
 
 kw_id = QM key:"$id" QM name_separator value:schema_id &{return atRoot(key) && newId(value)} {ids.push(value); return {key, value}}
 kw_anchor = QM key:"$anchor" QM name_separator value:anchor {return {key, value}}
@@ -243,7 +243,7 @@ schema_array "array of schemas"
 type_array "array of JSON types"
   = begin_array values:(
       head:type tail:(value_separator v:type { return v; })*
-    { return tail.includes(head) ? error("Os elementos do array 'type' devem ser todos únicos!") : [head].concat(tail); }
+    { return tail.includes(head) ? error("Os elementos do array <b>type</b> devem ser todos únicos!") : [head].concat(tail); }
     )? end_array
     { return values !== null ? values : error("O array de tipos não pode ser vazio!"); }
 

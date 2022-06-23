@@ -282,16 +282,17 @@ function parseAttributeGroup(el, depth) {
 function parseExtensionSC(el, depth) {
    let parsed = {attrs: "", content: ""}
 
-   parsed.attrs = parseAttributeGroup(el, depth)
-   parsed.content = parseType(el.attrs.base, depth)
+   parsed.attrs = parseAttributeGroup(el, depth+1)
+   parsed.content = parseType(el.attrs.base, depth+1)
 
    let str = "{\n"
    if (parsed.attrs.length > 0) {
       str += parsed.attrs
-      if (parsed.content.length > 0) str += ",\n" + indent(depth)
+      if (parsed.content.length > 0) str += ",\n"
    }
 
-   return `${str}DFXS_EXTENSION__SC: ${parsed.content}\n${indent(depth-1)}}`
+   if (parsed.content.length > 0) str += indent(depth+1)
+   return `${str}DFXS_SIMPLE_CONTENT: ${parsed.content}\n${indent(depth)}}`
 }
 
 function parseGroup(el, depth, keys) {

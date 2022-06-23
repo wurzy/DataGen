@@ -59,7 +59,7 @@ function checkKeysByType(obj) {
   }
 
   for (let k in obj)
-    if (!keywords.includes(k)) return error(`O tipo {${obj.type.join(", ")}} não suporta a chave '${k}'!`)
+    if (!keywords.includes(k)) return error(`O tipo {<b>${obj.type.join("</b>, <b>")}</b>} não suporta a chave <b>${k}</b>!`)
       
   return true
 }
@@ -73,9 +73,9 @@ function checkRangeKeywords(obj) {
   if (hasAll("exclusiveMinimum", obj)) emin = obj.exclusiveMinimum
   if (hasAll("exclusiveMaximum", obj)) emax = obj.exclusiveMaximum
 
-  if (min !== null && max !== null && min > max) return error(`O valor da chave 'minimum' deve ser <= ao da chave 'maximum'!`)
-  if (min !== null && emax !== null && min >= emax) return error(`O valor da chave 'minimum' deve ser < ao da chave 'exclusiveMaximum'!`)
-  if (max !== null && emin !== null && max <= emin) return error(`O valor da chave 'maximum' deve ser > ao da chave 'exclusiveMinimum'!`)
+  if (min !== null && max !== null && min > max) return error(`O valor da chave <b>minimum</b> deve ser &#60;= ao da chave <b>maximum</b>!`)
+  if (min !== null && emax !== null && min >= emax) return error(`O valor da chave <b>minimum</b> deve ser &#60; ao da chave <b>exclusiveMaximum</b>!`)
+  if (max !== null && emin !== null && max <= emin) return error(`O valor da chave <b>maximum</b> deve ser &#62; ao da chave <b>exclusiveMinimum</b>!`)
 
   if (min !== null && emin !== null) {
     if (emin >= min) delete obj.minimum
@@ -86,7 +86,7 @@ function checkRangeKeywords(obj) {
     else delete obj.exclusiveMaximum
   }
 
-  if (hasAll(["maxLength", "minLength"], obj) && obj.minLength > obj.maxLength) return error(`O valor da chave 'minLength' deve ser <= ao da chave 'maxLength'!`)
+  if (hasAll(["maxLength", "minLength"], obj) && obj.minLength > obj.maxLength) return error(`O valor da chave <b>minLength</b> deve ser &#60;= ao da chave <b>maxLength</b>!`)
 
   return true
 }
@@ -119,7 +119,7 @@ function checkDependentSchemas(obj) {
     for (let k in obj.dependentSchemas) {
       if ("type" in obj.dependentSchemas[k]) {
         let type_keys = Object.keys(obj.dependentSchemas[k].type)
-        if (type_keys.length > 1 || type_keys[0] != "object") return error(`As subschemas especificadas na chave 'dependentSchemas' devem ser do tipo 'object' (apenas), visto que são aplicadas a uma schema desse mesmo tipo!`)
+        if (type_keys.length > 1 || type_keys[0] != "object") return error(`As subschemas especificadas na chave <b>dependentSchemas</b> devem ser do tipo <i>object</i> (apenas), visto que são aplicadas a uma schema desse mesmo tipo!`)
 
         if (hasAll("required", obj)) {
           let subschema = obj.dependentSchemas[k].type.object
@@ -139,7 +139,7 @@ function checkRequiredProps(obj) {
   if (hasAll("required", obj)) {
     if (!obj.required.length) {delete obj.required; return true}
 
-    if (obj.required.length != [...new Set(obj.required)].length) return error("Todos os elementos do array da chave 'required' devem ser únicos!")
+    if (obj.required.length != [...new Set(obj.required)].length) return error("Todos os elementos do array da chave <b>required</b> devem ser únicos!")
     
     let properties = hasAll("properties", obj) ? Object.keys(obj.properties) : []
     let patternProperties = hasAll("patternProperties", obj) ? Object.keys(obj.patternProperties).map(p => new RegExp(p)) : []
@@ -150,7 +150,7 @@ function checkRequiredProps(obj) {
       else if (!hasAny(["additionalProperties", "unevaluatedProperties"], obj)) ;
       else if (hasAll("additionalProperties", obj) && obj.additionalProperties !== false) ;
       else if (!hasAll("additionalProperties", obj) && hasAll("unevaluatedProperties", obj) && obj.unevaluatedProperties !== false) ;
-      else return error(`A propriedade '${obj.required[i]}' referida na chave 'required' não é permitida no objeto pela schema!`)
+      else return error(`A propriedade <i>${obj.required[i]}</i> referida na chave <b>required</b> não é permitida no objeto pela schema!`)
     }
   }
   return true
@@ -159,14 +159,14 @@ function checkRequiredProps(obj) {
 // verificar que as chaves 'required' e de tamanho do objeto não se contradizem
 function checkMaxProperties(obj) {
   if (hasAll(["required", "maxProperties"], obj))
-    if (obj.maxProperties < obj.required.length) return error(`A chave 'maxProperties' define que o objeto deve ter, no máximo, ${obj.maxProperties} propriedades, contudo a chave 'required' define que há ${obj.required.length} propriedades obrigatórias!`)
+    if (obj.maxProperties < obj.required.length) return error(`A chave <b>maxProperties</b> define que o objeto deve ter, no máximo, ${obj.maxProperties} propriedades, contudo a chave <b>required</b> define que há ${obj.required.length} propriedades obrigatórias!`)
 
   if (hasAll("minProperties", obj)) {
     if (!hasAll("patternProperties", obj) && (
       (hasAll("additionalProperties", obj) && obj.additionalProperties === false) || 
       (!hasAll("additionalProperties", obj) && hasAll("unevaluatedProperties", obj) && obj.unevaluatedProperties === false))) {
         let properties = hasAll("properties", obj) ? Object.keys(obj.properties).length : 0
-        if (properties < obj.minProperties) return error(`A chave 'minProperties' define que o objeto deve ter, no mínimo, ${obj.minProperties} propriedades, contudo a schema permite um máximo de ${properties} propriedades no objeto!`)
+        if (properties < obj.minProperties) return error(`A chave <b>minProperties</b> define que o objeto deve ter, no mínimo, ${obj.minProperties} propriedades, contudo a schema permite um máximo de ${properties} propriedades no objeto!`)
     }
   }
   return true
@@ -175,27 +175,27 @@ function checkMaxProperties(obj) {
 // verificar a coerência das chaves de contenção 
 function checkContains(obj) {
   if (!hasAll("contains", obj)) {
-    if (hasAny(["minContains","maxContains"], obj)) return error("As chaves 'minContains' e 'maxContains' só podem ser usadas em conjunto com a chave 'contains'!")
+    if (hasAny(["minContains","maxContains"], obj)) return error("As chaves <b>minContains</b> e <b>maxContains</b> só podem ser usadas em conjunto com a chave <b>contains</b>!")
   }
-  else if (hasAll(["minContains","maxContains"], obj) && obj.minContains > obj.maxContains) return error("O valor da chave 'minContains' deve ser <= ao da chave 'maxContains'!")
+  else if (hasAll(["minContains","maxContains"], obj) && obj.minContains > obj.maxContains) return error("O valor da chave <b>minContains</b> deve ser &#60;= ao da chave <b>maxContains</b>!")
 
-  if (hasAll(["minContains", "maxItems"], obj) && obj.minContains > obj.maxItems) return error(`O array deve ter pelo menos ${obj.minContains} elementos, segundo a chave 'minContains', mas a chave 'maxItems' define um limite máximo de ${obj.maxItems}!`)
+  if (hasAll(["minContains", "maxItems"], obj) && obj.minContains > obj.maxItems) return error(`O array deve ter pelo menos ${obj.minContains} elementos, segundo a chave <b>minContains</b>, mas a chave <b>maxItems</b> define um limite máximo de ${obj.maxItems} elementos!`)
 
   return true
 }
 
 // verificar a coerência das chaves de comprimento de arrays
 function checkArrayLength(obj) {
-  if (hasAll(["minItems","maxItems"], obj) && obj.minItems > obj.maxItems) return error("O valor da chave 'minItems' deve ser <= ao da chave 'maxItems'!")
+  if (hasAll(["minItems","maxItems"], obj) && obj.minItems > obj.maxItems) return error("O valor da chave <b>minItems</b> deve ser &#60;= ao da chave <b>maxItems</b>!")
 
   if (("items" in obj && obj.items === false) || (!hasAll("items", obj) && hasAll("unevaluatedItems", obj) && obj.unevaluatedItems === false)) {
     let prefixed = hasAll("prefixItems", obj) ? obj.prefixItems.length : 0
-    if (hasAll("minItems", obj) && obj.minItems > prefixed) return error(`A chave 'minItems' define que o array deve ter, no mínimo, ${obj.minItems} elementos, contudo a schema não permite mais de ${prefixed} elementos!`)
+    if (hasAll("minItems", obj) && obj.minItems > prefixed) return error(`A chave <b>minItems</b> define que o array deve ter, no mínimo, ${obj.minItems} elementos, contudo a schema não permite mais de ${prefixed} elementos!`)
     if (hasAll("maxItems", obj) && obj.maxItems > prefixed) obj.maxItems = prefixed
   }
 
   if (hasAll(["prefixItems","minItems","items"], obj) && obj.items === false && obj.minItems > obj.prefixItems.length)
-    return error(`A chave 'minItems' define que o array deve ter, no mínimo, ${obj.minItems} elementos, contudo a chave 'prefixItems' especifica apenas ${obj.prefixItems.length} elementos e a chave 'items' proibe elementos extra para além desses!`)
+    return error(`A chave <b>minItems</b> define que o array deve ter, no mínimo, ${obj.minItems} elementos, contudo a chave <b>prefixItems</b> especifica apenas ${obj.prefixItems.length} elementos e a chave <b>items</b> proibe elementos extra para além desses!`)
 
   return true
 }
@@ -203,8 +203,8 @@ function checkArrayLength(obj) {
 // verificar que os elementos do array da chave 'enum' são todos únicos (não funciona para elementos array/objeto) e do tipo correto
 function checkEnumArray(obj) {
   if (hasAll("enum", obj)) {
-    if (!obj.enum.length) return error("O array da chave 'enum' deve ter, no mínimo, um elemento!")
-    if (obj.enum.length != [...new Set(obj.enum)].length) return error("Todos os elementos do array da chave 'enum' devem ser únicos!")
+    if (!obj.enum.length) return error("O array da chave <b>enum</b> deve ter, no mínimo, um elemento!")
+    if (obj.enum.length != [...new Set(obj.enum)].length) return error("Todos os elementos do array da chave <b>enum</b> devem ser únicos!")
 
     if (hasAll("type", obj) && obj.type.length > 0) {
       for (let i = 0; i < obj.enum.length; i++) {
@@ -217,7 +217,7 @@ function checkEnumArray(obj) {
           else if (typeof obj.enum[i] == obj.type[j]) {valid = true; break}
         }
 
-        if (!valid) return error(`Todos os elementos do array da chave 'enum' devem ser do tipo {${obj.type.join(", ")}}, segundo definido pela chave 'type'!`)
+        if (!valid) return error(`Todos os elementos do array da chave <b>enum</b> devem ser do tipo {<b>${obj.type.join("</b>, <b>")}</b>}, segundo definido pela chave <b>type</b>!`)
       }
     }
   }
@@ -241,7 +241,7 @@ function checkPredefinedValueType(obj) {
         else if (typeof value[i].v == obj.type[j]) {valid = true; break}
       }
 
-      if (!valid) return error(`O valor da chave '${value[i].k}' deve ser do tipo {${obj.type.join(", ")}}, segundo definido pela chave 'type'!`)
+      if (!valid) return error(`O valor da chave <b>${value[i].k}</b> deve ser do tipo {<b>${obj.type.join("</b>, <b>")}</b>}, segundo definido pela chave <b>type</b>!`)
     }
   }
   return true
@@ -250,7 +250,7 @@ function checkPredefinedValueType(obj) {
 // verificar as condições if then else
 function checkIfThenElse(obj) {
   if (hasAny(["if","then","else"], obj)) {
-    if (!hasAll("if", obj)) return error("Não pode usar as chaves 'then' e/ou 'else' numa schema sem usar a chave 'if'!")
+    if (!hasAll("if", obj)) return error("Não pode usar as chaves <b>then</b> e/ou <b>else</b> numa schema sem usar a chave <b>if</b>!")
     else if ("type" in obj.if) {
       let schema_types = obj.type.map(x => x=="integer" ? "number" : x)
       let if_types = Object.keys(obj.if.type)
@@ -268,7 +268,7 @@ function checkIfThenElse(obj) {
         let then_types = Object.keys(obj.then.type)
 
         if (!if_types.includes("undef") && !then_types.includes("undef")) {
-          if (!then_types.filter(t => if_types.includes(t)).length) return error("As schemas das chaves 'if' e 'then' devem ter pelo menos 1 tipo de dados gerável em comum!")
+          if (!then_types.filter(t => if_types.includes(t)).length) return error("As schemas das chaves <b>if</b> e <b>then</b> devem ter pelo menos 1 tipo de dados gerável em comum!")
 
           for (let i = 0; i < then_types.length; i++) {
             if (!if_types.includes(then_types[i])) delete obj.then.type[then_types[i]]
@@ -280,7 +280,7 @@ function checkIfThenElse(obj) {
         let else_types = Object.keys(obj.else.type)
 
         if (!if_types.includes("undef") && !else_types.includes("undef")) {
-          if (!else_types.filter(t => if_types.includes(t)).length) return error("As schemas das chaves 'if' e 'else' devem ter pelo menos 1 tipo de dados gerável em comum!")
+          if (!else_types.filter(t => if_types.includes(t)).length) return error("As schemas das chaves <b>if</b> e <b>else</b> devem ter pelo menos 1 tipo de dados gerável em comum!")
 
           for (let i = 0; i < else_types.length; i++) {
             if (!if_types.includes(else_types[i])) delete obj.else.type[else_types[i]]
@@ -299,7 +299,7 @@ function checkIfThenElse(obj) {
 // verificar os requisitos necessários para se considerar a chave 'contentSchema'
 function checkContentSchema(obj) {
   if (hasAll("contentSchema", obj) && !(hasAll(["type","contentMediaType"], obj) && obj.type.includes("string")))
-    return error("O valor da chave 'contentSchema' só é considerado se a instância for uma string e a chave 'contentMediaType' estiver presente!")
+    return error("O valor da chave <b>contentSchema</b> só é considerado se a instância for uma string e a chave <b>contentMediaType</b> estiver presente!")
   return true
 }
 

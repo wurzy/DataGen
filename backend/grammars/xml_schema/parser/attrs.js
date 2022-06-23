@@ -9,10 +9,10 @@ const cleanContent = content => content === null ? [] : content.filter(e => e !=
 // juntar todos os atributos do elemento num só objeto
 const getAttrs = objArr => objArr === null ? {} : cleanContent(objArr).reduce(((r,c) => { r[c.attr] = c.val; return r }), {})
 // verificar se o array de atributos tem algum atributo repetido
-const check_repeatedAttrs = (arr, attrs, el_name) => (Object.keys(attrs).length == arr.length) ? attrs : error(`O elemento <${el_name}> não pode possuir atributos repetidos!`)
+const check_repeatedAttrs = (arr, attrs, el_name) => (Object.keys(attrs).length == arr.length) ? attrs : error(`O elemento <b>&#60;${el_name}&#62;</b> não pode possuir atributos repetidos!`)
 
 // mensagem de erro para quando o atributo 'name'/'ref' é obrigatório
-let required_err = (attr, el, kind) => `O atributo 'name' é requirido num elemento <${el}>${kind}! O nome do elemento deve obeceder à expressão regular [a-zA-Z_][a-zA-Z0-9.\-_]*, podendo também conter caracteres não-ASCII${attr=="ref" ? ", e pode ter ainda um prefixo de schema (que deve ter a mesma semântica)" : ""}.`
+let required_err = (attr, el, kind) => `O atributo <b>name</b> é requirido num elemento <b>&#60;${el}&#62;</b>${kind}! O nome do elemento deve obeceder à expressão regular <b>[a-zA-Z_][a-zA-Z0-9.\-_]*</b>, podendo também conter caracteres não-ASCII${attr=="ref" ? ", e pode ter ainda um prefixo de schema (que deve ter a mesma semântica)" : ""}.`
 
 // adicionar os valores default dos atributos "max/minOccurs"
 function defaultOccurs(attrs, curr) {
@@ -31,7 +31,7 @@ function defaultOccurs(attrs, curr) {
 // validar os atributos do elemento <schema>
 function check_schemaAttrs(arr, default_prefix) {
     // obrigatoriamente tem atributos (no mínimo a definição do namespace)
-    if (arr.length < 1) return error("O elemento <schema> requer, no mínimo, a definição do namespace!")
+    if (arr.length < 1) return error("O elemento <b>&#60;schema&#62;</b> requer, no mínimo, a definição do namespace!")
 
     let keys = [], // array com os nomes dos atributos
         attrs = {namespaces: {}}, // objeto com os valores dos atributos
@@ -39,7 +39,7 @@ function check_schemaAttrs(arr, default_prefix) {
         
     for (let i = 0; i < arr.length; i++) {
       // verificar que não há atributos repetidos (pode haver várias definições de namespaces)
-      if (keys.includes(arr[i].attr) && arr[i].attr != "namespace") return error("O elemento <schema> não pode possuir atributos repetidos!")
+      if (keys.includes(arr[i].attr) && arr[i].attr != "namespace") return error("O elemento <b>&#60;schema&#62;</b> não pode possuir atributos repetidos!")
       else {
         // guardar a chave "namespace" apenas 1x
         if (!keys.includes(arr[i].attr)) keys.push(arr[i].attr)
@@ -61,11 +61,11 @@ function check_schemaAttrs(arr, default_prefix) {
     }
 
     // a definição do namespace é obrigatória
-    if (!Object.keys(attrs.namespaces).length && !null_namespace.length) return error("O elemento <schema> requer a definição do namespace!")
+    if (!Object.keys(attrs.namespaces).length && !null_namespace.length) return error("O elemento <b>&#60;schema&#62;</b> requer a definição do namespace!")
     // verificar que a definição de um namespace e, opcionalmente, prefixo predefinidos está correta e coerente
-    if (default_prefix === null && !null_namespace.length) return error("Precisa de prefixar o elemento <schema> com o prefixo do namespace predefinido!")
+    if (default_prefix === null && !null_namespace.length) return error("Precisa de prefixar o elemento <b>&#60;schema&#62;</b> com o prefixo do namespace predefinido!")
     if (default_prefix !== null && null_namespace.length > 0) {
-      if (!(default_prefix in attrs.namespaces)) return error("Precisa de associar o prefixo do elemento <schema> a um namespace!")
+      if (!(default_prefix in attrs.namespaces)) return error("Precisa de associar o prefixo do elemento <b>&#60;schema&#62;</b> a um namespace!")
     }
 
     // atributos com valores predefinidos
@@ -82,16 +82,16 @@ function check_elemAttrs(arr, schema_depth, curr) {
 
   // restrições relativas à profundidade dos elementos
   if (!schema_depth) { // elementos da schema
-    if ("ref" in attrs) return error("O atributo 'ref' é proibido num elemento <element> de schema!")
-    if ("maxOccurs" in attrs) return error("O atributo 'maxOccurs' é proibido num elemento <element> de schema!")
-    if ("minOccurs" in attrs) return error("O atributo 'minOccurs' é proibido num elemento <element> de schema!")
+    if ("ref" in attrs) return error("O atributo <b>ref</b> é proibido num elemento <b>&#60;element&#62;</b> de schema!")
+    if ("maxOccurs" in attrs) return error("O atributo <b>maxOccurs</b> é proibido num elemento <b>&#60;element&#62;</b> de schema!")
+    if ("minOccurs" in attrs) return error("O atributo <b>minOccurs</b> é proibido num elemento <b>&#60;element&#62;</b> de schema!")
     if (!("name" in attrs)) return error(required_err("name", "element", " de schema"))
   }
   // elementos aninhados
-  else if ("final" in attrs) return error("O atributo 'final' é proibido num elemento <element> local!")
+  else if ("final" in attrs) return error("O atributo <b>final</b> é proibido num elemento <b>&#60;element&#62;</b> local!")
 
   // mensagem de erro de atributos mutuamente exclusivos
-  let mutexc_error = (a1,a2) => error(`Em elementos <element>, os atributos '${a1}' e '${a2}' são mutuamente exclusivos!`)
+  let mutexc_error = (a1,a2) => error(`Em elementos <b>&#60;element&#62;</b>, os atributos <b>${a1}</b> e <b>${a2}</b> são mutuamente exclusivos!`)
   // atributos mutuamente exclusivos
   if ("default" in attrs && "fixed" in attrs) return mutexc_error("default","fixed")
   if ("ref" in attrs && "block" in attrs) return mutexc_error("ref","block")
@@ -104,7 +104,7 @@ function check_elemAttrs(arr, schema_depth, curr) {
 
   // maxOccurs não pode ser inferior a minOccurs
   if ("maxOccurs" in attrs && "minOccurs" in attrs && attrs.maxOccurs < attrs.minOccurs)
-    return error("A propriedade 'maxOccurs' do elemento não pode ser inferior à 'minOccurs'!")
+    return error("A propriedade <b>maxOccurs</b> do elemento não pode ser inferior à <b>minOccurs</b>!")
 
   // atributos com valores predefinidos
   if (schema_depth > 0) attrs = defaultOccurs(attrs, curr)
@@ -122,7 +122,7 @@ function check_keyrefAttrs(arr) {
 
   // atributos requiridos
   if (!("name" in attrs)) return error(required_err("name", "keyref", ""))
-  if (!("refer" in attrs)) return error(`No elemento <keyref> é requirido o atributo 'refer'!`)
+  if (!("refer" in attrs)) return error(`No elemento <b>&#60;keyref&#62;</b> é requirido o atributo <b>refer</b>!`)
 
   return data(attrs)
 }
@@ -134,18 +134,18 @@ function check_attributeElAttrs(arr, el_name, schema_depth) {
 
   // restrições relativas à profundidade dos elementos
   if (!schema_depth) { // elementos da schema
-    if ("ref" in attrs) return error(`O atributo 'ref' é proibido num elemento <${el_name}> de schema!`)
+    if ("ref" in attrs) return error(`O atributo <b>ref</b> é proibido num elemento <b>&#60;${el_name}&#62;</b> de schema!`)
     if (!("name" in attrs)) return error(required_err("name", el_name, " de schema"))
   }
   else {
     if (el_name == "attributeGroup") {
       if (!("ref" in attrs)) return error(required_err("ref", el_name, " local"))
-      if ("name" in attrs) return error(`O atributo 'name' é proibido num elemento <${el_name}> local!`)
+      if ("name" in attrs) return error(`O atributo <b>name</b> é proibido num elemento <b>&#60;${el_name}&#62;</b> local!`)
     }
   }
 
   // mensagem de erro de atributos mutuamente exclusivos
-  let mutexc_error = (a1,a2) => error(`Em elementos <${el_name}>, os atributos '${a1}' e '${a2}' são mutuamente exclusivos!`)
+  let mutexc_error = (a1,a2) => error(`Em elementos <b>&#60;${el_name}&#62;</b>, os atributos <b>${a1}</b> e <b>${a2}</b> são mutuamente exclusivos!`)
   // atributos mutuamente exclusivos
   if ("name" in attrs && "ref" in attrs) return mutexc_error("name","ref")
 
@@ -168,14 +168,14 @@ function check_groupAttrs(arr, schema_depth, curr) {
 
   // restrições relativas à profundidade dos elementos
   if (!schema_depth) { // elementos da schema
-    if ("ref" in attrs) return error("O atributo 'ref' é proibido num elemento <group> de schema!")
-    if ("minOccurs" in attrs) return error("O atributo 'minOccurs' é proibido num elemento <group> de schema!")
-    if ("maxOccurs" in attrs) return error("O atributo 'maxOccurs' é proibido num elemento <group> de schema!")
+    if ("ref" in attrs) return error("O atributo <b>ref</b> é proibido num elemento <b>&#60;group&#62;</b> de schema!")
+    if ("minOccurs" in attrs) return error("O atributo <b>minOccurs</b> é proibido num elemento <b>&#60;group&#62;</b> de schema!")
+    if ("maxOccurs" in attrs) return error("O atributo <b>maxOccurs</b> é proibido num elemento <b>&#60;group&#62;</b> de schema!")
     if (!("name" in attrs)) return error(required_err("name", "group", " de schema"))
   }
   else {
     if (!("ref" in attrs)) return error(required_err("ref", "group", " local"))
-    if ("name" in attrs) return error("O atributo 'name' é proibido num elemento <group> local!")
+    if ("name" in attrs) return error("O atributo <b>name</b> é proibido num elemento <b>&#60;group&#62;</b> local!")
   }
 
   // atributos com valores predefinidos
@@ -189,7 +189,7 @@ function check_notationAttrs(arr) {
 
   // atributos requiridos
   if (!("name" in attrs)) return error(required_err("name", "notation", ""))
-  if (!("public" in attrs) && !("system" in attrs)) return error(`No elemento <notation> é requirido pelo menos um dos atributos 'public' e 'system'!`)
+  if (!("public" in attrs) && !("system" in attrs)) return error(`No elemento <b>&#60;notation&#62;</b> é requirido pelo menos um dos atributos <b>public</b> e <b>system</b>!`)
 
   return data(attrs)
 }
@@ -201,7 +201,7 @@ function check_localTypeAttrs(arr, el_name, schema_depth, curr) {
   
   // restrições relativas à profundidade dos elementos
   if (!schema_depth && !("name" in attrs)) return error(required_err("name", el_name, " de schema"))
-  if (schema_depth && !curr.redefine && "name" in attrs) return error(`O atributo 'name' é proibido se o pai do elemento <${el_name}> não for o <schema>!`)
+  if (schema_depth && !curr.redefine && "name" in attrs) return error(`O atributo <b>name</b> é proibido se o pai do elemento <b>&#60;${el_name}&#62;</b> não for o <b>&#60;schema&#62;</b>!`)
 
   if (el_name == "complexType") {
     // atributos com valores predefinidos
@@ -214,29 +214,29 @@ function check_localTypeAttrs(arr, el_name, schema_depth, curr) {
 
 // verificar que o nome do elemento de derivação, os atributos e o valor batem todos certo
 // nesta função, só se verifica o espaço léxico do atributo "value" dos elementos <totalDigits>, <fractionDigits>, <length>, <minLength>, <maxLength>, <whiteSpace> e <pattern>
-// para verificar os restantes elementos, é preciso o tipo base, faz-se mais à frente
+// para verificar os restantes elementos, é preciso o tipo-base, faz-se mais à frente
 function check_constrFacetAttrs(name, arr) {
     let attrs = check_repeatedAttrs(arr, getAttrs(arr), name)
     if ("error" in attrs) return attrs
 
     if ("value" in attrs) {
       if (name == "whiteSpace") {
-        if (!["preserve","replace","collapse"].includes(attrs.value)) return error(`O valor da faceta <whiteSpace> deve ser um dos seguintes: {preserve, replace, collapse}!`)
+        if (!["preserve","replace","collapse"].includes(attrs.value)) return error(`O valor da faceta <b>&#60;whiteSpace&#62;</b> deve ser um dos seguintes: {<b>preserve</b>, <b>replace</b>, <b>collapse</b>}!`)
       }
       else if (name == "totalDigits") {
-        if (!/^\+?[1-9]\d*$/.test(attrs.value)) return error(`O valor da faceta 'totalDigits' deve ser um inteiro positivo!`)
+        if (!/^\+?[1-9]\d*$/.test(attrs.value)) return error(`O valor da faceta <b>totalDigits</b> deve ser um inteiro positivo!`)
         attrs.value = parseInt(attrs.value)
       } 
       else if (["fractionDigits","length","minLength","maxLength"].includes(name)) {
-        if (!/^\+?\d+$/.test(attrs.value)) return error(`O valor da faceta <${name}> deve ser um inteiro não negativo!`)
+        if (!/^\+?\d+$/.test(attrs.value)) return error(`O valor da faceta <b>&#60;${name}&#62;</b> deve ser um inteiro não negativo!`)
         attrs.value = parseInt(attrs.value)
       }
     }
 
     // restrições relativas à existência dos atributos
-    if (!("value" in attrs)) return error(`No elemento <${name}> é requirido o atributo 'value'!`)
+    if (!("value" in attrs)) return error(`No elemento <b>&#60;${name}&#62;</b> é requirido o atributo <b>value</b>!`)
     if (name == "pattern" || name == "enumeration") {
-      if ("fixed" in attrs) return error(`O elemento <${name}> não aceita o atributo 'fixed'!`)
+      if ("fixed" in attrs) return error(`O elemento <b>&#60;${name}&#62;</b> não aceita o atributo <b>fixed</b>!`)
     }
     else if (!("fixed" in attrs)) attrs.fixed = false
     
@@ -277,8 +277,8 @@ function check_repeatedAttributes(attrGroups) {
       let repeated = next_groups[k[i]].attrs.filter(v => new_attrs.includes(v))
       
       if (repeated.length > 0) {
-        let name = isNaN(parseInt(k[i])) ? `'${k[i]}'` : "novo"
-        return error(`Os elementos <attribute> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o <${attrGroups[k[i]].element}> ${name} tem atributos repetidos com os nomes '${repeated.join("', '")}'.`)
+        let name = isNaN(parseInt(k[i])) ? `<i>${k[i]}</i>` : "novo"
+        return error(`Os elementos <b>&#60;attribute&#62;</b> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o <b>&#60;${attrGroups[k[i]].element}&#62;</b> ${name} tem atributos repetidos com os nomes <i>${repeated.join("</i>, <i>")}</i>.`)
       }
       else {
         next_groups[k[i]].attrs = next_groups[k[i]].attrs.concat(new_attrs)

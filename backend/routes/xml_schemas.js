@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const {translateMsg} = require('../utils/utils')
-const fs = require('fs')
 
 const dslParser = require('../grammars/datagen_dsl/parser')
 const xmlParser = require('../grammars/xml_schema/parser/parser')
@@ -47,11 +46,6 @@ function generate(req) {
   // criar modelo DSL a partir dos dados da schemas
   let model = xmlConverter.convert(data.xsd, data.simpleTypes, data.complexTypes, req.body.element, req.body.settings)
   console.log('modelo criado')
-  // Write data in 'Output.txt' .
-  /* fs.writeFile('modelo.txt', model, (err) => {
-      // In case of a error throw err.
-      if (err) throw err;
-  }) */
   
   // gerar dataset
   let dataset = dslParser.parse(model)

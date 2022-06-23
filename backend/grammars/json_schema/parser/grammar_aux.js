@@ -52,16 +52,16 @@ function checkAllOfTypes(value, error) {
     }
   }
 
-  if (!types.length) return error("As schemas da chave 'allOf' devem ter pelo menos um tipo de dados em comum, caso contrário não é possível gerar um valor em conformidade com todas elas!")
+  if (!types.length) return error("As schemas da chave <b>allOf</b> devem ter pelo menos um tipo de dados em comum, caso contrário não é possível gerar um valor em conformidade com todas elas!")
   return types
 }
 
 // verificar que não há schemas false onde não deve
 function checkFalseSchema(key, value, error) {
   if (Array.isArray(value)) {
-    if (value.includes(false)) return error(`A chave '${key}' não pode conter uma subschema falsa!`)
+    if (value.includes(false)) return error(`A chave <b>${key}</b> não pode conter uma subschema falsa!`)
   }
-  else if (value === false) return error(`A schema da chave '${key}' não pode ser falsa!`)
+  else if (value === false) return error(`A schema da chave <b>${key}</b> não pode ser falsa!`)
   return true
 }
 
@@ -69,9 +69,9 @@ function checkFalseSchema(key, value, error) {
 function checkFalseProp(key, value, error) {
   for (let p in value) {
     if (key == "dependentSchemas") {
-      if (typeof value[p] == "boolean") return error(`A chave '${key}' não pode ter uma propriedade associada a uma schema true/false!`)
+      if (typeof value[p] == "boolean") return error(`A chave <b>${key}</b> não pode ter uma propriedade associada a uma schema <i>true/false</i>!`)
     }
-    else if (value[p] === false) return error(`A chave '${key}' não pode ter uma propriedade associada a uma schema falsa!`)
+    else if (value[p] === false) return error(`A chave <b>${key}</b> não pode ter uma propriedade associada a uma schema falsa!`)
   }
   return true
 }
@@ -79,7 +79,7 @@ function checkFalseProp(key, value, error) {
 // verificar que a schema dada pela chave 'propertyNames' é do tipo string
 function checkPropertyNamesType(obj, error) {
   if (typeof obj === "boolean" || ("type" in obj && Object.keys(obj.type).some(k => k != "string")))
-    return error(`Como as chaves de objetos devem ser sempre strings, está implícito que a schema dada pela chave 'propertyNames' deve ser do tipo 'string' (apenas)!`)
+    return error(`Como as chaves de objetos devem ser sempre strings, está implícito que a schema dada pela chave <b>propertyNames</b> deve ser do tipo <b>string</b> (apenas)!`)
   return true
 }
 

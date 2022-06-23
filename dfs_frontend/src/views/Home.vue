@@ -204,6 +204,7 @@ export default {
       xml_schemas: [{ label: "Schema", key: "schema_1", elements: [] }],
       xml_tab: {label: "Schema", key: "schema_1"},
       xml_element: {},
+      xml_schema_changes_since_last_gen: false,
       xml_settings: {
         recursivity: {lower: 0, upper: 3},
         unbounded: 10
@@ -323,7 +324,10 @@ export default {
       
       let new_label
       if (this.input_mode == "javascript") new_label = aux.searchJsonSchemaId(content, tabs[index].key)
-      else new_label = "Schema"
+      else {
+        new_label = "Schema"
+        this.xml_schema_changes_since_last_gen = true
+      }
 
       // dar update ao label da schema para o seu id, se tiver um
       // ou para o label original da schema (Schema nr), se o user tiver apagado o id
@@ -391,7 +395,7 @@ export default {
           let lines = this.xml_tabs[0].content.split("\n")
 
           this.grammar_errors = [{
-            message: "A schema não tem nenhum <element> global para gerar um dataset!",
+            message: "A schema não tem nenhum <b>&#60;element&#62;</b> global para gerar um dataset!",
             location: {
               start: {line: 1, column: 1},
               end: {line: lines.length, column: lines[lines.length-1].length}
@@ -400,7 +404,7 @@ export default {
         }
         else {
           this.xml_schemas[0].elements = []
-          this.xml_element = {}
+          if (this.xml_schema_changes_since_last_gen) this.xml_element = {}
 
           if (data.elements.length == 1) {
             this.xml_element = {label: data.elements[0], key: "elem_1"}
@@ -468,6 +472,7 @@ export default {
       
       this.loading = false
       this.send_req = false
+      if (this.input_mode == "xml") this.xml_schema_changes_since_last_gen = false
       window.dispatchEvent(new CustomEvent("loading", {detail: { storage: {loading: false} }}))
     },
     async sendGenRequest(type, body) {

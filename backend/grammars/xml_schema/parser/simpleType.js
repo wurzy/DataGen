@@ -10,9 +10,9 @@ let countDigits = num => String(num).replace(/\-|\./g, "").length
 let countIntDigits = num => String(num).replace(/\-|\.\d+/g, "").length
 // contar o número de dígitos fracionários de um número
 let countFracDigits = num => num%1 === 0 ? 0 : String(num).replace(/\-?\d*\./, "").length
-// verificar se o tipo base é um tipo de números inteiros
+// verificar se o tipo-base é um tipo de números inteiros
 let isBaseInt = base => ["byte","int","integer","long","short","negativeInteger","nonNegativeInteger","nonPositiveInteger","positiveInteger"].includes(base) || base.startsWith("unsigned")
-// verifica se o tipo base é um tipo lista
+// verifica se o tipo-base é um tipo-lista
 let isListType = base => ["list","ENTITIES","IDREFS","NMTOKENS"].includes(base)
 // retorna o comprimento de uma enumeração, conforme seja uma string ou uma lista
 let enumLength = (e, base) => isListType(base) ? e.split(/[ \t\n\r]+/g).length : e.length
@@ -94,7 +94,7 @@ function validate_TypeRef(ref, curr, existsLocalType, default_prefix, simpleType
   }
   if (prefix == null || prefix == default_prefix) {
     if (!existsLocalType) return error(`Tem de referenciar um ${error_msg[curr.any_type]} válido!`)
-    if (!curr.curr && type === curr.type) return error(`Definições circulares detetadas para o tipo '${type}'! Isto significa que o '${type}' está contido na sua própria hierarquia, o que é um erro.`)
+    if (!curr.curr && type === curr.type) return error(`Definições circulares detetadas para o tipo <b>${type}</b>! Isto significa que o <b>${type}</b> está contido na sua própria hierarquia, o que é um erro.`)
   }
   return data(true)
 }
@@ -184,7 +184,7 @@ function create_simpleTypes(default_prefix) {
 
   derivedTypes.map(x => {
     let new_content =  x[2].map(r => {return {element: r[0], attrs: {value: r[1], fixed: r[2]}}})
-    let base_content = JSON.parse(JSON.stringify(obj[x[1]].content)) // constraining facets do tipo base
+    let base_content = JSON.parse(JSON.stringify(obj[x[1]].content)) // constraining facets do tipo-base
     obj[x[0]] = {XMLSchema: true, content: restrict2(x[0], {type: x[1], prefix: default_prefix}, base_content, new_content).data}
   })
   
@@ -213,10 +213,10 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
     }
   }
 
-  // se for um tipo lista, a base devolvida pela getTypeInfo é dos elementos da lista
+  // se for um tipo-lista, a base devolvida pela getTypeInfo é dos elementos da lista
   let type = getTypeInfo(base, default_prefix, simpleTypes)
   if (!["list","union"].includes(type.type) && type.prefix == default_prefix) {
-    // se for um tipo lista, neste função interessa saber isso e não a base dos elementos da lista
+    // se for um tipo-lista, neste função interessa saber isso e não a base dos elementos da lista
     if ("list" in simpleTypes[type.type]) type = getTypeInfo({list: true}, default_prefix, simpleTypes)
   }
   
@@ -234,7 +234,7 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
     // só os atributos "pattern" e "enumeration" é que podem aparecer várias vezes
     if (key == "pattern" || key == "enumeration") f[key].push(value)
     else {
-      if (key in f) return error(`O elemento '${key}' só pode ser definido uma vez em cada elemento <restriction>!`)
+      if (key in f) return error(`O elemento <b>&#60;${key}&#62;</b> só pode ser definido uma vez em cada elemento <b>&#60;restriction&#62;</b>!`)
       else f[key] = value
     }
   }
@@ -244,15 +244,15 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
   if (!f.pattern.length) delete f.pattern
   else f.pattern = f.pattern.map(x => '^('+x+')$').join("|") // se houver vários patterns no mesmo passo de derivação, são ORed juntos
   
-  let err1 = (a1,a2) => error(`As facetas <${a1}> e <${a2}> são mutuamente exclusivas no mesmo passo de derivação!`)
-  let err2 = (a1,a2,eq,int,offset) => error(`${int ? "Como o tipo base diz respeito a números inteiros, o" : "O"} valor da faceta <${a1}> deve ser <${eq} ao da <${a2}>${offset}!`)
-  let err3 = (el,val,lim,comp) => error(`O valor '${val}' da faceta <enumeration> é ${comp} a ${lim}, o que contradiz a faceta <${el}>!`)
-  let err4 = (a1,a2,dig,val) => error(`O valor '${val}' da faceta <${a1}> só permite valores com mais de ${dig} dígitos, o que contradiz a faceta <${a2}>!`)
-  let err5 = (el,dig,val,frac) => error(`O valor '${val}' da faceta <enumeration> tem mais do que ${dig} dígitos${frac ? " fracionários" : ""}, o que contradiz a faceta <${el}>!`)
-  let err6 = (val) => error(`O valor '${val}' da faceta <enumeration> não obedece à expressão regular do(s) elemento(s) <pattern> no mesmo passo de derivação!`)
-  let err7 = (el,val,len,comp) => error(`O valor '${val}' da faceta <enumeration> não tem comprimento ${comp} ${len}, o que contradiz a faceta <${el}>!`)
-  let err8 = (el) => error(`É um erro o tipo base não ter a faceta <${el}> se a restrição atual o tem, e a restrição atual ou o tipo base têm a faceta <length>!`)
-  let err9 = (el,base,val) => error(`O valor da faceta <${el}> para o tipo base '${base}' deve ser ${val}, senão o espaço de valores válidos é vazio!`)
+  let err1 = (a1,a2) => error(`As facetas <b>&#60;${a1}&#62;</b> e <b>&#60;${a2}&#62;</b> são mutuamente exclusivas no mesmo passo de derivação!`)
+  let err2 = (a1,a2,eq,int,offset) => error(`${int ? "Como o tipo-base diz respeito a números inteiros, o" : "O"} valor da faceta <b>&#60;${a1}&#62;</b> deve ser &#60;${eq} ao da <b>&#60;${a2}&#62;</b>${offset}!`)
+  let err3 = (el,val,lim,comp) => error(`O valor <i>${val}</i> da faceta <b>&#60;enumeration&#62;</b> é ${comp} a <i>${lim}</i>, o que contradiz a faceta <b>&#60;${el}&#62;</b>!`)
+  let err4 = (a1,a2,dig,val) => error(`O valor <i>${val}</i> da faceta <b>&#60;${a1}&#62;</b> só permite valores com mais de ${dig} dígitos, o que contradiz a faceta <b>&#60;${a2}&#62;</b>!`)
+  let err5 = (el,dig,val,frac) => error(`O valor <i>${val}</i> da faceta <b>&#60;enumeration&#62;</b> tem mais do que ${dig} dígitos${frac ? " fracionários" : ""}, o que contradiz a faceta <b>&#60;${el}&#62;</b>!`)
+  let err6 = (val) => error(`O valor <i>${val}</i> da faceta <b>&#60;enumeration&#62;</b> não obedece à expressão regular do(s) elemento(s) <b>&#60;pattern&#62;</b> no mesmo passo de derivação!`)
+  let err7 = (el,val,len,comp) => error(`O valor <i>${val}</i> da faceta <b>&#60;enumeration&#62;</b> não tem comprimento ${comp} ${len}, o que contradiz a faceta <b>&#60;${el}&#62;</b>!`)
+  let err8 = (el) => error(`É um erro o tipo-base não ter a faceta <b>&#60;${el}&#62;</b> se a restrição atual o tem, e a restrição atual ou o tipo-base têm a faceta <b>&#60;length&#62;</b>!`)
+  let err9 = (el,base,val) => error(`O valor da faceta <b>&#60;${el}&#62;</b> para o tipo-base <b>${base}</b> deve ser ${val}, senão o espaço de valores válidos é vazio!`)
 
   let has = facet => facet in f
 
@@ -267,14 +267,14 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
     for (let i = 0; i < f.enumeration.length; i++) {
       if (has("totalDigits") && countDigits(f.enumeration[i]) > f.totalDigits) return err5("totalDigits", f.totalDigits, f.enumeration[i], false)
       if (has("fractionDigits") && countFracDigits(f.enumeration[i]) > f.fractionDigits) return err5("fractionDigits", f.fractionDigits, f.enumeration[i], true)
-      if (has("maxExclusive") && f.enumeration[i] >= f.maxExclusive) return err3("maxExclusive", f.enumeration[i], f.maxExclusive, ">=")
-      if (has("maxInclusive") && f.enumeration[i] > f.maxInclusive) return err3("maxInclusive", f.enumeration[i], f.maxInclusive, ">")
-      if (has("minExclusive") && f.enumeration[i] <= f.minExclusive) return err3("minExclusive", f.enumeration[i], f.minExclusive, "<=")
-      if (has("minInclusive") && f.enumeration[i] < f.minInclusive) return err3("minInclusive", f.enumeration[i], f.minInclusive, "<")
+      if (has("maxExclusive") && f.enumeration[i] >= f.maxExclusive) return err3("maxExclusive", f.enumeration[i], f.maxExclusive, "&#62;=")
+      if (has("maxInclusive") && f.enumeration[i] > f.maxInclusive) return err3("maxInclusive", f.enumeration[i], f.maxInclusive, "&#62;")
+      if (has("minExclusive") && f.enumeration[i] <= f.minExclusive) return err3("minExclusive", f.enumeration[i], f.minExclusive, "&#60;=")
+      if (has("minInclusive") && f.enumeration[i] < f.minInclusive) return err3("minInclusive", f.enumeration[i], f.minInclusive, "&#60;")
       if (has("pattern") && !new RegExp(f.pattern).test(f.enumeration[i])) return err6(f.enumeration[i])
       if (has("length") && enumLength(f.enumeration[i], type.base) != f.length) return err7("length", f.enumeration[i], f.length, "=")
-      if (has("maxLength") && enumLength(f.enumeration[i], type.base) > f.maxLength) return err7("maxLength", f.enumeration[i], f.maxLength, "<=")
-      if (has("minLength") && enumLength(f.enumeration[i], type.base) < f.minLength) return err7("minLength", f.enumeration[i], f.minLength, ">=")
+      if (has("maxLength") && enumLength(f.enumeration[i], type.base) > f.maxLength) return err7("maxLength", f.enumeration[i], f.maxLength, "&#60;=")
+      if (has("minLength") && enumLength(f.enumeration[i], type.base) < f.minLength) return err7("minLength", f.enumeration[i], f.minLength, "&#62;=")
     }
   }
   if (has("totalDigits")) {
@@ -325,22 +325,22 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
     if (has("minLength") && f.minLength > f.maxLength) return err2("minLength", "maxLength", "=", false, "")
   }
 
-  // restrições relativas aos intervalos de valores válidos do tipo base em questão
+  // restrições relativas aos intervalos de valores válidos do tipo-base em questão
   if (type.type == "gDay") {
-    if (has("maxExclusive") && f.maxExclusive.substring(0,5) == "---01") return err9("maxExclusive", "gDay", "> '01'")
-    if (has("minExclusive") && f.minExclusive.substring(0,5) == "---31") return err9("minExclusive", "gDay", "< '31'")
+    if (has("maxExclusive") && f.maxExclusive.substring(0,5) == "---01") return err9("maxExclusive", "gDay", "&#62; '01'")
+    if (has("minExclusive") && f.minExclusive.substring(0,5) == "---31") return err9("minExclusive", "gDay", "&#60; '31'")
   }
   if (type.type == "gMonth") {
-    if (has("maxExclusive") && f.maxExclusive.substring(0,4) == "--01") return err9("maxExclusive", "gMonth", "> '01'")
-    if (has("minExclusive") && f.minExclusive.substring(0,4) == "--12") return err9("minExclusive", "gMonth", "< '12'")
+    if (has("maxExclusive") && f.maxExclusive.substring(0,4) == "--01") return err9("maxExclusive", "gMonth", "&#62; '01'")
+    if (has("minExclusive") && f.minExclusive.substring(0,4) == "--12") return err9("minExclusive", "gMonth", "&#60; '12'")
   }
   if (type.type == "gMonthDay") {
-    if (has("maxExclusive") && f.maxExclusive.substring(0,7) == "--01-01") return err9("maxExclusive", "gMonthDay", "> '01/01'")
-    if (has("minExclusive") && f.minExclusive.substring(0,7) == "--12-31") return err9("minExclusive", "gMonthDay", "< '12/31'")
+    if (has("maxExclusive") && f.maxExclusive.substring(0,7) == "--01-01") return err9("maxExclusive", "gMonthDay", "&#62; '01/01'")
+    if (has("minExclusive") && f.minExclusive.substring(0,7) == "--12-31") return err9("minExclusive", "gMonthDay", "&#60; '12/31'")
   }
   if (type.type == "duration" && has("maxExclusive")) {
     let max = durationToMS(f.maxExclusive)
-    if (!max) return err9("maxExclusive", "duration", "> 0")
+    if (!max) return err9("maxExclusive", "duration", "&#62; 0")
   }
   
   // se houver enumerações ou patterns, juntar todos os seus valores numa só faceta
@@ -356,9 +356,9 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
 
 // verificar se os valores especificados nas constraining facets pertencem ao espaço léxico do tipo em que se baseiam
 // esta função só verifica o espaço léxico do atributo "value" dos elementos <minExclusive>, <minInclusive>, <maxExclusive>, <maxInclusive> e <enumeration>
-// os restantes não dependem do tipo base e já foram verificados antes
+// os restantes não dependem do tipo-base e já foram verificados antes
 function check_constrFacetBase(base, type, content) {
-  // criar um array com os nomes de todos os constraining facets do tipo base
+  // criar um array com os nomes de todos os constraining facets do tipo-base
   let content_els = content.map(x => x.element)
   
   // criar array com o nome dos constraining facets válidos para o tipo em questão
@@ -385,18 +385,18 @@ function check_constrFacetBase(base, type, content) {
       facets = ["enumeration","pattern"]; break
   }
 
-  // o elemento <whiteSpace> pode aparecer em qualquer tipo base
+  // o elemento <whiteSpace> pode aparecer em qualquer tipo-base
   if (type.base != "union") facets.push("whiteSpace")
 
   // verificar se facets possui todos os elementos de content_els para ver se há algum constraining facet inválido no tipo em questão
   if (!content_els.every(v => facets.includes(v))) {
-    let init_err = `O tipo '${type.type}'`
+    let init_err = `O tipo <b>${type.type}</b>`
     if (["list","union"].includes(type.type)) init_err = "Um tipo derivado por " + (type.type == "list" ? "lista" : "união")
 
-    return error(`${init_err} só permite os elementos de restrição <${facets.join(">, <")}>!`)
+    return error(`${init_err} só permite os elementos de restrição <b>&#60;${facets.join("&#62;</b>, <b>&#60;")}&#62;</b>!`)
   }
 
-  // verificar se o atributo "value" pertence ao espaço léxico do tipo base
+  // verificar se o atributo "value" pertence ao espaço léxico do tipo-base
   // no caso de listas, só seria preciso verificar os <enumeration> aqui e isso é feito na check_listEnumeration
   for (let i = 0; i < content.length; i++) {
     if ((!isListType(type.base) && type.base != "union") && ["minExclusive","minInclusive","maxExclusive","maxInclusive","enumeration"].includes(content[i].element)) {
@@ -413,7 +413,7 @@ function check_constrFacetBase(base, type, content) {
 // verificar se o valor pertence ao espaço léxico do tipo em que se baseia (por regex)
 // base_name tem o prefixo para printar no erro, base_type não
 function check_constrFacetBase_aux(base_name, base_type, value) {
-  let error_msg = `'${value}' não é um valor válido para o tipo '${base_name}'!`
+  let error_msg = `<b>${value}</b> não é um valor válido para o tipo <b>${base_name}</b>!`
 
   switch (base_type) {
     case "boolean":
@@ -542,9 +542,9 @@ function restrict(name, st_content, default_prefix, simpleTypes) {
 
     // não permitir criar listas de listas
     if ("list" in fst_content.content[0] || ("union" in fst_content.content[0] && fst_content.content[0].union.some(x => "list" in x))) {
-      let name_str = name !== undefined ? ` '${name}'` : ""
-      let base_str = "itemType" in fst_content.attrs ? ` '${fst_content.attrs.itemType}'` : ""
-      return error(`Na definição do tipo lista${name_str}, o tipo base${base_str} é inválido porque ou é um tipo lista, ou um tipo união que contém uma lista!`)
+      let name_str = name !== undefined ? ` <b>${name}</b>` : ""
+      let base_str = "itemType" in fst_content.attrs ? ` <b>${fst_content.attrs.itemType}</b>` : ""
+      return error(`Na definição do tipo-lista${name_str}, o tipo-base${base_str} é inválido porque ou é um tipo-lista, ou um tipo-união que contém uma lista!`)
     }
 
     return restrict_list(name, fst_content.content[0], [], default_prefix, simpleTypes)
@@ -558,7 +558,7 @@ function restrict(name, st_content, default_prefix, simpleTypes) {
       if ("union" in fst_content.content[0]) {
         return restrict_union(name, {}, fst_content.content[0].union, new_content, default_prefix, simpleTypes)
       }
-      // se estiver a restringir um tipo derivado por lista, as novas restrições são relativas à lista e não ao tipo base
+      // se estiver a restringir um tipo derivado por lista, as novas restrições são relativas à lista e não ao tipo-base
       else if ("list" in fst_content.content[0]) {
         return restrict_list(name, fst_content.content[0], new_content, default_prefix, simpleTypes)
       }
@@ -575,22 +575,22 @@ function restrict(name, st_content, default_prefix, simpleTypes) {
       base_content = JSON.parse(JSON.stringify(simpleTypes[type.type]))
 
       if ("union" in base_content) return restrict_union(name, {}, base_content.union, new_content, default_prefix, simpleTypes)
-      // se for um tipo lista, os constraining facets base são relativos à lista, senão ao tipo base
+      // se for um tipo-lista, os constraining facets base são relativos à lista, senão ao tipo-base
       if ("list" in base_content) return restrict_list(name, base_content, fst_content.content, default_prefix, simpleTypes)
       else base_content = base_content.content
     }
   }
   
-  let type = getTypeInfo(base, default_prefix, simpleTypes) // tipo base
+  let type = getTypeInfo(base, default_prefix, simpleTypes) // tipo-base
   let content = restrict2(name, type, base_content, new_content)
   if ("error" in content) return content
 
   return data({built_in_base: type.base, content: content.data})
 }
 
-// name = nome do novo tipo, base = nome do tipo base, new_content = facetas do novo tipo, st = simpleTypes
+// name = nome do novo tipo, base = nome do tipo-base, new_content = facetas do novo tipo, st = simpleTypes
 function restrict2(name, base, base_content, new_content) {
-  let base_els = base_content.map(x => x.element) // nomes das constraining facets do tipo base
+  let base_els = base_content.map(x => x.element) // nomes das constraining facets do tipo-base
 
   for (let i = 0; i < new_content.length; i++) {
     let new_facet = new_content[i].element // nome da faceta em questão no tipo novo
@@ -671,36 +671,36 @@ function restrict2(name, base, base_content, new_content) {
 }
 
 function restrict_aux(name, base, base_facet, new_facet, base_els, base_content, new_value, cond) {
-  // tipo base para usar nas condições (enumLength)
+  // tipo-base para usar nas condições (enumLength)
   let base_type = base.type
   // na mensagem de erro, imprimir o nome do tipo com prefixo, se tiver um
   base = base.prefix === null ? base.type : (base.prefix + ":" + base.type)
 
   if (cond == "mutex" && base_els.includes(base_facet))
-    return error(`É um erro o tipo base não ter a faceta <${new_facet}> se a restrição atual o tem, e a restrição atual ou o tipo base têm a faceta <length>!`)
+    return error(`É um erro o tipo-base não ter a faceta <b>&#60;${new_facet}&#62;</b> se a restrição atual o tem, e a restrição atual ou o tipo-base têm a faceta <b>&#60;length&#62;</b>!`)
 
   // tipos de mensagens de erro
   let err_str = {
-    fixed: facet => `o valor para <${facet}> foi fixado a`,
-    compare: (facet, comp) => `deve ser ${comp} ${comp == "=" ? "a" : "que "}o valor de <${facet}> que foi definido como`,
-    length: (facet, inf_sup) => `o seu comprimento deve ser ${inf_sup}= ao valor de <${facet}> que foi definido como`,
+    fixed: facet => `o valor para <b>&#60;${facet}&#62;</b> foi fixado a`,
+    compare: (facet, comp) => `deve ser ${comp} ${comp == "=" ? "a" : "que "}o valor de <b>&#60;${facet}&#62;</b> que foi definido como`,
+    length: (facet, inf_sup) => `o seu comprimento deve ser ${inf_sup}= ao valor de <b>&#60;${facet}&#62;</b> que foi definido como`,
     digits: (frac) => `o número total de dígitos${frac ? " fracionários" : ""} foi limitado a`,
-    enum: () => `não pertence ao espaço de valores de enumeração do tipo base${!["xs:list","xs:union"].includes(base) ? `, '${base}'` : ""}`,
-    parent_enum: () => `nenhum dos valores do espaço de enumeração do tipo base${!["xs:list","xs:union"].includes(base) ? `, '${base}'` : ""}, obedece a essa restrição`,
-    match_child: (facet) => `não obedece ao formato de <${facet}> que foi definido como`,
-    ws: () => `o valor de <whiteSpace> foi definido como`
+    enum: () => `não pertence ao espaço de valores de enumeração do tipo-base${!["xs:list","xs:union"].includes(base) ? `, <b>${base}</b>` : ""}`,
+    parent_enum: () => `nenhum dos valores do espaço de enumeração do tipo-base${!["xs:list","xs:union"].includes(base) ? `, <b>${base}</b>` : ""}, obedece a essa restrição`,
+    match_child: (facet) => `não obedece ao formato de <b>&#60;${facet}&#62;</b> que foi definido como`,
+    ws: () => `o valor de <b>&#60;whiteSpace&#62;</b> foi definido como`
   }
 
   let err = (facet, base_val, new_val, err_type, err_args, end) => 
-    error(`Na definição d${name !== undefined ? `e '${name}'` : "o novo simpleType"}, o valor '${new_val}' da faceta <${facet}> é inválido, porque ${err_str[err_type](...err_args)}${end ? ` '${base_val}' num dos seus tipos ancestrais` : ""}!`)
+    error(`Na definição d${name !== undefined ? `e <b>${name}</b>` : "o novo simpleType"}, o valor <i>${new_val}</i> da faceta <b>&#60;${facet}&#62;</b> é inválido, porque ${err_str[err_type](...err_args)}${end ? ` <i>${base_val}</i> num dos seus tipos ancestrais` : ""}!`)
 
   if (base_els.includes(base_facet)) {
-    // ir buscar o valor da faceta em questão ao tipo base
+    // ir buscar o valor da faceta em questão ao tipo-base
     let index = base_content.findIndex(x => x.element == base_facet)
     let base_attrs = base_content[index].attrs
     let base_value = base_attrs.value
 
-    // se a faceta já existir no tipo base, verificar se é fixed lá
+    // se a faceta já existir no tipo-base, verificar se é fixed lá
     if (base_facet == new_facet && base_facet != "enumeration") {
       if (base_attrs.fixed && base_value != new_value) return err(new_facet, base_value, new_value, "fixed", [new_facet], true)
     }
@@ -708,13 +708,13 @@ function restrict_aux(name, base, base_facet, new_facet, base_els, base_content,
     let err_args = []
     switch (cond) {
       case "eq": if (!(base_value == new_value)) err_args = ["compare", [base_facet, "="], true]; break
-      case "inf": if (!(base_value > new_value)) err_args = ["compare", [base_facet, "<"], true]; break
-      case "inf_eq": if (!(base_value >= new_value)) err_args = ["compare", [base_facet, "<="], true]; break
-      case "sup": if (!(base_value < new_value)) err_args = ["compare", [base_facet, ">"], true]; break
-      case "sup_eq": if (!(base_value <= new_value)) err_args = ["compare", [base_facet, ">="], true]; break
+      case "inf": if (!(base_value > new_value)) err_args = ["compare", [base_facet, "&#60;"], true]; break
+      case "inf_eq": if (!(base_value >= new_value)) err_args = ["compare", [base_facet, "&#60;="], true]; break
+      case "sup": if (!(base_value < new_value)) err_args = ["compare", [base_facet, "&#62;"], true]; break
+      case "sup_eq": if (!(base_value <= new_value)) err_args = ["compare", [base_facet, "&#62;="], true]; break
       case "len_eq": if (!(base_value == enumLength(new_value, base_type))) err_args = ["length", [base_facet, ""], true]; break
-      case "len_inf_eq": if (!(base_value >= enumLength(new_value, base_type))) err_args = ["length", [base_facet, "<"], true]; break
-      case "len_sup_eq": if (!(base_value <= enumLength(new_value, base_type))) err_args = ["length", [base_facet, ">"], true]; break
+      case "len_inf_eq": if (!(base_value >= enumLength(new_value, base_type))) err_args = ["length", [base_facet, "&#60;"], true]; break
+      case "len_sup_eq": if (!(base_value <= enumLength(new_value, base_type))) err_args = ["length", [base_facet, "&#62;"], true]; break
       case "frac_enum": if (Math.min(...base_value.map(x => countFracDigits(x))) > new_value) err_args = ["parent_enum", [], false]; break
       case "inf_dig": if (base_value < countDigits(new_value)) err_args = ["digits", [false], true]; break
       case "inf_fracDig": if (base_value < countFracDigits(new_value)) err_args = ["digits", [true], true]; break
@@ -756,7 +756,7 @@ function restrict_list(name, base, list_new_content, default_prefix, simpleTypes
   if ("error" in list_new_content) return list_new_content
   list_new_content = list_new_content.data
 
-  // se tiver uma enumeration da lista, temos de validar semanticamente cada elemento da lista, de acordo com o seu tipo base
+  // se tiver uma enumeration da lista, temos de validar semanticamente cada elemento da lista, de acordo com o seu tipo-base
   let enum_facet = list_new_content.filter(x => x.element == "enumeration")
   if (enum_facet.length > 0) {
     let check = check_listEnumeration(elem_bases, enum_facet[0].attrs.value)
@@ -770,14 +770,14 @@ function restrict_list(name, base, list_new_content, default_prefix, simpleTypes
   return data({list: list_new_content.data, content: elem_content})
 }
 
-// validar os elementos de enumerações de listas individualmente conforme o seu tipo base
+// validar os elementos de enumerações de listas individualmente conforme o seu tipo-base
 function check_listEnumeration(bases, enumerations) {
   for (let i = 0; i < enumerations.length; i++) {
     let values = enumerations[i].split(/[ \t\n\r]+/g)
 
     for (let j = 0; j < values.length; j++) {
       let check = bases.map(b => check_constrFacetBase_aux(b, b, values[j]))
-      if (check.every(x => "error" in x)) return error(`'${values[j]}' não é um valor válido para nenhum dos tipos base da lista '${bases.join("', '")}'!`)
+      if (check.every(x => "error" in x)) return error(`<i>${values[j]}</i> não é um valor válido para nenhum dos tipos-base da lista <b>${bases.join("</b>, <b>")}</b>!`)
     }
   }
 
@@ -829,7 +829,7 @@ function check_unionFacets(name, types, new_facets, default_prefix, simpleTypes)
     if ("enumeration" in f) {
       for (let i = 0; i < f.enumeration.length; i++) {
         if (!new RegExp(f.pattern).test(f.enumeration[i])) {
-          return error(`O valor '${f.enumeration[i]}' da faceta <enumeration> não obedece à expressão regular do(s) elemento(s) <pattern> no mesmo passo de derivação!`)
+          return error(`O valor <i>${f.enumeration[i]}</i> da faceta <b>&#60;enumeration&#62;</b> não obedece à expressão regular do(s) elemento(s) <b>&#60;pattern&#62;</b> no mesmo passo de derivação!`)
         }
       }
     }
@@ -867,7 +867,7 @@ function check_unionFacets(name, types, new_facets, default_prefix, simpleTypes)
 
     for (let i = 0; i < check.length; i++) {
       // neste caso, o valor não é lexicamente válido para nenhum dos tipos base
-      if (check[i].every(x => !x)) return error(`'${f.enumeration[i]}' não é um valor válido para nenhum dos tipos base da união!`)
+      if (check[i].every(x => !x)) return error(`<b>${f.enumeration[i]}</b> não é um valor válido para nenhum dos tipos-base da união!`)
 
       // imprimir as mensagens de erro dos tipos lexicamente válidos, se as facetas não estiverem corretas
       if (check[i].every(x => !x || "error" in x)) {

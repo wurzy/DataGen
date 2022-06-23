@@ -11,10 +11,10 @@ const data = x => {return {data: x}}
 // verificar se a base de um simpleContent é um tipo embutido, simpleType ou complexType com simpleContent
 // só chegam extensions com base complexTypes à função 'extend'
 function checkBaseSC(ct, base, complexTypes) {
-    let name = "name" in ct.attrs ? `complexType '${ct.attrs.name}'` : "novo complexType"
+    let name = "name" in ct.attrs ? `complexType <b>${ct.attrs.name}</b>` : "novo complexType"
 
     if (!(base in complexTypes && complexTypes[base].content[0].element == "simpleContent"))
-        return error(`Na definição do ${name}, o tipo base '${base}' referenciado no elemento <simpleContent> é inválido! Deve ser um tipo embutido, simpleType ou complexType com simpleContent!`)
+        return error(`Na definição do ${name}, o tipo-base <b>${base}</b> referenciado no elemento <b>&#60;simpleContent&#62;</b> é inválido! Deve ser um tipo embutido, simpleType ou complexType com simpleContent!`)
     return data(true)
 }
 
@@ -34,7 +34,7 @@ function extend(new_ct, complexTypes, attrGroups) {
     
     // encontrar o complexType base referenciado na derivação do novo
     let base_ct = JSON.parse(JSON.stringify(complexTypes[base]))
-    if (base_ct === undefined) return error(`O <complexType> '${base}' referenciado na base da derivação não existe!'`)
+    if (base_ct === undefined) return error(`O &#60;complexType&#62; <b>${base}</b> referenciado na base da derivação não existe!'`)
     
     if (new_child.element == "simpleContent") {
         let base_ext = base_ct.content[0].content[0]
@@ -65,20 +65,20 @@ function extend(new_ct, complexTypes, attrGroups) {
                 if ("error" in checkAttrs) return checkAttrs
                 else attrGroups = checkAttrs.data
 
-                if (base_ct.content[0].element == "all" && new_child.content[0].content.length > 0) return error("Ao derivar um elemento <all> por extensão, apenas é possível adicionar atributos ao tipo!")
+                if (base_ct.content[0].element == "all" && new_child.content[0].content.length > 0) return error("Ao derivar um elemento <b>&#60;all&#62;</b> por extensão, apenas é possível adicionar atributos ao tipo!")
                 
                 base_ct.content[0].content = base_ct.content[0].content.concat(new_child.content[0].content)
                 new_ct.content = base_ct.content.concat(base_attrs).concat(new_attrs)
                 
                 break
             case "simpleContent":
-                let name = "name" in new_ct.attrs ? `complexType '${new_ct.attrs.name}'` : "novo complexType"
+                let name = "name" in new_ct.attrs ? `complexType <i>${new_ct.attrs.name}</i>` : "novo complexType"
 
                 let type
                 if ("mixed" in new_ct.attrs && new_ct.attrs.mixed && (!("mixed" in new_ct.content[0].attrs) || new_ct.content[0].attrs.mixed)) type = "mixed"
                 else type = ("mixed" in new_ct.content[0].attrs && new_ct.content[0].attrs.mixed) ? "mixed" : "element-only"
 
-                return error(`O tipo derivado e da sua base devem ambos ter conteúdo 'mixed' ou 'element-only'. Neste caso, o ${name} é '${type}', mas o tipo base '${base_ct.attrs.name}' não!`)
+                return error(`O tipo derivado e a sua base devem ambos ter conteúdo <b>mixed</b> ou <b>element-only</b>. Neste caso, o ${name} é <b>${type}</b>, mas o tipo-base <i>${base_ct.attrs.name}</i> não!`)
         }
     }
     
@@ -87,7 +87,7 @@ function extend(new_ct, complexTypes, attrGroups) {
 
 // verificar se há atributos com o mesmo nome no novo complexType e no complexType base
 function check_repeatedAttributes(ct_attrs, base_attrs, new_attrs, attrGroups) {
-    let name = "name" in ct_attrs ? `'${ct_attrs.name}'` : "novo"
+    let name = "name" in ct_attrs ? `<b>${ct_attrs.name}</b>` : "novo"
 
     let base_names = base_attrs.map(x => {return {element: x.element, name: x.attrs["name" in x.attrs ? "name" : "ref"]}})
     let new_names = new_attrs.map(x => {return {element: x.element, name: x.attrs["name" in x.attrs ? "name" : "ref"]}})
@@ -97,8 +97,8 @@ function check_repeatedAttributes(ct_attrs, base_attrs, new_attrs, attrGroups) {
         let repeated_attrs = repeated.filter(x => x.element == "attribute").map(x => x.name)
         let repeated_groups = repeated.filter(x => x.element == "attributeGroup").map(x => x.name)
         
-        if (repeated_attrs.length > 0) return error(`Os elementos <attribute> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o <complexType> ${name} tem atributos repetidos com os nomes '${repeated_attrs.join("', '")}'.`)
-        if (repeated_groups.length > 0) return error(`Os elementos <attribute> locais de um elemento devem ter todos nomes distintos entre si! Neste caso, tanto o <complexType> ${name} como o seu tipo base referenciam os mesmos grupos de atributos '${repeated_groups.join("', '")}'.`)
+        if (repeated_attrs.length > 0) return error(`Os atributos locais de um elemento devem ter todos nomes distintos entre si! Neste caso, o &#60;complexType&#62; ${name} tem atributos repetidos com os nomes <i>${repeated_attrs.join("</i>, <i>")}</i>.`)
+        if (repeated_groups.length > 0) return error(`Os atributos locais de um elemento devem ter todos nomes distintos entre si! Neste caso, tanto o &#60;complexType&#62; ${name} como o seu tipo-base referenciam os mesmos grupos de atributos <i>${repeated_groups.join("</i>, <i>")}</i>.`)
     }
     else attrGroups = attrsAPI.addAttrGroup(attrGroups, "name" in ct_attrs ? ct_attrs.name : null, "complexType", base_attrs.concat(new_attrs))
 
@@ -115,22 +115,22 @@ function restrict(new_ct, complexTypes) {
     
     // encontrar o complexType base referenciado na derivação do novo
     let base_ct = complexTypes[base]
-    if (base_ct === undefined) return error(`O <complexType> '${base}' referenciado na base da derivação não existe!'`)
+    if (base_ct === undefined) return error(`O complexType <b>${base}</b> referenciado na base da derivação não existe!'`)
     
-    let name_ct = "name" in new_ct.attrs ? `complexType '${new_ct.attrs.name}'` : "novo complexType"
+    let name_ct = "name" in new_ct.attrs ? `complexType <b>${new_ct.attrs.name}</b>` : "novo complexType"
 
     // complexType base tem conteúdo vazio
     if (!base_ct.content.length || !["group","all","choice","sequence"].includes(base_ct.content[0].element)) {
         if (restriction.content.length > 0 && ["group","all","choice","sequence"].includes(restriction.content[0].element))
-            return error(`A definição do ${name_ct} é inválida, pois o elemento filho <${restriction.content[0].element}> não pertence ao tipo base.`)
+            return error(`A definição do ${name_ct} é inválida, pois o elemento filho <b>&#60;${restriction.content[0].element}&#62;</b> não pertence ao tipo-base.`)
     }
 
     if (!restriction.content.length || !["group","all","choice","sequence"].includes(restriction.content[0].element)) {
         if (!("minOccurs" in base_ct.content[0].attrs && !base_ct.content[0].attrs.minOccurs))
-            return error(`A definição do ${name_ct} é inválida, pois o conteúdo deste tipo é vazio, mas o conteúdo do tipo base '${base}' não é nem pode ser vazio.`)
+            return error(`A definição do ${name_ct} é inválida, pois o conteúdo deste tipo é vazio, mas o conteúdo do tipo-base <b>${base}</b> não é nem pode ser vazio.`)
     }
 
-    let err_msg = error(`A definição do ${name_ct} é inválida, porque não há um mapeamento funcional completo entre as partículas do tipo base e do novo tipo.`)
+    let err_msg = error(`A definição do ${name_ct} é inválida, porque não há um mapeamento funcional completo entre as partículas do tipo-base e do novo tipo.`)
 
     let check = validateRestrictionCC(base_ct.content[0], restriction.content[0], err_msg)
     if ("error" in check) return check
@@ -145,7 +145,7 @@ function restrict(new_ct, complexTypes) {
 }
 
 function validateRestrictionAttrsSC(ct_attrs, b, r) {
-    let name_ct = "name" in ct_attrs ? ct_attrs.name : "novo complexType"
+    let name_ct = "name" in ct_attrs ? `complexType <b>${ct_attrs.name}</b>` : "novo complexType"
     
     for (let i = 0; i < r.length; i++) {
         let prop = "name" in r[i].attrs ? "name" : "ref"
@@ -154,12 +154,12 @@ function validateRestrictionAttrsSC(ct_attrs, b, r) {
         // índice deste atributo na restrição
         let index = b.findIndex(x => x.element == r[i].element && x.attrs[getProp(x)] == r[i].attrs[prop])
         if (index != -1) {
-            if ("fixed" in b[index].attrs && !("fixed" in r[i].attrs)) return error(`A definição do ${name_ct} é inválida. O valor do atributo '${b[index].attrs[getProp(b[index])]}' neste novo tipo não é fixado, o que contradiz o tipo base que está a derivar, cujo valor do respetivo atributo é fixado a '${b[index].attrs.fixed}'!`)
-            if ("fixed" in b[index].attrs && r[i].attrs.fixed != b[index].attrs.fixed) return error(`A definição do ${name_ct} é inválida. O valor do atributo '${b[index].attrs[getProp(b[index])]}' neste novo tipo é fixado a '${r[i].attrs.fixed}', o que contradiz o tipo base que está a derivar, cujo valor do respetivo atributo é fixado a '${b[index].attrs.fixed}'!`)
+            if ("fixed" in b[index].attrs && !("fixed" in r[i].attrs)) return error(`A definição do ${name_ct} é inválida. O valor do atributo <b>${b[index].attrs[getProp(b[index])]}</b> neste novo tipo não é fixado, o que contradiz o tipo-base que está a derivar, cujo valor do respetivo atributo é fixado a <i>${b[index].attrs.fixed}</i>!`)
+            if ("fixed" in b[index].attrs && r[i].attrs.fixed != b[index].attrs.fixed) return error(`A definição do ${name_ct} é inválida. O valor do atributo <b>${b[index].attrs[getProp(b[index])]}</b> neste novo tipo é fixado a <i>${r[i].attrs.fixed}</i>, o que contradiz o tipo-base que está a derivar, cujo valor do respetivo atributo é fixado a <i>${b[index].attrs.fixed}</i>!`)
 
             b[index] = r[i]
         }
-        else return error(`A definição do ${name_ct} é inválida. O atributo '${r[i].attrs[prop]}' neste novo tipo não corresponde a nenhum atributo do tipo base!`)
+        else return error(`A definição do ${name_ct} é inválida. O atributo <b>${r[i].attrs[prop]}</b> neste novo tipo não corresponde a nenhum atributo do tipo-base!`)
     }
 
     return data(b)
@@ -175,8 +175,8 @@ function validateRestrictionAttrsCC(b, r, name_ct) {
         let index = r.findIndex(x => x.element == "attribute" && prop in x.attrs && x.attrs[prop] == b[i].attrs[prop])
         if (index != -1) {
             match.push(index)
-            if ("fixed" in b[i].attrs && !("fixed" in r[index].attrs)) return error(`A definição do ${name_ct} é inválida. O valor do atributo '${b[i].attrs[prop]}' neste novo tipo não é fixado, o que contradiz o tipo base que está a derivar, cujo valor do respetivo atributo é fixado a '${b[i].attrs.fixed}'!`)
-            if ("fixed" in b[i].attrs && r[index].attrs.fixed != b[i].attrs.fixed) return error(`A definição do ${name_ct} é inválida. O valor do atributo '${b[i].attrs[prop]}' neste novo tipo é fixado a '${r[index].attrs.fixed}', o que contradiz o tipo base que está a derivar, cujo valor do respetivo atributo é fixado a '${b[i].attrs.fixed}'!`)
+            if ("fixed" in b[i].attrs && !("fixed" in r[index].attrs)) return error(`A definição do ${name_ct} é inválida. O valor do atributo <b>${b[i].attrs[prop]}</b> neste novo tipo não é fixado, o que contradiz o tipo-base que está a derivar, cujo valor do respetivo atributo é fixado a <i>${b[i].attrs.fixed}</i>!`)
+            if ("fixed" in b[i].attrs && r[index].attrs.fixed != b[i].attrs.fixed) return error(`A definição do ${name_ct} é inválida. O valor do atributo <b>${b[i].attrs[prop]}</b> neste novo tipo é fixado a <i>${r[index].attrs.fixed}</i>, o que contradiz o tipo-base que está a derivar, cujo valor do respetivo atributo é fixado a <i>${b[i].attrs.fixed}</i>!`)
 
             new_r.push(r[index])
         }
@@ -186,14 +186,14 @@ function validateRestrictionAttrsCC(b, r, name_ct) {
     if (r.length-1 > match.length) {
         match.push(0)
         let attrs = r.filter((x,i) => !match.includes(i)).map(x => "name" in x.attrs ? x.attrs.name : x.attrs.ref)
-        return error(`A definição do ${name_ct} é inválida. Os atributos '${attrs.join("', '")}' da restrição não correspondem a atributos do tipo base!`)
+        return error(`A definição do ${name_ct} é inválida. Os atributos <b>${attrs.join("</b>, <b>")}<b> da restrição não correspondem a atributos do tipo-base!`)
     }
 
     return data(new_r)
 }
 
 function validateRestrictionCC(base_el, new_el, err_msg) {
-    let prohib = (base, arr) => error(`Só é permitido derivar por restrição um elemento <${base}> com um elemento <${arr.join(">, <").replace(/,([^,]*)$/, " ou" + '$1')}>!`)
+    let prohib = (base, arr) => error(`Só é permitido derivar por restrição um elemento <b>&#60;${base}&#62;</b> com um elemento <b>&#60;${arr.join("&#62;</b>, <b>&#60;").replace(/,([^,]*)$/, " ou" + '$1')}&#62;</b>!`)
 
     if (base_el.element == "element") {
         if (new_el.element != "element") return err_msg
@@ -274,14 +274,14 @@ function particlesLength(el, len) {
 
 function ocurrenceRange(base_el, new_el, r_minOccurs, r_maxOccurs) {
     let choiceSeq = r_minOccurs !== null
-    let err = msg => error(!choiceSeq ? msg : `O 'range' de ocorrência do grupo de elementos da restrição, (${r_minOccurs},${r_maxOccurs}), não é uma restrição válida do 'range' de ocorrência do grupo de elementos base, (${base_el.attrs.minOccurs},${base_el.attrs.maxOccurs})!`)
+    let err = msg => error(!choiceSeq ? msg : `O intervalo de ocorrências do grupo de elementos da restrição, <b>(${r_minOccurs},${r_maxOccurs})</b>, não é uma restrição válida do intervalo de ocorrências do grupo de elementos base, <b>(${base_el.attrs.minOccurs},${base_el.attrs.maxOccurs})</b>!`)
 
     if (r_minOccurs === null) r_minOccurs = new_el.attrs.minOccurs
     if (r_maxOccurs === null) r_maxOccurs = new_el.attrs.maxOccurs
 
-    if (!(r_minOccurs >= base_el.attrs.minOccurs)) return err(`Ao derivar um <${base_el.element}> por restrição, o atributo 'minOccurs' do novo elemento deve ser >= que o do elemento base.`)
+    if (!(r_minOccurs >= base_el.attrs.minOccurs)) return err(`Ao derivar um <b>&#60;${base_el.element}&#62;</b> por restrição, o atributo <b>minOccurs</b> do novo elemento deve ser &#62;= que o do elemento base.`)
     if (!(base_el.attrs.maxOccurs == "unbounded" || (r_maxOccurs != "unbounded" && r_maxOccurs <= base_el.attrs.maxOccurs)))
-        return err(`Ao derivar um <${base_el.element}> por restrição, ou o atributo 'maxOccurs' do elemento base é "unbounded", ou tanto 'maxOccurs' do elemento base como do novo são números e 'maxOccurs' do novo é <= que o do elemento base.`)
+        return err(`Ao derivar um <b>&#60;${base_el.element}&#62;</b> por restrição, ou o atributo <b>maxOccurs</b> do elemento base é <i>"unbounded"</i>, ou tanto <b>maxOccurs</b> do elemento-base como do novo são números e <b>maxOccurs</b> do novo é &#60;= que o do elemento base.`)
     return data(true)
 }
 
@@ -351,7 +351,7 @@ function emptiable(content) {
 }
 
 function validateBaseRestrictionSC(base_ct) {
-    let error_msg = "A definição do novo complexType é inválida. Quando <simpleContent> é usado, o tipo base deve ser um complexType cujo tipo do conteúdo seja simples, ou, apenas se for especificada uma restrição, um complexType com conteúdo 'mixed' e partículas esvaziáveis, ou, apenas se for especificada uma extensão, um simpleType. O novo complexType não satisfaz nenhuma destas condições!"
+    let error_msg = "A definição do novo complexType é inválida. Quando <b>&#60;simpleContent&#62;</b> é usado, o tipo-base deve ser um complexType cujo tipo do conteúdo seja simples, ou, apenas se for especificada uma restrição, um complexType com conteúdo <i>mixed</i> e partículas esvaziáveis, ou, apenas se for especificada uma extensão, um simpleType. O novo complexType não satisfaz nenhuma destas condições!"
 
     if ("mixed" in base_ct.attrs && base_ct.attrs.mixed && emptiable(base_ct.content)) return data(true)
     return error(error_msg)

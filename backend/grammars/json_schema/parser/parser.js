@@ -371,7 +371,7 @@ module.exports = /*
         peg$c223 = peg$literalExpectation("20-12", false),
         peg$c224 = "/schema",
         peg$c225 = peg$literalExpectation("/schema", false),
-        peg$c226 = function(v) {return v == "https://json-schema.org/draft/2020-12/schema" ? true : error("Esta ferramenta implementa apenas a sintaxe do draft 2020-12!")},
+        peg$c226 = function(v) {return v == "https://json-schema.org/draft/2020-12/schema" ? true : error("Esta ferramenta implementa apenas a sintaxe do <b>draft 2020-12</b>!")},
         peg$c227 = "$id",
         peg$c228 = peg$literalExpectation("$id", false),
         peg$c229 = function(key, value) {return atRoot(key) && newId(value)},
@@ -432,7 +432,7 @@ module.exports = /*
         peg$c251 = peg$otherExpectation("array of strings"),
         peg$c252 = peg$otherExpectation("array of schemas"),
         peg$c253 = peg$otherExpectation("array of JSON types"),
-        peg$c254 = function(head, tail) { return tail.includes(head) ? error("Os elementos do array 'type' devem ser todos únicos!") : [head].concat(tail); },
+        peg$c254 = function(head, tail) { return tail.includes(head) ? error("Os elementos do array <b>type</b> devem ser todos únicos!") : [head].concat(tail); },
         peg$c255 = function(values) { return values !== null ? values : error("O array de tipos não pode ser vazio!"); },
         peg$c256 = peg$otherExpectation("number"),
         peg$c257 = "-",
@@ -5934,9 +5934,9 @@ module.exports = /*
       let propertyNames_refs = []
 
       // chave só permitida na raiz
-      const atRoot = kw => !depth[depth.length-1] ? true : error(`A chave '${kw}' só é permitida ao nível da raiz da (sub)schema!`)
+      const atRoot = kw => !depth[depth.length-1] ? true : error(`A chave <b>${kw}</b> só é permitida ao nível da raiz da (sub)schema!`)
       // todos os ids devem ser únicos
-      const newId = id => !ids.includes(id) ? true : error(`Todas as propriedades '$id' devem ser únicas! Há mais do que uma (sub)schema cujo '$id' é '${id}'.`)
+      const newId = id => !ids.includes(id) ? true : error(`Todas as propriedades <b>$id</b> devem ser únicas! Há mais do que uma (sub)schema cujo <b>$id</b> é <i>${id}</i>.`)
 
 
     peg$result = peg$startRuleFunction();
