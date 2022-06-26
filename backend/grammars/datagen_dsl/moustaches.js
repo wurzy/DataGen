@@ -373,19 +373,20 @@ function xsd_complexGType(base, max, min, list, i) {
 
 function xsd_dateTime(base, max, min, list, i) {
     let str = ""
+    let fmin = _.cloneDeep(min), fmax = _.cloneDeep(max)
+
+    if (fmax !== null) fmax.date[0] = fmax.date[0].split("/").reverse().join("-")
+    fmin.date[0] = fmin.date[0].split("/").reverse().join("-")
 
     for (let j = 0; j < randomize(list.max,list.min); j++) {
         let timee, datee = max !== null ? date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : date(min.date[0], null, "YYYY-MM-DD", 0)
-          
-        if (max !== null) max.date[0] = max.date[0].split("/").reverse().join("-")
-        min.date[0] = min.date[0].split("/").reverse().join("-")
         
         if (base == "dateTime") {             
-            if (max !== null && datee == max.date[0]) timee = time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
-            else if (datee == min.date[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
+            if (fmax !== null && datee == fmax.date[0]) timee = time("hh:mm:ss", 24, false, {start: fmax.date[1], end: "23:59:59"}, 0)
+            else if (datee == fmin.date[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: fmin.date[1]}, 0)
             else timee = time("hh:mm:ss", 24, false, null, 0)
         }
-        if ((max !== null && date > max.date[0]) || datee < min.date[0]) datee = "-" + datee
+        if ((fmax !== null && datee > fmax.date[0]) || datee < fmin.date[0]) datee = "-" + datee
         str += datee + (base == "dateTime" ? ("T" + timee) : "") + " "
     }
     

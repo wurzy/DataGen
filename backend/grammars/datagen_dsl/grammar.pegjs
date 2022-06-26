@@ -106,22 +106,50 @@
         if (args.length == 1) join += ",null"
       }
       if (key == "xsd_gDay") {
-        if (!join.length) join = '1,31,2,""'
+        if (args.length == 2) {
+          args.map((x,i) => args[i] = parseInt(x.slice(4,-1)))
+          join = args.join(",") + ',2,""'
+        }
+        else join = '1,31,2,""'
       }
       if (key == "xsd_gMonth") {
-        if (!join.length) join = '1,12,2,""'
+        if (args.length == 2) {
+          args.map((x,i) => args[i] = parseInt(x.slice(3,-1)))
+          join = args.join(",") + ',2,""'
+        }
+        else join = '1,12,2,""'
       }
       if (key == "xsd_gYear") {
         key = "formattedInteger"
+        if (args.length == 2) {
+          args.map((x,i) => args[i] = parseInt(x.slice(1,-1)))
+          join = args.join(",") + ',4,""'
+        }
         if (!join.length) join = '0,2020,4,""'
       }
-      if (["xsd_gMonthDay","xsd_gYearMonth"].includes(key)) {
+      if (key == "xsd_gMonthDay") {
+        let list_arg = '{"max":1,"min":1}'
+        if (args.length == 4) list_arg = args.splice(2,3).join(",")
+        args.map((arg,i) => args[i] = arg.slice(3,-1).split("-").map(x => parseInt(x)))
+        args.map((arg,i) => args[i] = JSON.stringify({month: arg[0], day: arg[1]}))
+        join = `"${key.slice(4)}",${args.reverse().join(",")},${list_arg}`
         key = "xsd_complexGType"
-        if (args.length == 2) join = JSON.stringify(key) + "," + join + ',{"max":1,"min":1}'
+      }
+      if (key == "xsd_gYearMonth") {
+        let list_arg = '{"max":1,"min":1}'
+        if (args.length == 4) list_arg = args.splice(2,3).join(",")
+        args.map((arg,i) => args[i] = arg.slice(1,-1).split("-").map(x => parseInt(x)))
+        args.map((arg,i) => args[i] = JSON.stringify({year: arg[0], month: arg[1]}))
+        join = `"${key.slice(4)}",${args.reverse().join(",")},${list_arg}`
+        key = "xsd_complexGType"
       }
       if (key == "xsd_duration") {
-        if (args.length == 2) join += ',{"max":1,"min":1}'
+        let list_arg = '{"max":1,"min":1}'
+        if (args.length == 4) list_arg = args.splice(2,3).join(",")
+        args.map((arg,i) => args[i] = JSON.stringify(getDurationParts(arg.slice(1,-1))))
+        join = `${args.reverse().join(",")},${list_arg}`
       }
+      if (key == "xsd_dateTime") join = join.replace(/[\/\-\.]/g, "/")
 
       path = "genAPI." + key
       join += !join.length ? "gen.i" : ",gen.i"
@@ -176,6 +204,37 @@
     }
 
     return {path, args: join}
+  }
+
+  function getDurationParts(d) {
+    let parts = []
+    d = d.substring(1).split("T")
+    if (d.length == 1) d.push("")
+
+    let getParts = (chars, str) => {
+      for (let i = 0; i < chars.length; i++) {
+        if (!str.includes(chars[i])) {
+          parts.push(0)
+          if (chars[i] == "S") parts.push(0)
+        }
+        else {
+          let split = str.split(chars[i])
+          str = split[1]
+
+          if (chars[i] == "S") {
+            let s = split[0].split(".")
+            if (s.length == 1) s.push("0")
+            if (!s[0].length) s[0] = "0"
+            s.map(x => parts.push(parseInt(x)))
+          }
+          else parts.push(parseInt(split[0]))
+        }
+      }
+    }
+    
+    getParts(["Y","M","D"], d[0])
+    getParts(["H","M","S"], d[1])
+    return parts
   }
 
   function getLocalVars() {
@@ -710,14 +769,14 @@ gDay = quotation_mark "---" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation
 gMonth = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) quotation_mark { return parseInt(month) }
 gMonthDay = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) "-" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation_mark { return {month: parseInt(month), day: parseInt(day)} }
 
-xsd_dateTime_arg = v:$("{" ws '"date"' ws ":" ws "[" ws '"' date:$(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) '"' ws "," ws time:time ws "]" ws "," ws '"neg"' ws ":" ("true"/"false") ws "}") { return JSON.parse(v) }
+xsd_dateTime_arg = v:("{" ws '"date"' ws ":" ws "[" ws '"' date:(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9] { return text().replace(/[\/\-\.]/g, "/") }) '"' ws "," ws time:$time ws "]" ws "," ws '"neg"' ws ":" ws ("true"/"false") ws "}") { return JSON.parse(v.join("")) }
 
 duration = quotation_mark "-"? "P" Y:$(DIGIT+ "Y")? M:$(DIGIT+ "M")? D:$(DIGIT+ "D")? 
            T:("T" h:$(DIGIT+ "H")? m:$(DIGIT+ "M")? s:duration_seconds? {return [h,m].concat(s===null ? [0,0] : s)})? quotation_mark { return [Y,M,D].concat(T===null ? [0,0,0,0] : T).map(x => x==="" ? 0 : parseInt(x))}
 
 duration_seconds = s:(s:(s:$DIGIT+ ss:$("." DIGIT+)? {return [s, ss.slice(1)]} / "." ss:$DIGIT+ {return [0, ss.slice(1)]}) "S" {return s})? {return s}
 
-xsd_list_arg = "{" ws '"max"' ws":" max:$digit1_9+ ws "," ws '"min"' ws ":" min:$digit1_9+ ws "}" { return {max: parseInt(max), min: parseInt(min)} }
+xsd_list_arg = "{" ws '"max"' ws ":" ws max:$digit1_9+ ws "," ws '"min"' ws ":" ws min:$digit1_9+ ws "}" { return {max: parseInt(max), min: parseInt(min)} }
 
 char
   = unescaped
