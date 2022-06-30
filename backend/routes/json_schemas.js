@@ -77,9 +77,7 @@ router.post('/', (req, res) => {
 
   try {
     // extrair dados da schema
-    console.log(req.body.schemas)
     let data = req.body.schemas.map(x => {schema_key = x.key; return jsonParser.parse(x.content)})
-    //console.log(JSON.stringify(data))
     console.log('schema parsed')
 
     res.status(201).jsonp(generate(req, data, true))

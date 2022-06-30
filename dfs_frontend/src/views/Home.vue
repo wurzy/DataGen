@@ -390,7 +390,7 @@ export default {
       }
     },
     async askXmlMainSchema() {
-      let {data} = await axios.post('/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
+      let {data} = await axios.post('http://localhost:3000/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
       
       if ("message" in data) this.grammar_errors = [aux.translateMsg(data)]
       else if ("elements" in data) {
@@ -427,7 +427,6 @@ export default {
     async generate() {
       this.send_req = true
       this.choose_schema = false
-      this.tab_format = this.output_mode
       let result, filename = ""
       
       let settings = this.input_mode == "xml" ? this.xml_settings : this.json_settings
@@ -453,7 +452,6 @@ export default {
         let main_schema = this.json_tabs.find(t => t.key == this.json_tab.key)
         filename = main_schema.label
         result = await this.sendGenRequest("json", {schemas: [main_schema, ...other_schemas], settings})
-        console.log(result)
       }
       
       if (result !== undefined) {
@@ -469,6 +467,7 @@ export default {
         }
         else {
           this.grammar_errors = []
+          this.tab_format = this.output_mode
           this.newDataset(result.data, filename)
         }
       }
@@ -480,7 +479,7 @@ export default {
     },
     async sendGenRequest(type, body) {
       try {
-        return await axios.post(`/api/${type}_schema/`, body, {timeout: 35000})
+        return await axios.post(`http://localhost:3000/api/${type}_schema/`, body, {timeout: 35000})
       } 
       catch (err) {
         this.errorMsg = "A operação de geração do dataset excedeu o tempo limite!"

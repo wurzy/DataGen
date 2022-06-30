@@ -18,7 +18,6 @@ let randomize = (max,min) => Math.floor(Math.random() * ((max+1) - min) + min)
 let rand = len => Math.floor(Math.random()*len)
 // clonar um valor
 let clone = x => JSON.parse(JSON.stringify(x))
-let a = x => console.log(JSON.stringify(x))
 
 function convert(json, user_settings) {
     original_json = json
