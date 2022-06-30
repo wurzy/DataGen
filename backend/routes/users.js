@@ -57,7 +57,7 @@ router.post('/registar', passport.authenticate('signup-auth'), function(req, res
 // obter informação contida no token
 router.get('/:token', function(req,res) {
   Blacklist.consultar(req.params.token)
-    .then(dados => { console.log(dados.data); res.status(500).jsonp({error: "Token expirado"})})
+    .then(dados => { res.status(500).jsonp({error: "Token expirado"})})
     .catch(error => {
       jwt.verify(req.params.token,secret,function(e,decoded){
         if(e){

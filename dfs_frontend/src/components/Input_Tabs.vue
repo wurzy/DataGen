@@ -56,6 +56,7 @@ export default {
     onChangeInput(content) {
       let index = this.tabs.findIndex(t => t.key == this.tab)
       this.tabs[index].content = content
+      this.content = content
       this.$emit('updateContent', index, content)
     },
     addTab(content) {
@@ -78,9 +79,9 @@ export default {
         reader.onload = (res) => {
           let schema = res.currentTarget.result
 
-          if (this.input_mode == "xml") this.content = schema
+          if (this.input_mode == "xml") this.onChangeInput(schema)
           else {
-            if (!tab.content.length) this.content = schema
+            if (!tab.content.length) this.onChangeInput(schema)
             else {
               this.newTab_upload = true
               // por algum motivo, ao dar upload para uma tab nova, todos os \n da schema passam a \r\n

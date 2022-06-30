@@ -1,27 +1,33 @@
 // Funções auxiliares ----------
 
-let randomize = (min,max) => Math.floor(Math.random() * ((max+1) - min) + min)
 let indent = depth => '\t'.repeat(depth)
 
+function convertDSLToFunction(str) {
+   if (/^{{time/.test(str) && str.includes(".")) {
+      str = str.split(".").map(x => x.slice(2,-2))
+      return `gen.${str[0]}+"."+gen.${str[1]}`
+   }
+   if (/^-/.test(str)) {
+      str = str.split("{{")
+      return `"${str[0]}"+gen.${str[1].slice(0,-2)}`
+   }
+   if (/^{{/.test(str)) return `gen.${str.slice(2,-2)}`
+}
 
 // Funções de tradução de tipos embutidos ----------
 
 function parseStringType(c, base, has) { 
-   let length = 0
+   let min = null, max = null
 
-   if (has("length")) length = c.length
-   else {
-      let max = null, min = null
+   if (has("length")) {min = c.length; max = c.length}
+   if (has("maxLength")) max = c.maxLength
+   if (has("minLength")) min = c.minLength
 
-      if (has("maxLength")) max = c.maxLength
-      if (has("minLength")) min = c.minLength
+   if (max === null && min == null) {min = 10; max = 50}
+   else if (min == null) min = max > 1 ? 1 : 0
+   else if (max == null) max = min + 50
 
-      if (max === null && min == null) {min = 10; max = 50}
-      else if (min == null) min = max > 1 ? 1 : 0
-      else if (max == null) max = min + 50
-
-      length = randomize(min, max)
-   }
+   let length = min == max ? min : `${min},${max}`
    
    if (base == "hexBinary") return `{{hexBinary(${length})}}`
    if (["normalizedString","string","token"].includes(base)) return `{{stringOfSize(${length})}}`
@@ -88,7 +94,7 @@ function parseSimpleGType(c, base, has) {
     return `${"-".repeat(hyphens[base])}{{formattedInteger(${min},${max},${pad},"")}}`
 }
  
-function parseComplexGType(c, base, list, has) {
+function parseComplexGType(c, base, has) {
    let aux = {
       gMonthDay: (x,offset) => {
          let day = parseInt(x.substring(5,7)), month = parseInt(x.substring(2,4))
@@ -143,10 +149,10 @@ function parseComplexGType(c, base, list, has) {
    max = base == "gMonthDay" ? `"--${String(max.month).padStart(2,"0")}-${String(max.day).padStart(2,"0")}"` : `"${String(max.year).padStart(4,"0")}-${String(max.month).padStart(2,"0")}"`
    min = base == "gMonthDay" ? `"--${String(min.month).padStart(2,"0")}-${String(min.day).padStart(2,"0")}"` : `"${String(min.year).padStart(4,"0")}-${String(min.month).padStart(2,"0")}"`
 
-   return `{{xsd_${base}(${min},${max},${JSON.stringify(list)})}}`
+   return `{{xsd_${base}(${min},${max})}}`
 }
  
-function parseDateTimeType(c, base, list, has) {
+function parseDateTimeType(c, base, has) {
    let aux = {
       date: (str, offset) => {
          let neg = str[0] == "-"
@@ -164,10 +170,7 @@ function parseDateTimeType(c, base, list, has) {
          date = date.toISOString().split("T")
          date[1] = date[1].slice(0,-5)
 
-         date[0] = date[0].split("-")
-         date[0] = `${date[0][2]}/${date[0][1]}/${date[0][0]}`
-
-         return {date, neg}
+         return date.join("T") //{date, neg}
       },
       time: (t,offset) => {
          t = t.match(/^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.\d+)?/)
@@ -221,6 +224,29 @@ function parseDateTimeType(c, base, list, has) {
          }
 
          return parts
+      },
+      durationString: (d) => {
+         let i = 0, str = "P", units = ["Y","M","D","H","M",".","S"], maxPossible = [0, 12, 30, 24, 59, 59, 999]
+
+         for (let j = 0; j < 3; j++) {
+            let next = d.shift()
+            if (next != 0) str += next + units[i]
+            i++
+         }
+
+         if (d.reduce((acc,cur) => acc += cur, 0) != 0) {
+            str += "T"
+            for (let j = 0; j < 3; j++) {
+               let next = d.shift()
+               if (next != 0) str += next + units[i]
+               i++
+            }
+            
+            if (!d[0]) str = str.slice(0,-1) + units[i]
+            else str += d[0] + units[i]
+         }
+
+         return str
       }
    }
 
@@ -234,14 +260,19 @@ function parseDateTimeType(c, base, list, has) {
    if (has("minExclusive")) min = aux[base](c.minExclusive, 1)
     
    if (["date","dateTime"].includes(base)) {
-      if (max === null && min === null) min = {date: ["01/01/1950", "00:00:00"], neg: false}
+      if (max === null && min === null) min = "1950-01-01T00:00:00"
       else if (min === null) {
-         let maxDate = max[0].split("/")
-         let year = parseInt(maxDate[2])
-         min = {date: [`${maxDate[0]}/${maxDate[1]}/${year > 1000 ? (year-1000).toString().padStart(4,"0") : "0000"}`, "00:00:00"], neg: false}
+         let maxDate = max.split("T")[0].split("-")
+         let year = parseInt(maxDate[0])
+         min = `${year > 1000 ? (year-1000).toString().padStart(4,"0") : "0000"}-${maxDate[1]}-${maxDate[0]}T00:00:00`
       }
 
-      return `{{xsd_dateTime("${base}",${JSON.stringify(max)},${JSON.stringify(min)},${JSON.stringify(list)})}}`
+      if (base == "date") {
+         min = min.split("T")[0]
+         if (max !== null) max = max.split("T")[0]
+      }
+
+      return `{{xsd_${base}("${min}"${max !== null ? `,"${max}"` : ""})}}`
    }
  
    if (base == "time") {
@@ -261,38 +292,31 @@ function parseDateTimeType(c, base, list, has) {
          else min = [0,0,0,0,0,0,0]
       }
 
-      return `{{xsd_duration(${JSON.stringify(min)},${JSON.stringify(max)},${JSON.stringify(list)})}}`
+      return `{{xsd_duration("${aux.durationString(min)}","${aux.durationString(max)}")}}`
    }
 }
  
 function parseLanguage(c, has) {
-    let langs = ["af","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","az","be","bg","bn","ca","cs","da","de-at","de-ch","de-li","de-lu","de","div","el","en-au","en-bz","en-ca","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","en","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-gt","es-hn","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","fi","fo","fr-be","fr-ca","fr-ch","fr-lu","fr-mc","fr","gd","gl","gu","he","hi","hr","hu","hy","id","is","it-ch","it","ja","ka","kk","kn","ko","kok","kz","lt","lv","mk","ml","mn","mr","ms","mt","nb-no","ne","nl-be","nl","nn-no","no","or","pa","pl","pt-br","pt","rm","ro-md","ro","ru-md","ru","sa","sb","sk","sl","sq","sr","sv-fi","sv","sw","sx","syr","ta","te","th","tn","tr","ts","tt","uk","ur","uz","vi","xh","yi","zh-cn","zh-hk","zh-mo","zh-sg","zh-tw","zh","zu"]
-    if ("pattern" in c && c.pattern != "([a-zA-Z]{2}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*") return `{{pattern("${content.pattern}")}}`
+   if ("pattern" in c && c.pattern != "([a-zA-Z]{2}|[iI]-[a-zA-Z]+|[xX]-[a-zA-Z]{1,8})(-[a-zA-Z]{1,8})*") return `{{pattern("${content.pattern}")}}`
+   let max = null, min = null, len = null
+
+   if (has("length") && (c.length == 2 || c.length == 5)) len = c.length
+   else {
+      if (has("maxLength")) max = c.maxLength
+      if (has("minLength")) min = c.minLength
+      
+      if (max !== null && min !== null) {
+         if (max >= 2 && min <= 2 && max < 5) len = 2
+         if (max >= 5 && min <= 5 && min > 2) len = 5
+      }
+      else if (max !== null && max >= 2 && max < 5) len = 5
+      else if (min !== null && min <= 5 && min > 2) len = 2
+   }
  
-    let max = null, min = null
- 
-    if (has("length")) {
-       if (c.length == 2) langs = langs.filter(x => x.length == 2)
-       if (c.length == 5) langs = langs.filter(x => x.length == 5)
-    }
-    if (has("maxLength")) max = c.maxLength
-    if (has("minLength")) max = c.minLength
- 
-    if (max !== null && min !== null) {
-       if (max >= 2 && min <= 2 && max < 5) langs = langs.filter(x => x.length == 2)
-       if (max >= 5 && min <= 5 && min > 2) langs = langs.filter(x => x.length == 5)
-    }
-    else if (max === null) {
-       if (min <= 5 && min > 2) langs = langs.filter(x => x.length == 5)
-    }
-    else if (min === null) {
-       if (max >= 2 && max < 5) langs = langs.filter(x => x.length == 2)
-    }
- 
-    return `{{random("${langs.join('","')}")}}`
+   return `{{language(${len !== null ? len : ""})}}`
 }
 
-function parseRestriction(content, base, list) {
+function parseRestriction(content, base) {
    // verificar se a faceta em questão existe no conteúdo
    let has = facet => facet in content
    
@@ -315,13 +339,13 @@ function parseRestriction(content, base, list) {
          return parseNumberType(content, base, has)
 
       case "date": case "dateTime": case "duration": case "time":
-         return parseDateTimeType(content, base, list, has)
+         return parseDateTimeType(content, base, has)
 
       case "gDay": case "gMonth": case "gYear":
          return parseSimpleGType(content, base, has)
 
       case "gMonthDay": case "gYearMonth":
-         return parseComplexGType(content, base, list, has)
+         return parseComplexGType(content, base, has)
    }
 }
 
@@ -343,22 +367,41 @@ function parseList(st, depth) {
    else if (min === null) min = min-5 > 0 ? min-5 : 0
 
    if (st.content.length == 1) {
-      let elem = parseRestriction(st.content[0].content, st.content[0].built_in_base, {max, min})
-      for (let i = 0; i < randomize(min,max); i++) str += elem + " "
-      return "'" + str.slice(0,-1) + "'.string()"
+      let elem = parseRestriction(st.content[0].content, st.content[0].built_in_base)
+
+      str = `gen => {\n${indent(depth)}let elems = []\n`
+      str += `${indent(depth)}for (let i = 0; i < Math.floor(Math.random()*(${max}-${min}))+${min}; i++) elems.push(${convertDSLToFunction(elem)})\n`
+      str += `${indent(depth--)}return elems.join(" ")\n${indent(depth)}}`
+      return str
    }
    else {
-      str = `gen => {\n${indent(depth)}let elems = []\n`
-      let type_len = st.content.length - 1
+      let types = st.content.map(x => parseRestriction(x.content, x.built_in_base))
+      types.map((t,i) => types[i] = convertDSLToFunction(t))
 
-      for (let i = 0; i < randomize(min,max); i++) {
-         let type_ind = randomize(0, type_len)
-         let elem = parseRestriction(st.content[type_ind].content, st.content[type_ind].built_in_base, {max: 1, min: 1})
-         str += `${indent(depth)}elems.push(${elem.startsWith("{{") ? `gen.${elem.slice(2,-2)}` : `"${elem}"`})\n`
-      }
-      
-      return str + `${indent(depth--)}return elems.join(" ")\n${indent(depth--)}}`
+      str = `gen => {\n${indent(depth)}let elems = []\n`
+      str += `${indent(depth++)}for (let i = 0; i < Math.floor(Math.random()*(${max}-${min}))+${min}; i++) {\n`
+      str += `${indent(depth)}let values = [${types.join(", ")}]\n`
+      str += `${indent(depth)}let next = values[Math.floor(Math.random()*(values.length))]\n`
+      str += `${indent(depth--)}elems.push(next)\n${indent(depth)}}\n`
+      return str + `${indent(depth--)}return elems.join(" ")\n${indent(depth)}}`
    }
+}
+
+function parseComplexUnion(types, depth) {
+   let functions = []
+   types.map((x,i) => {
+      if (/^gen =>/.test(x)) {
+         types[i] = x.replace(/^gen/, `let f${i} = ()`).replace(/\n(\t*)/g, (m) => m+"\t").replace(/\t+}$/, `${indent(depth+1)}}`)
+         functions.push(i)
+      }
+      else types[i] = convertDSLToFunction(x.slice(1,-1)) // tirar os apóstrofes da interpolação
+   })
+
+   let str = `gen => {\n`
+   types.filter((x,i) => {if (functions.includes(i)) return x}).map(x => str += `${indent(depth+1)}${x}\n`)
+   str += `${indent(depth+1)}let options = [${types.map((x,i) => !functions.includes(i) ? x : `f${i}()`).join(", ")}]\n`
+   str += `${indent(depth+1)}return options[Math.floor(Math.random()*options.length)]\n${indent(depth)}}`
+   return str
 }
 
 function parseSimpleType(st, ids, depth) {
@@ -369,17 +412,19 @@ function parseSimpleType(st, ids, depth) {
 
    // derivação por união
    else if ("union" in st) {
-      st.union = st.union.map(x => parseSimpleType(x, ids, depth).str)
-      str = st.union[randomize(0, st.union.length-1)]
+      let types = st.union.map(x => parseSimpleType(x, ids, depth).str)
+
+      if (!st.union.some(x => "list" in x)) str = `gen => { return gen.random(${types.map(x => convertDSLToFunction(x.slice(1,-1))).join(", ")}) }`
+      else str = parseComplexUnion(types, depth)
    }
 
    // derivação por restrição
    else {
       let content = st.content.reduce((a,c) => {a[c.element] = c.attrs.value; return a}, {})
-      let parsed = parseRestriction(content, st.built_in_base, {max: 1, min: 1})
+      let parsed = parseRestriction(content, st.built_in_base)
       str = "'" + parsed + "'"
    }
-
+   
    str = str.replace(/{XSD_ID}/g, () => `id${++ids}`)
    return {str, ids}
 }

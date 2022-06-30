@@ -35,9 +35,9 @@
       title="Definições do processo de geração"
       options
       settings
+      more_width
       :valid_settings="valid_settings"
       :visible="settings"
-      :more_width="input_mode!='xml'"
       @close="closeSettings"
       @confirm="confirmSettings"
     >
@@ -207,7 +207,10 @@ export default {
       xml_schema_changes_since_last_gen: false,
       xml_settings: {
         recursivity: {lower: 0, upper: 3},
-        unbounded: 10
+        unbounded: 10,
+        prob_default: 60,
+        prob_nil: 30,
+        prob_noAll: 30
       },
       
       // from JSON schemas
@@ -387,7 +390,7 @@ export default {
       }
     },
     async askXmlMainSchema() {
-      let {data} = await axios.post('http://localhost:3000/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
+      let {data} = await axios.post('/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
       
       if ("message" in data) this.grammar_errors = [aux.translateMsg(data)]
       else if ("elements" in data) {
@@ -477,7 +480,7 @@ export default {
     },
     async sendGenRequest(type, body) {
       try {
-        return await axios.post(`http://localhost:3000/api/${type}_schema/`, body, {timeout: 35000})
+        return await axios.post(`/api/${type}_schema/`, body, {timeout: 35000})
       } 
       catch (err) {
         this.errorMsg = "A operação de geração do dataset excedeu o tempo limite!"

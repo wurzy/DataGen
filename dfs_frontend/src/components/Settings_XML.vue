@@ -23,7 +23,34 @@
             v-model="new_settings.unbounded"
             :rules="[rules.required, rules.nonNegative]"
             type="number"
-            label='Máximo de ocorrências quando maxOccurs="unbounded"' 
+            label="Máximo de ocorrências da instância de um elemento com o atributo 'maxOccurs' a 'unbounded'"
+        />
+
+        <v-text-field
+            v-model="new_settings.prob_default"
+            :rules="[rules.required, rules.probability]"
+            type="number"
+            min="0"
+            max="100"
+            label="Probabilidade de uma instância de um elemento <attribute>/<element> com o atributo 'default' ter esse valor predefinido"
+        />
+
+        <v-text-field
+            v-model="new_settings.prob_nil"
+            :rules="[rules.required, rules.probability]"
+            type="number"
+            min="0"
+            max="100"
+            label="Probabilidade de uma instância de <element> com o atributo 'nillable' a verdadeiro ter o valor explícito 'nil'"
+        />
+
+        <v-text-field
+            v-model="new_settings.prob_noAll"
+            :rules="[rules.required, rules.probability]"
+            type="number"
+            min="0"
+            max="100"
+            label="Probabilidade de um elemento <all> com o atributo 'minOccurs' a 0 não ocorrer na instância"
         />
     </v-form>
 </template>
@@ -41,13 +68,17 @@ export default {
             valid: true,
             new_settings: {
                 recursivity: {lower: 0, upper: 3},
-                unbounded: 10
+                unbounded: 10,
+                prob_default: 60,
+                prob_nil: 30,
+                prob_noAll: 30
             },
             rules: {
                 required: v => !!v || "Valor obrigatório.",
                 nonNegative: v => parseInt(v) >= 0 || "O valor não pode ser negativo.",
                 lessThanUpper: v => parseInt(v) <= parseInt(this.new_settings.recursivity.upper) || "Não pode ser maior que o limite superior.",
-                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursivity.lower) || "Não pode ser menor que o limite inferior."
+                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursivity.lower) || "Não pode ser menor que o limite inferior.",
+                probability: v => parseInt(v) >= 0 && parseInt(v) <= 100 || "O valor deve ser uma probabilidade (entre 0 e 100)."
             }
         }
     },

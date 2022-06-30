@@ -18,6 +18,7 @@ function cleanSettings(settings, frontend) {
   if (frontend) {
     settings.recursivity.lower = parseInt(settings.recursivity.lower)
     settings.recursivity.upper = parseInt(settings.recursivity.upper)
+    settings.prob_if = parseFloat(settings.prob_if)
   }
 
   if (!(Number.isInteger(settings.recursivity.lower) && settings.recursivity.lower >= 0)) return "O valor 'recursivity.lower' das definições deve ser um inteiro não-negativo!"
@@ -37,14 +38,14 @@ function cleanSettings(settings, frontend) {
     settings.extend_prefixItems = settings.extend_prefixItems == "extend" ? "OR" : (settings.extend_prefixItems == "append" ? "AP" : (settings.extend_prefixItems == "partial_overwrite" ? "OWP" : "OWT"))
   }
 
-  settings.prob_if = parseFloat(parseFloat(settings.prob_if).toFixed(2))/100
+  settings.prob_if = parseFloat(settings.prob_if.toFixed(2))/100
   settings.prob_patternProperty = parseFloat(parseFloat(settings.prob_patternProperty).toFixed(2))/100
 
   return true
 }
 
-function generate(req, data) {
-  let clean = cleanSettings(req.body.settings, true)
+function generate(req, data, frontend) {
+  let clean = cleanSettings(req.body.settings, frontend)
   if (typeof clean == "string") return {message: clean}
   
   let resolved = resolve_refs(data, req.body.settings)
@@ -81,7 +82,7 @@ router.post('/', (req, res) => {
     //console.log(JSON.stringify(data))
     console.log('schema parsed')
 
-    res.status(201).jsonp(generate(req, data))
+    res.status(201).jsonp(generate(req, data, true))
   } catch (err) {
     res.status(201).jsonp({...err, schema_key})
   }
@@ -98,11 +99,8 @@ router.post('/:output', (req, res) => {
     if (!isObject(req.body.main_schema)) return res.status(500).send("A schema principal deve ser enviada em forma de objeto JSON!")
     if (!(Array.isArray(req.body.other_schemas) && req.body.other_schemas.every(x => isObject(x)))) return res.status(500).send("O valor de 'other_schemas' deve ser um array com as restantes schemas, todas elas em forma de objeto JSON!")
 
-    if (!("recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "prob_if" in settings && "prob_patternProperty" in settings && "random_props" in settings && "extend_objectProperties" in settings && "extend_prefixItems" in settings && "extend_schemaProperties" in settings))
+    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "prob_if" in settings && "prob_patternProperty" in settings && "random_props" in settings && "extend_objectProperties" in settings && "extend_prefixItems" in settings && "extend_schemaProperties" in settings))
       return res.status(500).send(`As definições enviadas no pedido não estão corretas! Devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
-    
-    let clean = cleanSettings(req.body.settings, false)
-    if (typeof clean == "string") return res.status(500).send(clean)
 
     let schema_key = ""
     let schemas = [JSON.stringify(req.body.main_schema, null, 2), ...req.body.other_schemas.map(x => JSON.stringify(x, null, 2))]
@@ -111,7 +109,7 @@ router.post('/:output', (req, res) => {
       let data = schemas.map((x,i) => {schema_key = i; return jsonParser.parse(x)})
       console.log('schema parsed')
 
-      let result = generate(req, data)
+      let result = generate(req, data, false)
       if ("message" in result) return res.status(500).send(result.message)
       res.status(201).jsonp(result)
     } catch (err) {

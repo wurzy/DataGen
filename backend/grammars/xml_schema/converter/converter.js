@@ -4,26 +4,60 @@ let default_prefix = null
 let xsd_content = []
 let simpleTypes = {}
 let complexTypes = {}
-let recursiv = {element: {}, complexType: {}, group: {}}
+let recursiv = {}
 let SETTINGS = {}
+let temp_structs = 0
 let ids = 0
 
-/* nr de elementos que vão ser criados como objetos temporariamente na DSL com uma chave especial 
-e convertidos posteriormente para a forma original na tradução JSON-XML do DataGen */
-let temp_structs = 0
-
-// Tabs de indentação
+// tabs de indentação
 const indent = depth => "\t".repeat(depth)
-// Escolher uma QM que não seja usada na própria string
+// escolher uma QM que não seja usada na própria string
 const chooseQM = str => str.includes('"') ? "'" : '"'
-// Gerar um número aleatório entre min e max (inclusivé)
-const randomize = (min, max) => Math.floor(Math.random() * ((max+1) - min) + min)
+// nomes dos elementos recursivos da schema de um certo tipo
+const recursiveEls = el => Object.keys(recursiv[el])
 
 // criar array com os nomes do tipos embutidos da XML Schema
 const built_in_types = () => {
    let types = []
    for (let p in simpleTypes) if (!("built_in_base" in simpleTypes[p])) types.push(p)
    return types
+}
+
+// assegurar que todos os elementos têm 1 ocorrência, se não for especificado
+function default_occurs(attrs) {
+   if (!("minOccurs" in attrs || "maxOccurs" in attrs)) {
+      attrs.minOccurs = 1
+      attrs.maxOccurs = 1
+   }
+}
+
+// identificar os elementos recursivos da schema
+function checkRecursivity(xsd_content, complexTypes) {
+   let recursiv = {element: {}, complexType: {}, group: {}}
+
+   // complexType
+   for (let t in complexTypes) {
+      if (recursiveElement(complexTypes[t].attrs.name, "element", "type", complexTypes[t].content)) recursiv.complexType[complexTypes[t].attrs.name] = 0
+   }
+
+   // element e group
+   for (let i = 0; i < xsd_content.length; i++) {
+      let el = xsd_content[i]
+      if ("content" in el && recursiveElement(el.attrs.name, el.element, "ref", el.content)) recursiv[el.element][el.attrs.name] = 0
+   }
+
+   return recursiv
+}
+
+// verificar se um elemento concreto da schema é recursivo
+function recursiveElement(name, element, attr, content) {
+   for (let i = 0; i < content.length; i++) {
+       if (content[i].element == element && attr in content[i].attrs && content[i].attrs[attr] == name) return true
+       if (content[i].element != "simpleType" && Array.isArray(content[i].content) && content[i].content.length > 0) {
+           if (recursiveElement(name, element, attr, content[i].content)) return true
+       }
+   }
+   return false
 }
 
 // determinar o nome e prefixo de schema do tipo em questão e o nome da sua base embutida
@@ -51,7 +85,7 @@ function getTypeInfo(type) {
    return {type, complex, base, prefix}
 }
 
-function normalizeName(name, end_prefix) {
+function normalizeName(name, end_prefix, prefixed) {
    let prefix = "DFXS_"
 
    if (/\.|\-/.test(name)) {
@@ -59,13 +93,12 @@ function normalizeName(name, end_prefix) {
       name = name.replace(/\./g, "__DOT__").replace(/\-/g, "__HYPHEN__")
    }
 
-   return prefix + end_prefix + name + ": "
+   return ((!prefixed && prefix == "DFXS_") ? "" : (prefix + end_prefix)) + name + ": "
 }
 
-
 function convert(xsd, st, ct, main_elem, user_settings) {
-   let str = "<!LANGUAGE pt>\n{\n"
-   let depth = 1
+   let depth = 1, new_temp_structs = 1
+   let str = `<!LANGUAGE pt>\n{\n${indent(depth)}DFXS__FROM_XML_SCHEMA: true,\n`
    
    // variáveis globais
    default_prefix = xsd.prefix
@@ -73,109 +106,103 @@ function convert(xsd, st, ct, main_elem, user_settings) {
    simpleTypes = st
    complexTypes = ct
    SETTINGS = user_settings
+   recursiv = checkRecursivity(xsd_content, ct)
+   temp_structs = 0
    ids = 0
 
    let elements = xsd.content.filter(x => x.element == "element")
    if (!elements.length) str += indent(depth) + "DFXS_EMPTY_XML: true\n"
    else {
-      let {elem_str, _} = parseElement(elements.find(x => x.attrs.name == main_elem), depth, {}, true)
-
-      if (elem_str.length > 0) {
-         str += indent(depth) + elem_str
-         //if (i < elements.length-1) str += ","
-         str += "\n"
-      }
+      let parsed = parseElement(elements.find(x => x.attrs.name == main_elem), depth, true)
+      if (parsed.length > 0) str += indent(depth) + parsed + "\n"
    }
 
-
    str += "}"
+   str = str.replace(/DFXS_(TEMP|FLATTEN)__\d+/g, (m) => m.replace(/\d+$/, "") + new_temp_structs++)
    str = str.replace(/{XSD_IDREF}/g, `id{{integer(1,${ids})}}`)
    return str
 }
 
 // schemaElem indica se é o <element> é uma coleção ou não
-function parseElement(el, depth, keys, schemaElem) {
-   if ("ref" in el.attrs) return parseRef(el, depth, keys)
+function parseElement(el, depth, schemaElem) {
+   if ("ref" in el.attrs) return parseRef(el, depth)
 
-   let elem_str = ""
-   let name = el.attrs.name
-
-   // função auxiliar para verificar se o elemento referencia um tipo complexo
-   let complexTypeRef = attrs => "type" in attrs && xsd_content.some(x => x.element == "complexType" && x.attrs.name == attrs.type)
-
-   // se ainda não tiver sido gerado nenhum destes elementos, colocar a sua chave no mapa
-   // numerar as suas ocorrências para não dar overwrite na geração do DataGen
-   // é desnecessário para elementos de schema, que são únicos, mas é para simplificar
-   if (!(name in keys)) keys[name] = 1
-
+   default_occurs(el.attrs)
    if (el.attrs.maxOccurs == "unbounded") el.attrs.maxOccurs = SETTINGS.unbounded
-   let occurs = schemaElem ? 1 : randomize(el.attrs.minOccurs, el.attrs.maxOccurs)
 
-   // atualizar o mapa de recursividade deste elemento
-   if (name in recursiv.element) recursiv.element[name]++
-   else recursiv.element[name] = 1
-
-   // se o elemento tiver um tipo complexo por referência
-   if (complexTypeRef(el.attrs)) {
-      if (el.attrs.type in recursiv.complexType) recursiv.complexType[el.attrs.type]++
-      else recursiv.complexType[el.attrs.type] = 1
-
-      if (recursiv.complexType[el.attrs.type] > SETTINGS.recursivity.upper) occurs = 0
+   // atualizar o mapa de recursividade, se for o caso
+   let recursiv_el = null
+   if (recursiveEls("element").includes(el.attrs.name)) recursiv_el = {ref: recursiv.element, key: el.attrs.name}
+   else if ("type" in el.attrs && xsd_content.some(x => x.element == "complexType" && x.attrs.name == el.attrs.type)) {
+      if (recursiveEls("complexType").includes(el.attrs.type)) recursiv_el = {ref: recursiv.complexType, key: el.attrs.type}
    }
-   
-   for (let i = 0; i < (recursiv.element[name] > SETTINGS.recursivity.upper ? 0 : occurs); i++) {
-      // converte o valor do elemento para string DSL
-      let parsed = parseElementAux(el, depth)
 
-      if (!("ref" in el.attrs)) {
-         // completa a string DSL com a chave e formatação
-         if (!parsed.length) parsed = "{ DFXS_EMPTY_XML: true }"
-         elem_str += normalizeName(name, keys[name]++ + "__") + parsed + (i < occurs-1 ? `,\n${indent(depth)}` : "")
-      }
+   if (recursiv_el !== null) {
+      // se este novo elemento recursivo ultrapassar a recursividade máxima, não produzir
+      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursivity.upper) return ""
       else {
-         elem_str = parsed.elem_str
-         keys = parsed.keys
-      }
+         // se o elemento recursivo ainda não tiver cumprido a recursividade mínima, obrigar que seja produzido
+         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursivity.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
+         recursiv_el.ref[recursiv_el.key]++ 
+      }     
    }
 
-   recursiv.element[name]--
-   if (complexTypeRef(el.attrs)) recursiv.complexType[el.attrs.type]--
+   let min = el.attrs.minOccurs, max = el.attrs.maxOccurs
+   let repeat = min!=1 || max!=1, base_depth = depth + (repeat ? 1 : 0)
+
+   let str = "", name = normalizeName(el.attrs.name, "ELEM__", false)
+   let parsed = parseElementAux(el, name, base_depth, schemaElem)
+
+   str = !parsed.str.length ? "{ DFXS_EMPTY_XML: true }" : ((parsed.exception ? "" : name) + parsed.str)
+   if (repeat) str = `DFXS_FLATTEN__${++temp_structs}: [ 'repeat(${min}${min==max ? "" : `,${max}`})': {\n${indent(base_depth)}${str}\n${indent(base_depth-1)}} ]`   
    
-   return {elem_str, occurs, keys}
+   if (recursiv_el !== null) recursiv_el.ref[recursiv_el.key]--
+   return str
 }
 
-function parseElementAux(el, depth) {
-   let attrs = el.attrs
-
+function parseElementAux(el, name, depth, schemaElem) {
+   let str = "", exception = false, base_depth = depth + (schemaElem ? 1 : 0)
+   let ct = el.content.length > 0 && el.content[0].element == "complexType"
+   
    // parsing dos atributos -----
-   /* if ("abstract" in attrs) */
-   if ("nillable" in attrs) {
-      // se "nillable" for true, dar uma probabilidade de 30% de o conteúdo do elemento no XML ser nil
-      if (attrs.nillable && Math.random() < 0.3) return "{ DFXS_ATTR__nil: true }"
+   // se "nillable" for true, dar uma probabilidade de 30% de o conteúdo do elemento no XML ser nil
+   if ("nillable" in el.attrs && el.attrs.nillable) {
+      str = `if (Math.random() < ${SETTINGS.prob_nil}) { ${name}{ DFXS_ATTR__nil: true } }\n${indent(base_depth)}else {${ct ? "\n"+indent(base_depth+1) : " "}${name}`
+      exception = true
    }
-   if ("fixed" in attrs) return '"' + attrs.fixed + '"'
-   if ("default" in attrs && Math.random() > 0.4) return '"' + attrs.default + '"'
-   if ("type" in attrs) return parseType(attrs.type, depth)
+   if ("fixed" in el.attrs) return {str: '"' + el.attrs.fixed + '"', exception}
+   if ("default" in el.attrs) {
+      str = `if (Math.random() < ${SETTINGS.prob_default}) { ${name}"${el.attrs.default}" }\n${indent(base_depth)}else {${ct ? "\n"+indent(base_depth+1) : " "}${name}`
+      exception = true
+   }
+   if ("type" in el.attrs) str += parseType(el.attrs.type, exception ? base_depth : depth)
 
    // parsing do conteúdo -----
-   let type = el.content[0]
-   if (type.element == "simpleType") {
-      let parsed = parseSimpleType(type, ids, depth) // a parte relevante do simpleType é o elemento filho (list / restriction / union)
-      ids = parsed.ids
-      return parsed.str
+   if (el.content.length > 0) {
+      let type = el.content[0]
+      if (type.element == "simpleType") {
+         let parsed = parseSimpleType(type, ids, exception ? base_depth : depth) // a parte relevante do simpleType é o elemento filho (list / restriction / union)
+         ids = parsed.ids
+         str += parsed.str
+      }
+      if (type.element == "complexType") str += parseComplexType(type, exception ? base_depth+1 : depth)
    }
-   else return parseComplexType(type, depth)
+
+   if (exception) {
+      str += (ct ? "\n"+indent(base_depth) : " ") + "}"
+      if (schemaElem) str = `DFXS_TEMP__${++temp_structs}: {\n${indent(base_depth)}${str}\n${indent(depth)}}`
+   }
+   return {str, exception}
 }
 
-function parseRef(el, depth, keys) {
-   let ref_el = xsd_content.filter(x => x.element == el.element && x.attrs.name == el.attrs.ref)[0]
-
+function parseRef(el, depth) {
+   let ref_el = xsd_content.find(x => x.element == el.element && x.attrs.name == el.attrs.ref)
    ref_el.attrs = {...ref_el.attrs, ...el.attrs}
    delete ref_el.attrs.ref
 
    switch (el.element) {
-      case "element": return parseElement(ref_el, depth, keys, false)
-      case "group": return parseGroup(ref_el, depth, keys)
+      case "element": return parseElement(ref_el, depth, false)
+      case "group": return parseGroup(ref_el, depth)
    }
 }
 
@@ -206,10 +233,10 @@ function parseComplexType(el, depth) {
    for (let i = 0; i < content_len; i++) {
       switch (content[i].element) {
          case "simpleContent": return parseExtensionSC(content[i].content[0], depth)
-         case "group": parsed.content += parseGroup(content[i], depth+1, {}).str.slice(0, -2); break;
-         case "all": parsed.content += parseAll(content[i], depth+2, {}).str; break;
-         case "sequence": parsed.content += parseSequence(content[i], depth+1, {}).str.slice(0, -1); break;
-         case "choice": parsed.content += parseChoice(content[i], depth+1, {}).str; break;
+         case "group": parsed.content += parseGroup(content[i], depth+1); break;
+         case "all": parsed.content += parseAll(content[i], depth+1); break;
+         case "sequence": parsed.content += parseSequence(content[i], depth+1); break;
+         case "choice": parsed.content += parseChoice(content[i], depth+1); break;
       }
 
       if (i < content_len - 1) parsed.content += ",\n"
@@ -238,28 +265,31 @@ function parseComplexType(el, depth) {
 }
 
 function parseAttribute(el, depth) {
-   let attrs = el.attrs
-   let str = normalizeName(attrs.name, "ATTR__"), value = ""
+   let str = normalizeName(el.attrs.name, "ATTR__", true), value = ""
 
    // parsing dos atributos
-   if (attrs.use == "prohibited") return ""
-   if ("fixed" in attrs) value = attrs.fixed
-   if ("default" in attrs && Math.random() > 0.4) value = attrs.default
+   if (el.attrs.use == "prohibited") return ""
+   if ("fixed" in el.attrs) value = el.attrs.fixed
+   if ("default" in el.attrs) value = el.attrs.default
 
    // se tiver um valor predefinido, verifica se tem "/' dentro para encapsular com o outro
    if (value.length > 0) {
       let qm = chooseQM(value)
-      return indent(depth) + str + qm + value + qm
+      value = qm + value + qm
+
+      if ("default" in el.attrs) str = `if (Math.random() < ${SETTINGS.prob_default}) { ${str}${value} }\n${indent(depth)}else { ${str}`
+   }
+   
+   if (!value.length || "default" in el.attrs) {
+      if ("type" in el.attrs) value = parseType(el.attrs.type, depth)
+      else {
+         value = parseSimpleType(el.content[0], ids, depth)
+         ids = value.ids
+         value = value.str
+      }
    }
 
-   if ("type" in attrs) value = parseType(attrs.type, depth)
-   else {
-      value = parseSimpleType(el.content[0], ids, depth)
-      ids = value.ids
-      value = value.str
-   }
-
-   return indent(depth) + str + value
+   return indent(depth) + str + value + ("default" in el.attrs ? " }" : "")
 }
 
 function parseAttributeGroup(el, depth) {
@@ -295,166 +325,137 @@ function parseExtensionSC(el, depth) {
    return `${str}DFXS_SIMPLE_CONTENT: ${parsed.content}\n${indent(depth)}}`
 }
 
-function parseGroup(el, depth, keys) {
-   if ("ref" in el.attrs) return parseRef(el, depth, keys)
+function parseGroup(el, depth) {
+   if ("ref" in el.attrs) return parseRef(el, depth)
 
-   let str = ""
+   default_occurs(el.attrs)
    if (el.attrs.maxOccurs == "unbounded") el.attrs.maxOccurs = SETTINGS.unbounded
 
-   // atualizar o mapa de recursividade deste grupo
-   if (el.attrs.name in recursiv.group) recursiv.group[el.attrs.name]++
-   else recursiv.group[el.attrs.name] = 1
+   // atualizar o mapa de recursividade, se for o caso
+   let recursiv_el = null
+   if (recursiveEls("group").includes(el.attrs.name)) recursiv_el = {ref: recursiv.group, key: el.attrs.name}
 
-   let occurs = recursiv.group[el.attrs.name] > SETTINGS.recursivity.upper ? 0 : randomize(el.attrs.minOccurs, el.attrs.maxOccurs)
-
-   // repetir os filhos um nr aleatório de vezes, entre os limites dos atributos max/minOccurs
-   for (let i = 0; i < occurs; i++) {
-      let parsed
-
-      switch (el.content[0].element) {
-         case "all":
-            parsed = parseAll(el.content[0], depth+2, keys)
-            
-            if (parsed.str.length > 0) {
-               // ajustar a formatação e remover o \n no fim para meter uma vírgula antes
-               parsed.str = parsed.str.replace(/\n\t+/g, "\n" + "\t".repeat(depth+2)).replace(/\t+}/, "\t".repeat(depth+1) + "}")
-               parsed.str = `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},`
-            }
-            break;
-         case "choice": parsed = parseChoice(el.content[0], depth, keys); parsed.str += ","; break;
-         case "sequence": parsed = parseSequence(el.content[0], depth, keys); break;
-      }
-
-      if (parsed.str.length > 0) str += parsed.str + "\n"
-      keys = parsed.keys
+   if (recursiv_el !== null) {
+      // se este novo elemento recursivo ultrapassar a recursividade máxima, não produzir
+      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursivity.upper) return ""
+      else {
+         // se o elemento recursivo ainda não tiver cumprido a recursividade mínima, obrigar que seja produzido
+         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursivity.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
+         recursiv_el.ref[recursiv_el.key]++ 
+      }     
    }
+
+   let str = "", parsed, min = el.attrs.minOccurs, max = el.attrs.maxOccurs, repeat = min!=1 || max!=1
    
-   recursiv.group[el.attrs.name]--
-   return {str, keys}
+   switch (el.content[0].element) {
+      case "all":
+         parsed = parseAll(el.content[0], depth+3)
+         
+         if (parsed.length > 0) {
+            parsed = parsed.replace(/\n\t+/g, "\n" + indent(depth+3)).replace(/\t+}/, indent(depth+2) + "}") // ajustar a formatação
+            parsed = `${indent(depth+1)}DFXS_TEMP__${++temp_structs}: {\n${parsed}\n${indent(depth+1)}}`
+         }
+         break;
+      case "choice": parsed = parseChoice(el.content[0], depth+1); break;
+      case "sequence": parsed = parseSequence(el.content[0], depth+1); break;
+   }
+
+   if (parsed.length > 0) str = parsed
+   str = `${indent(depth)}DFXS_FLATTEN__${++temp_structs}: [ ${repeat ? `'repeat(${min}${min==max ? "" : `,${max}`})': ` : ""}{\n${str}\n${indent(depth)}} ]`
+
+   if (recursiv_el !== null) recursiv_el.ref[recursiv_el.key]--
+   return str
 }
 
-function parseAll(el, depth, keys) {
+function parseAll(el, depth) {
    let elements = el.content.filter(x => x.element == "element")
-   let elements_str = [], nr_elems = 0
+   let elements_str = [], nr_elems = 0, min = el.attrs.minOccurs
+   let str = "", base_depth = depth + (!min ? 1 : 0)
 
    elements.forEach(x => {
-      // se ainda não tiver sido gerado nenhum destes elementos, colocar a sua chave no mapa
-      if (!(x.attrs.name in keys)) keys[x.attrs.name] = 1
-
-      // dar parse a cada elemento
-      let parsed = parseElement(x, depth, keys, false)
-
-      if (parsed.elem_str.length > 0) {
-         // contar o nr de elementos total (tendo em conta max/minOccurs de cada um)
-         nr_elems += parsed.occurs
-         keys = parsed.keys
-
-         // dar parse a todos os elementos e guardar as respetivas strings num array
-         elements_str.push(`\n${indent(depth)}${parsed.elem_str},`)
+      let parsed = parseElement(x, base_depth+1, false) // dar parse a cada elemento
+      if (parsed.length > 0) {
+         nr_elems += x.attrs.maxOccurs // contar o nr de elementos total (tendo em conta maxOccurs de cada um)
+         elements_str.push(`\n${indent(base_depth+1)}${parsed},`) // dar parse a todos os elementos e guardar as respetivas strings num array
       }
    })
+   if (!elements_str.length) return ""
+
+   if (!min) str = `${indent(base_depth-1)}if (Math.random() < ${SETTINGS.prob_noAll}) { missing(100) {empty: true} }\n${indent(base_depth-1)}else {\n`
 
    // usar a primitiva at_least para randomizar a ordem dos elementos
-   let str = `${indent(depth-1)}at_least(${nr_elems}) {`
-   if (elements_str.length > 0) str += elements_str.join("").slice(0, -1)
-   else str += `\n${indent(depth)}empty: true` // se o conteúdo for vazio, colocar uma propriedade filler para usar o missing(100)
-   str += `\n${indent(depth-1)}}`
+   str += `${indent(base_depth)}at_least(${nr_elems}) {${elements_str.join("").slice(0, -1)}\n${indent(base_depth)}}`
 
-   // se minOccurs = 0, dar uma probabilidade de 30% de o elemento não aparecer no XML
-   if (!elements_str.length || !el.attrs.minOccurs && Math.random() < 0.3) str = str.replace(/at_least\(\d+\)/, "missing(100)")
-
-   return {str, keys}
+   if (!min) str += `\n${indent(base_depth-1)}}`
+   return str
 }
 
-function parseSequence(el, depth, keys) {
-   let str = ""
+function parseSequence(el, depth) {
+   default_occurs(el.attrs)
    if (el.attrs.maxOccurs == "unbounded") el.attrs.maxOccurs = SETTINGS.unbounded
 
-   // repetir os filhos um nr aleatório de vezes, entre os limites dos atributos max/minOccurs
-   for (let i = 0; i < randomize(el.attrs.minOccurs, el.attrs.maxOccurs); i++) {
-      let parsed = parseCT_child_content(el.element, str, el.content, depth, keys)
+   let min = el.attrs.minOccurs, max = el.attrs.maxOccurs, repeat = min!=1 || max!=1
 
-      str = parsed.str
-      keys = parsed.keys
-   }
-
-   return {str: str.slice(0, -1), keys}
+   let str = parseCT_child_content(el.element, "", el.content, depth+1).slice(0, -2)
+   str = `${indent(depth)}DFXS_FLATTEN__${++temp_structs}: [ ${repeat ? `'repeat(${min}${min==max ? "" : `,${max}`})': ` : ""}{\n${str}\n${indent(depth)}} ]`
+   return str
 }
 
-function parseChoice(el, depth, keys) {
-   let str = ""
+function parseChoice(el, depth) {
+   default_occurs(el.attrs)
    if (el.attrs.maxOccurs == "unbounded") el.attrs.maxOccurs = SETTINGS.unbounded
 
-   // escolher um dos filhos um nº aleatório de vezes, entre os limites dos atributos max/minOccurs
-   for (let i = 0; i < randomize(el.attrs.minOccurs, el.attrs.maxOccurs); i++) {
-      // usar a primitiva or para fazer exclusividade mútua
-      let new_str = `${indent(depth++)}or() {\n`
+   let min = el.attrs.minOccurs, max = el.attrs.maxOccurs, repeat = min!=1 || max!=1
+   let str = "", or_str = `${indent(depth+1)}or() {\n`
 
-      let parsed = parseCT_child_content(el.element, new_str, el.content, depth, keys)
-      keys = parsed.keys
-
-      if (parsed.str != new_str) {
-         new_str = parsed.str.slice(0, -2) + `\n${indent(--depth)}},\n`
-         str += new_str
-      }
-   }
-
-   return {str: str.slice(0, -2), keys}
+   // usar a primitiva or para fazer exclusividade mútua
+   str = parseCT_child_content(el.element, or_str, el.content, depth+2).slice(0, -2) + `\n${indent(depth+1)}}`
+   if (/\t+or\(\) \n/.test(str)) return ""
+   str = `${indent(depth)}DFXS_FLATTEN__${++temp_structs}: [ ${repeat ? `'repeat(${min}${min==max ? "" : `,${max}`})': ` : ""}{\n${str}\n${indent(depth)}} ]`
+   return str
 }
 
-function parseCT_child_content(parent, str, content, depth, keys) {
-   // a var choice é para indicar se o último elemento filtrado foi uma choice
-   let choice
-   
+function parseCT_child_content(parent, str, content, depth) {
    content.forEach(x => {
       let parsed
-      choice = false
-
-      // na string de um <element>, é preciso por tabs e vírgula
+      
+      // na string de um <element>, é preciso por indentação
       if (x.element == "element") {
-         // se ainda não tiver sido gerado nenhum destes elementos, colocar a sua chave no mapa
-         if (!(x.attrs.name in keys)) keys[x.attrs.name] = 1
-
-         parsed = parseElement(x, depth, keys, false)
-         if (parsed.elem_str.length > 0) str += `${indent(depth)}${parsed.elem_str},\n`
+         parsed = parseElement(x, depth, false)
+         if (parsed.length > 0) str += `${indent(depth)}${parsed},\n`
       }
 
       if (x.element == "group") {
-         parsed = parseGroup(x, depth, keys)
-         if (parsed.str.length > 0) str += parsed.str
+         parsed = parseGroup(x, depth)
+         if (parsed.length > 0) str += parsed + ",\n"
       }
 
-      // a string de uma <sequence> já vem formatada
       if (x.element == "sequence") {
-         parsed = parseSequence(x, depth, keys)
+         parsed = parseSequence(x, depth)
 
-         if (parsed.str.length > 0) {
+         if (parsed.length > 0) {
             if (parent == "choice") {
                // para uma sequence dentro de uma choice, queremos escolher a sequência inteira e não apenas um dos seus elementos
                // por isso, cria-se um objeto na DSL com uma chave especial que posteriormente é removido na tradução para XML
-               parsed.str = "\t" + parsed.str.replace(/\n\t/g, "\n\t\t").slice(0, -1)
-               str += `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed.str}\n${indent(depth)}},\n`
+               parsed = "\t" + parsed.replace(/\n\t/g, "\n\t\t")
+               str += `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed}\n${indent(depth)}},\n`
             }
-            else str += parsed.str + "\n"
+            else str += parsed + ",\n"
          }
       }
 
-      // a string de uma <choice> já vem formatada
       if (x.element == "choice") {
-         parsed = parseChoice(x, depth, keys)
-         if (parsed.str.length > 0) str += parsed.str + ",\n"
-         choice = true
+         parsed = parseChoice(x, depth)
+         if (parsed.length > 0) str += parsed + ",\n"
       }
 
       if (x.element == "all") {
-         parsed = parseAll(x, depth, keys)
-         if (parsed.str.length > 0) str += parsed.str + ",\n"
+         parsed = parseAll(x, depth)
+         if (parsed.length > 0) str += parsed + ",\n"
       }
-
-      keys = parsed.keys
    })
-
-   return {str, choice, keys}
+   
+   return str
 }
 
 

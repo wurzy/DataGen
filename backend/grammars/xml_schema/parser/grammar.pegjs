@@ -457,8 +457,10 @@
   
   // verificar que um elemento <element> não tem o atributo "ref" e um dos elementos filhos mutualmente exclusivos com esse
   function check_elemMutex(attrs, content) {
+    if ("type" in attrs && content.some(x => ["simpleType","complexType"].includes(x.element)))
+      return error("O atributo <b>type</b> e os elementos-filho <b>&#60;simpleType&#62;</b>/<b>&#60;complexType&#62;</b> são formas mutuamente exclusivas de especificar o tipo de um elemento <b>&#60;element&#62;</b>!")
     if ("ref" in attrs && content.some(x => ["simpleType","complexType","key","keyref","unique"].includes(x.element)))
-      return error(`Se o atributo <b>ref</b> está presente num elemento <b>&#60;element&#62;</b>, o seu conteúdo não pode conter nenhum elemento <b>&#60;simpleType&#62;</b>, <b>&#60;complexType&#62;</b>, <b>&#60;key&#62;</b>, <b>&#60;keyref&#62;</b> ou <b>&#60;unique&#62;</b>!`)
+      return error("Se o atributo <b>ref</b> está presente num elemento <b>&#60;element&#62;</b>, o seu conteúdo não pode conter nenhum elemento <b>&#60;simpleType&#62;</b>, <b>&#60;complexType&#62;</b>, <b>&#60;key&#62;</b>, <b>&#60;keyref&#62;</b> ou <b>&#60;unique&#62;</b>!")
     return true
   }
 

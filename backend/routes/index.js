@@ -7,7 +7,7 @@ const isReachable = require('is-reachable');
 var rimraf = require("rimraf");
 
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://mongo:27017";
+var url = "mongodb://mongo:27017/LEI2021";
 
 const strContro = `'use strict';
   

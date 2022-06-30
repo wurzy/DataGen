@@ -291,7 +291,9 @@ function check_restrictionST_facets(parent, base, content, default_prefix, simpl
     if (has("minInclusive") && f.minInclusive > 0 && countIntDigits(f.minInclusive) > f.totalDigits) return err4("minInclusive", "totalDigits", f.totalDigits, f.minInclusive)
   }
   if (has("maxExclusive")) {
-    if (has("minInclusive") && f.minInclusive >= f.maxExclusive) return err2("minInclusive", "maxExclusive", "=", false, "")
+    if (has("minInclusive") && f.minInclusive >= f.maxExclusive) {
+      if (type.type != "duration" || durationToMS(f.minInclusive) >= durationToMS(f.maxExclusive)) return err2("minInclusive", "maxExclusive", "=", false, "")
+    }
     if (has("minExclusive")) {
       if (isBaseInt(type.type) && f.minExclusive >= f.maxExclusive-1) return err2("minExclusive", "maxExclusive", "", true, " - 1")
       else {

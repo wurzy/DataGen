@@ -450,8 +450,38 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             <div class="col-md-5">
                 <div class="cell">
                     <div class="description">
-                        Gera o número indicado de caracteres hexadecimais aleatórios.<br/>
+                        Gera uma string de caracteres hexadecimais aleatórios, com Len caracteres.<br/>
                         Exemplo: hexBinary(5) = "4D3E764128"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        hexBinary 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                    *Min:: <code>Integer</code>,<br>
+                    *Max:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string de caracteres hexadecimais aleatórios, com um número aleatório de caracteres entre Min e Max.<br/>
+                        Exemplo: hexBinary(2,7) = "2B2222443841"
                     </div>
                 </div>
             </div>
@@ -944,7 +974,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        *Min:: <code>Integer</code>,
+                        *Min:: <code>Integer</code>,<br>
                         *Max:: <code>Integer</code>
                 </div>
             </div>
@@ -1049,7 +1079,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1109,7 +1139,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1169,7 +1199,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1200,7 +1230,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1260,7 +1290,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1291,7 +1321,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Min:: <code>String</code>,
+                        Min:: <code>String</code>,<br>
                         Max:: <code>String</code>
                 </div>
             </div>
@@ -1322,7 +1352,7 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
             </div>
             <div class="col-md-3">
                 <div class="cell">
-                        Tipo:: <code>String</code>,
+                        Tipo:: <code>String</code>,<br>
                         *Len:: <code>Integer</code>
                 </div>
             </div>
@@ -1332,6 +1362,38 @@ Isto é redundante se o valor de retorno já for uma <i>string</i>, mas pode ser
                         Gera uma string do tipo de dados textual nativo de <i>XML Schema</i> indicado, com o comprimento dado.<br/>
                         O primeiro argumento tem de ser um dos seguintes tipos: <code>ENTITY</code>, <code>Name</code>, <code>NCName</code>, <code>NMTOKEN</code>, <code>normalizedString</code>, <code>NOTATION</code>, <code>QName</code>, <code>string</code> ou <code>token</code>.<br/>
                         Exemplo: xsd_string("normalizedString", 10) = "gc97 nI 50"
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row margin-0">
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="propertyname">
+                        xsd_string 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="cell">
+                    <div class="type">
+                        <code>String</code>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cell">
+                        Tipo:: <code>String</code>,<br>
+                        *Min:: <code>Integer</code>,<br>
+                        *Max:: <code>Integer</code>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="cell">
+                    <div class="description">
+                        Gera uma string do tipo de dados textual nativo de <i>XML Schema</i> indicado, com um comprimento entre Min e Max.<br/>
+                        O primeiro argumento tem de ser um dos seguintes tipos: <code>ENTITY</code>, <code>Name</code>, <code>NCName</code>, <code>NMTOKEN</code>, <code>normalizedString</code>, <code>NOTATION</code>, <code>QName</code>, <code>string</code> ou <code>token</code>.<br/>
+                        Exemplo: xsd_string("normalizedString", 10, 15) = "pkqPGRh lZK4"
                     </div>
                 </div>
             </div>

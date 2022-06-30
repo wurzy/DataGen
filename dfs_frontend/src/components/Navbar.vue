@@ -28,7 +28,10 @@
                             <li><b>upper</b> - limite superior de recursividade; deve ser um inteiro não-negativo.</li>
                         </ul>
                     </li>
-                    <li><b>unbounded</b> - máximo de ocorrências de um elemento quando maxOccurs="unbounded"; deve ser um inteiro não-negativo.</li>
+                    <li><b>unbounded</b> - máximo de ocorrências de um elemento com o atributo 'maxOccurs' a "unbounded"; deve ser um inteiro não-negativo.</li>
+                    <li><b>prob_default</b> - probabilidade de uma instância de um elemento &#60;attribute&#62;/&#60;element&#62; com o atributo 'default' ter esse valor predefinido; deve ser um número entre 0 e 100.</li>
+                    <li><b>prob_nil</b> - probabilidade de uma instância de &#60;element&#62; com o atributo 'nillable' a verdadeiro ter o valor explícito 'nil'; deve ser um número entre 0 e 100.</li>
+                    <li><b>prob_noAll</b> - probabilidade de um elemento &#60;all&#62; com o atributo 'minOccurs' a 0 não ocorrer; deve ser um número entre 0 e 100.</li>
                 </ul>
             </ul>
             <br><hr><br>

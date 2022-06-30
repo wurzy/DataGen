@@ -62,7 +62,7 @@
     var path = ""
     var join = args.join(",")
 
-    if (key in genAPI || ["xsd_gDay","xsd_gMonth","xsd_gYear","xsd_gMonthDay","xsd_gYearMonth"].includes(key)) {
+    if (key in genAPI || ["xsd_gDay","xsd_gMonth","xsd_gYear","xsd_gMonthDay","xsd_gYearMonth","xsd_date"].includes(key)) {
       if (key == "index") {
         if (genAPI["index"](0, queue[queue.length-1], struct_types, array_indexes, 0) === false) errors.push({
           message: 'Não faz sentido invocar a função "index" aqui porque não está dentro de nenhum array!',
@@ -102,8 +102,14 @@
         if (args.length == 3) join += ",null"
         if (args.length == 5) join = `${args[0]},${args[1]},${args[2]},{start: ${args[3]}, end: ${args[4]}}`
       }
-      if (key == "stringOfSize") {
+      if (key == "language") {
+        if (!args.length) join += ",null"
+      }
+      if (key == "stringOfSize" || key == "hexBinary") {
         if (args.length == 1) join += ",null"
+      }
+      if (key == "xsd_string") {
+        if (args.length == 2) join += ",null"
       }
       if (key == "xsd_gDay") {
         if (args.length == 2) {
@@ -128,28 +134,26 @@
         if (!join.length) join = '0,2020,4,""'
       }
       if (key == "xsd_gMonthDay") {
-        let list_arg = '{"max":1,"min":1}'
-        if (args.length == 4) list_arg = args.splice(2,3).join(",")
         args.map((arg,i) => args[i] = arg.slice(3,-1).split("-").map(x => parseInt(x)))
         args.map((arg,i) => args[i] = JSON.stringify({month: arg[0], day: arg[1]}))
-        join = `"${key.slice(4)}",${args.reverse().join(",")},${list_arg}`
+        join = `"${key.slice(4)}",${args.join(",")}`
         key = "xsd_complexGType"
       }
       if (key == "xsd_gYearMonth") {
-        let list_arg = '{"max":1,"min":1}'
-        if (args.length == 4) list_arg = args.splice(2,3).join(",")
         args.map((arg,i) => args[i] = arg.slice(1,-1).split("-").map(x => parseInt(x)))
         args.map((arg,i) => args[i] = JSON.stringify({year: arg[0], month: arg[1]}))
-        join = `"${key.slice(4)}",${args.reverse().join(",")},${list_arg}`
+        join = `"${key.slice(4)}",${args.join(",")}`
         key = "xsd_complexGType"
       }
       if (key == "xsd_duration") {
-        let list_arg = '{"max":1,"min":1}'
-        if (args.length == 4) list_arg = args.splice(2,3).join(",")
         args.map((arg,i) => args[i] = JSON.stringify(getDurationParts(arg.slice(1,-1))))
-        join = `${args.reverse().join(",")},${list_arg}`
+        join = args.join(",")
       }
-      if (key == "xsd_dateTime") join = join.replace(/[\/\-\.]/g, "/")
+      if (key == "xsd_dateTime") join = '"dateTime",' + join + (args.length == 1 ? ",null" : "")
+      if (key == "xsd_date") {
+        join = '"date",' + join + (args.length == 1 ? ",null" : "")
+        key = "xsd_dateTime"
+      }
 
       path = "genAPI." + key
       join += !join.length ? "gen.i" : ",gen.i"
@@ -742,10 +746,11 @@ letter_case
   = quotation_mark ws word:(("uppercase") / ("mai"("ú"/"u")"scula")) ws quotation_mark { return "uppercase" }
   / quotation_mark ws word:(("lowercase") / ("min"("ú"/"u")"scula")) ws quotation_mark { return "lowercase" }
 
-date
-  = quotation_mark ws date:$(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws quotation_mark {
-    return date.replace(/[^\d]/g, "/")
-  }
+date = quotation_mark ws date:$(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9]) ws quotation_mark { return date.replace(/[^\d]/g, "/") }
+
+xsd_date = quotation_mark ws date:$([0-9][0-9][0-9][0-9]"-"("0"[1-9]/"1"[012])"-"("0"[1-9]/[12][0-9]/"3"[01])) ws quotation_mark { return date }
+
+xsd_dateTime = quotation_mark ws datetime:(date:$([0-9][0-9][0-9][0-9]"-"("0"[1-9]/"1"[012])"-"("0"[1-9]/[12][0-9]/"3"[01])) "T" time:$((([01][0-9]) / ("2"[0-3])) ":" [0-5][0-9] ":" [0-5][0-9])) ws quotation_mark { return datetime.join("") }
 
 date_format
   = quotation_mark ws format:$("DD" date_separator "MM" date_separator ("AAAA" / "YYYY")) ws quotation_mark { return format }
@@ -769,14 +774,10 @@ gDay = quotation_mark "---" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation
 gMonth = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) quotation_mark { return parseInt(month) }
 gMonthDay = quotation_mark "--" month:$("0" digit1_9 / "1"[0-2]) "-" day:$("0" digit1_9 / [12] DIGIT / "3"[01]) quotation_mark { return {month: parseInt(month), day: parseInt(day)} }
 
-xsd_dateTime_arg = v:("{" ws '"date"' ws ":" ws "[" ws '"' date:(("0"[1-9]/[12][0-9]/"3"[01])("/"/"-"/".")("0"[1-9]/"1"[012])("/"/"-"/".")[0-9][0-9][0-9][0-9] { return text().replace(/[\/\-\.]/g, "/") }) '"' ws "," ws time:$time ws "]" ws "," ws '"neg"' ws ":" ws ("true"/"false") ws "}") { return JSON.parse(v.join("")) }
-
 duration = quotation_mark "-"? "P" Y:$(DIGIT+ "Y")? M:$(DIGIT+ "M")? D:$(DIGIT+ "D")? 
            T:("T" h:$(DIGIT+ "H")? m:$(DIGIT+ "M")? s:duration_seconds? {return [h,m].concat(s===null ? [0,0] : s)})? quotation_mark { return [Y,M,D].concat(T===null ? [0,0,0,0] : T).map(x => x==="" ? 0 : parseInt(x))}
 
 duration_seconds = s:(s:(s:$DIGIT+ ss:$("." DIGIT+)? {return [s, ss.slice(1)]} / "." ss:$DIGIT+ {return [0, ss.slice(1)]}) "S" {return s})? {return s}
-
-xsd_list_arg = "{" ws '"max"' ws ":" ws max:$digit1_9+ ws "," ws '"min"' ws ":" ws min:$digit1_9+ ws "}" { return {max: parseInt(max), min: parseInt(min)} }
 
 char
   = unescaped
@@ -952,6 +953,12 @@ gen_moustaches
       data: fillArray("gen", null, "pattern", [pattern])
     }
   }
+  / "language(" ws arg:(len:natural_or_local ws {return len})? ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "language", [arg])
+    }
+  }
   / "multipleOf(" ws num:number_or_local ws ")" {
     return {
       model: {type: "float", required: true},
@@ -964,16 +971,16 @@ gen_moustaches
       data: fillArray("gen", null, "stringOfSize", [fst, snd])
     }
   }
-  / "xsd_string(" ws base:xsd_string_base ws "," ws len:natural_or_local ws ")" {
+  / "xsd_string(" ws base:xsd_string_base ws "," ws min:natural_or_local ws max:("," ws trd:natural_or_local ws { return trd })? ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "xsd_string", [base, len])
+      data: fillArray("gen", null, "xsd_string", [base, min, max])
     }
   }
-  / "hexBinary(" ws len:natural_or_local ws ")" {
+  / "hexBinary(" ws min:natural_or_local ws max:("," ws snd:natural_or_local ws { return snd })? ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "hexBinary", [len])
+      data: fillArray("gen", null, "hexBinary", [min, max])
     }
   }
   / "xsd_gDay(" ws args:(min:gDay ws "," ws max:gDay ws {return {min, max}})? ")" {
@@ -994,28 +1001,34 @@ gen_moustaches
       data: fillArray("gen", null, "formattedInteger", (args===null ? [0,2020] : [args.min, args.max]).concat([4, ""]))
     }
   }
-  / "xsd_gMonthDay(" ws min:gMonthDay ws "," ws max:gMonthDay ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+  / "xsd_gMonthDay(" ws min:gMonthDay ws "," ws max:gMonthDay ws ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "xsd_complexGType", ["gMonthDay", max, min, list===null ? {max:1,min:1} : list])
+      data: fillArray("gen", null, "xsd_complexGType", ["gMonthDay", min, max])
     }
   }
-  / "xsd_gYearMonth(" ws min:gYearMonth ws "," ws max:gYearMonth ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+  / "xsd_gYearMonth(" ws min:gYearMonth ws "," ws max:gYearMonth ws ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "xsd_complexGType", ["gYearMonth", max, min, list===null ? {max:1,min:1} : list])
+      data: fillArray("gen", null, "xsd_complexGType", ["gYearMonth", min, max])
     }
   }
-  / "xsd_duration(" ws min:duration ws "," ws max:duration ws list:("," ws l:xsd_list_arg ws { return l })? ")" {
+  / "xsd_duration(" ws min:duration ws "," ws max:duration ws ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "xsd_duration", [max, min, list===null ? {max:1,min:1} : list])
+      data: fillArray("gen", null, "xsd_duration", [min, max])
     }
   }
-  / "xsd_dateTime(" ws quotation_mark base:("dateTime"/"date") quotation_mark ws "," ws max:("null" {return null} / xsd_dateTime_arg) ws "," ws min:xsd_dateTime_arg ws "," ws list:xsd_list_arg ws ")" {
+  / "xsd_date(" ws min:xsd_date ws max:("," ws snd:xsd_date ws {return snd})? ")" {
     return {
       model: {type: "string", required: true},
-      data: fillArray("gen", null, "xsd_dateTime", [base, max, min, list])
+      data: fillArray("gen", null, "xsd_dateTime", ["date", min, max])
+    }
+  }
+  / "xsd_dateTime(" ws min:xsd_dateTime ws max:("," ws snd:xsd_dateTime ws {return snd})? ")" {
+    return {
+      model: {type: "string", required: true},
+      data: fillArray("gen", null, "xsd_dateTime", ["dateTime", min, max])
     }
   }
 
