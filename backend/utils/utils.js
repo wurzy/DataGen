@@ -21,4 +21,23 @@ function translateMsg(error, schema) {
     else return error.message
 }
 
-module.exports = {translateMsg}
+function replaceIDs(json, ids) {
+    for (let p in json) {
+        if (typeof json[p] == "string" && json[p] == "{DFXS_ID}") json[p] = "id" + ++ids
+        else if (typeof json[p] == "object" && json[p] != null) ids = replaceIDs(json[p], ids)
+    }
+    return ids
+}
+
+function replaceIDREFs(json, ids) {
+    for (let p in json) {
+        if (typeof json[p] == "string" && /\{DFXS_IDREF\}/.test(json[p])) json[p] = json[p].replace(/\{DFXS_IDREF\}/g, "id" + (Math.floor(Math.random()*ids)+1))
+        else if (typeof json[p] == "object" && json[p] != null) replaceIDREFs(json[p], ids)
+    }
+}
+
+module.exports = {
+    translateMsg,
+    replaceIDs,
+    replaceIDREFs
+}

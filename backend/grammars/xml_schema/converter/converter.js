@@ -7,7 +7,6 @@ let complexTypes = {}
 let recursiv = {}
 let SETTINGS = {}
 let temp_structs = 0
-let ids = 0
 
 // tabs de indentação
 const indent = depth => "\t".repeat(depth)
@@ -108,7 +107,6 @@ function convert(xsd, st, ct, main_elem, user_settings) {
    SETTINGS = user_settings
    recursiv = checkRecursivity(xsd_content, ct)
    temp_structs = 0
-   ids = 0
 
    let elements = xsd.content.filter(x => x.element == "element")
    if (!elements.length) str += indent(depth) + "DFXS_EMPTY_XML: true\n"
@@ -119,7 +117,6 @@ function convert(xsd, st, ct, main_elem, user_settings) {
 
    str += "}"
    str = str.replace(/DFXS_(TEMP|FLATTEN)__\d+/g, (m) => m.replace(/\d+$/, "") + new_temp_structs++)
-   str = str.replace(/{XSD_IDREF}/g, `id{{integer(1,${ids})}}`)
    return str
 }
 
@@ -179,12 +176,8 @@ function parseElementAux(el, name, depth, schemaElem) {
 
    // parsing do conteúdo -----
    if (el.content.length > 0) {
-      let type = el.content[0]
-      if (type.element == "simpleType") {
-         let parsed = parseSimpleType(type, ids, exception ? base_depth : depth) // a parte relevante do simpleType é o elemento filho (list / restriction / union)
-         ids = parsed.ids
-         str += parsed.str
-      }
+      let type = el.content[0] // a parte relevante do simpleType é o elemento filho (list / restriction / union)
+      if (type.element == "simpleType") str += parseSimpleType(type, exception ? base_depth : depth)
       if (type.element == "complexType") str += parseComplexType(type, exception ? base_depth+1 : depth)
    }
 
@@ -212,10 +205,7 @@ function parseType(type, depth) {
    if (!type.complex) {
       let st = JSON.parse(JSON.stringify(simpleTypes[type.type]))
       if (!["built_in_base","list","union"].some(x => x in st)) st.built_in_base = type.base
-
-      let parsed = parseSimpleType(st, ids, depth)
-      ids = parsed.ids
-      return parsed.str
+      return parseSimpleType(st, depth)
    }
    return parseComplexType(complexTypes[type.type], depth)
 }
@@ -249,10 +239,8 @@ function parseComplexType(el, depth) {
       if (!("mixed_type" in el)) str += `${indent(depth+1)}DFXS_MIXED_DEFAULT: true${empty ? "" : ",\n"}`
       else {
          let base_st = el.mixed_type.content[0]
-         let mixed_content = parseSimpleType({built_in_base: base_st.built_in_base, content: base_st.content}, ids, depth)
-         
-         ids = mixed_content.ids
-         str += `${indent(depth+1)}DFXS_MIXED_RESTRICTED: ${mixed_content.str}${empty ? "" : ",\n"}`
+         let mixed_content = parseSimpleType({built_in_base: base_st.built_in_base, content: base_st.content}, depth)
+         str += `${indent(depth+1)}DFXS_MIXED_RESTRICTED: ${mixed_content}${empty ? "" : ",\n"}`
       }
    }
    else if (empty) return "{ missing(100) {empty: true} }"
@@ -282,11 +270,7 @@ function parseAttribute(el, depth) {
    
    if (!value.length || "default" in el.attrs) {
       if ("type" in el.attrs) value = parseType(el.attrs.type, depth)
-      else {
-         value = parseSimpleType(el.content[0], ids, depth)
-         ids = value.ids
-         value = value.str
-      }
+      else value = parseSimpleType(el.content[0], depth)
    }
 
    return indent(depth) + str + value + ("default" in el.attrs ? " }" : "")

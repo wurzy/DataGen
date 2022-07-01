@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {translateMsg} = require('../utils/utils')
+const utils = require('../utils/utils')
 
 const dslParser = require('../grammars/datagen_dsl/parser')
 const xmlParser = require('../grammars/xml_schema/parser/parser')
@@ -62,6 +62,17 @@ function generate(req, frontend) {
   let format = req.body.settings.output
   console.log('dataset gerado')
 
+  // colocar IDs e IDREFs no dataset
+  if (/\{DFXS_ID\}/.test(model)) {
+    let ids = 0
+    ids = utils.replaceIDs(dataset.dataModel.data, ids) 
+    
+    if (/\{DFXS_IDREF\}/.test(model)) {
+      if (!ids) return {message: "O dataset produzido possui 1+ elementos de tipo 'IDREF', mas nenhum elemento de tipo 'ID'!\nÉ possível que os elementos de tipo 'ID' não sejam instanciados, dado que os mesmos, ou os elementos que os contêm, podem não ocorrer devido a restrições de ocorrências/recursividade, como foi o caso nesta instância. Tente gerar outro dataset."}
+      utils.replaceIDREFs(dataset.dataModel.data, ids)
+    }
+  }
+
   // converter dataset para o formato final
   if (format == "json") dataset = JSON.stringify(dslConverter.cleanJson(dataset.dataModel.data), null, 2)
   if (format == "xml") dataset = dslConverter.jsonToXml(dataset.dataModel.data, {xml_declaration: data.xml_declaration})
@@ -105,10 +116,10 @@ router.post('/:output', (req, res) => {
       req.body.settings.output = req.params.output
       let result = generate(req, false)
 
-      if ("message" in result) return res.status(500).send(translateMsg(result, null))
+      if ("message" in result) return res.status(500).send(utils.translateMsg(result, null))
       res.status(201).jsonp(result)
     } catch (err) {
-      res.status(500).send(translateMsg(err, null))
+      res.status(500).send(utils.translateMsg(err, null))
     }
   }
   else res.status(500).send(`O corpo do pedido deve ter apenas três propriedades: 'schema', 'element' e 'settings', onde 'element' é o elemento-raiz da schema que se pretende gerar.\nAs definições devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)

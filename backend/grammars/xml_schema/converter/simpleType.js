@@ -3,6 +3,7 @@
 let indent = depth => '\t'.repeat(depth)
 
 function convertDSLToFunction(str) {
+   if (str == "{DFXS_IDREF}") return '"'+str+'"'
    if (/^{{time/.test(str) && str.includes(".")) {
       str = str.split(".").map(x => x.slice(2,-2))
       return `gen.${str[0]}+"."+gen.${str[1]}`
@@ -327,8 +328,8 @@ function parseRestriction(content, base) {
       case "anyURI": return "http://www.w3.org/2001/XMLSchema"
       case "boolean": return "{{boolean()}}"
       case "language": return parseLanguage(content, has)
-      case "IDREF": return "{XSD_IDREF}"
-      case "ID": return "{XSD_ID}"
+      case "IDREF": return "{DFXS_IDREF}"
+      case "ID": return "{DFXS_ID}"
 
       case "base64Binary": case "ENTITY": case "hexBinary": case "Name": case "NCName": case "NMTOKEN":
       case "normalizedString": case "NOTATION": case "QName": case "string": case "token":
@@ -404,7 +405,7 @@ function parseComplexUnion(types, depth) {
    return str
 }
 
-function parseSimpleType(st, ids, depth) {
+function parseSimpleType(st, depth) {
    let str
    
    // derivação por lista
@@ -412,7 +413,7 @@ function parseSimpleType(st, ids, depth) {
 
    // derivação por união
    else if ("union" in st) {
-      let types = st.union.map(x => parseSimpleType(x, ids, depth).str)
+      let types = st.union.map(x => parseSimpleType(x, depth).str)
 
       if (!st.union.some(x => "list" in x)) str = `gen => { return gen.random(${types.map(x => convertDSLToFunction(x.slice(1,-1))).join(", ")}) }`
       else str = parseComplexUnion(types, depth)
@@ -425,8 +426,7 @@ function parseSimpleType(st, ids, depth) {
       str = "'" + parsed + "'"
    }
    
-   str = str.replace(/{XSD_ID}/g, () => `id${++ids}`)
-   return {str, ids}
+   return str
 }
 
 
