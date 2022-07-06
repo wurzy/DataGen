@@ -11,7 +11,7 @@ const {resolve_refs} = require('../grammars/json_schema/converter/refs')
 const {translateMsg} = require('../utils/utils')
 
 const ws = "‏‏‎ ‎"
-const settings_str = `"settings": {\n${ws}${ws}"recursivity": {"lower": ?, "upper": ?},\n${ws}${ws}"prob_if": ?,\n${ws}${ws}"prob_patternProperty": ?,\n${ws}${ws}"random_props": ?,\n${ws}${ws}"extend_objectProperties": ?,\n${ws}${ws}"prefixItems": ?,\n${ws}${ws}"extend_schemaProperties": ?\n}`
+const settings_str = `"settings": {\n${ws}${ws}"datagen_language": ?,\n${ws}${ws}"recursivity": {"lower": ?, "upper": ?},\n${ws}${ws}"prob_if": ?,\n${ws}${ws}"prob_patternProperty": ?,\n${ws}${ws}"random_props": ?,\n${ws}${ws}"extend_objectProperties": ?,\n${ws}${ws}"prefixItems": ?,\n${ws}${ws}"extend_schemaProperties": ?\n}`
 const isObject = x => typeof x == 'object' && !Array.isArray(x) && x !== null
 
 function cleanSettings(settings, frontend) {
@@ -27,6 +27,7 @@ function cleanSettings(settings, frontend) {
   if (!(typeof settings.prob_if == "number" && settings.prob_if >= 0 && settings.prob_if <= 100)) return "O valor 'prob_if' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
   if (!(typeof settings.prob_patternProperty == "number" && settings.prob_patternProperty >= 0 && settings.prob_patternProperty <= 100)) return "O valor 'prob_patternProperty' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
   if (!typeof settings.random_props == "boolean") return "O valor 'random_props' das definições deve ser um boleano!"
+  if (!(typeof settings.datagen_language == "string" && ["pt","en"].includes(settings.datagen_language))) return `O valor 'datagen_language' das definições deve ter um dos seguintes valores: "pt" (português) ou "en" (inglês)!`
 
   if (!frontend) {
     if (!(typeof settings.extend_objectProperties == "string" && ["extend","overwrite"].includes(settings.extend_objectProperties))) return "O valor 'extend_objectProperties' das definições, relativo à extensão de propriedades repetidas nas chaves 'properties' e 'patternProperties', deve ser uma das seguintes strings:\n\n• extend/overwrite - se as chaves tiverem propriedades repetidas, estende/subtitui a schema de cada propriedade da chave-base com a respetiva schema da mesma propriedade da chave nova. Todas as propriedades originais da nova chave são atribuídas à chave-base."
@@ -97,7 +98,7 @@ router.post('/:output', (req, res) => {
     if (!isObject(req.body.main_schema)) return res.status(500).send("A schema principal deve ser enviada em forma de objeto JSON!")
     if (!(Array.isArray(req.body.other_schemas) && req.body.other_schemas.every(x => isObject(x)))) return res.status(500).send("O valor de 'other_schemas' deve ser um array com as restantes schemas, todas elas em forma de objeto JSON!")
 
-    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "prob_if" in settings && "prob_patternProperty" in settings && "random_props" in settings && "extend_objectProperties" in settings && "extend_prefixItems" in settings && "extend_schemaProperties" in settings))
+    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "prob_if" in settings && "prob_patternProperty" in settings && "random_props" in settings && "extend_objectProperties" in settings && "extend_prefixItems" in settings && "extend_schemaProperties" in settings && "datagen_language" in settings))
       return res.status(500).send(`As definições enviadas no pedido não estão corretas! Devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
 
     let schema_key = ""

@@ -52,6 +52,16 @@
             max="100"
             label="Probabilidade de um elemento <all> com o atributo 'minOccurs' a 0 não ocorrer na instância"
         />
+
+        <v-radio-group
+            row
+            v-model="new_settings.datagen_language"
+            :rules="[rules.required]"
+            label="Língua dos resultados de funções de interpolação do DataGen:"
+        >
+            <v-radio :label="'Português'" :value="'pt'" color="var(--json-primary)"/>
+            <v-radio :label="'Inglês'" :value="'en'" color="var(--json-primary)"/>
+        </v-radio-group>
     </v-form>
 </template>
 
@@ -71,7 +81,8 @@ export default {
                 unbounded: 10,
                 prob_default: 60,
                 prob_nil: 30,
-                prob_noAll: 30
+                prob_noAll: 30,
+                datagen_language: "pt"
             },
             rules: {
                 required: v => !!v || "Valor obrigatório.",

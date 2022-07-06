@@ -96,9 +96,6 @@ function normalizeName(name, end_prefix, prefixed) {
 }
 
 function convert(xsd, st, ct, main_elem, user_settings) {
-   let depth = 1, new_temp_structs = 1
-   let str = `<!LANGUAGE pt>\n{\n${indent(depth)}DFXS__FROM_XML_SCHEMA: true,\n`
-   
    // variáveis globais
    default_prefix = xsd.prefix
    xsd_content = xsd.content
@@ -107,6 +104,9 @@ function convert(xsd, st, ct, main_elem, user_settings) {
    SETTINGS = user_settings
    recursiv = checkRecursivity(xsd_content, ct)
    temp_structs = 0
+
+   let depth = 1, new_temp_structs = 1
+   let str = `<!LANGUAGE ${SETTINGS.datagen_language}>\n{\n${indent(depth)}DFXS__FROM_XML_SCHEMA: true,\n`
 
    let elements = xsd.content.filter(x => x.element == "element")
    if (!elements.length) str += indent(depth) + "DFXS_EMPTY_XML: true\n"
@@ -172,13 +172,17 @@ function parseElementAux(el, name, depth, schemaElem) {
       str = `if (Math.random() < ${SETTINGS.prob_default}) { ${name}"${el.attrs.default}" }\n${indent(base_depth)}else {${ct ? "\n"+indent(base_depth+1) : " "}${name}`
       exception = true
    }
-   if ("type" in el.attrs) str += parseType(el.attrs.type, exception ? base_depth : depth)
 
-   // parsing do conteúdo -----
-   if (el.content.length > 0) {
-      let type = el.content[0] // a parte relevante do simpleType é o elemento filho (list / restriction / union)
-      if (type.element == "simpleType") str += parseSimpleType(type, exception ? base_depth : depth)
-      if (type.element == "complexType") str += parseComplexType(type, exception ? base_depth+1 : depth)
+   if ("datagen" in el) str += "'{{" + el.datagen.func + el.datagen.args + "}}'"
+   else {
+      if ("type" in el.attrs) str += parseType(el.attrs.type, exception ? base_depth : depth)
+
+      // parsing do conteúdo -----
+      if (el.content.length > 0) {
+         let type = el.content[0] // a parte relevante do simpleType é o elemento filho (list / restriction / union)
+         if (type.element == "simpleType") str += parseSimpleType(type, exception ? base_depth : depth)
+         if (type.element == "complexType") str += parseComplexType(type, exception ? base_depth+1 : depth)
+      }
    }
 
    if (exception) {
@@ -260,7 +264,7 @@ function parseAttribute(el, depth) {
    if ("fixed" in el.attrs) value = el.attrs.fixed
    if ("default" in el.attrs) value = el.attrs.default
 
-   // se tiver um valor predefinido, verifica se tem "/' dentro para encapsular com o outro
+   // se tiver um valor predefinido, verificar se tem "/' dentro para encapsular com o outro
    if (value.length > 0) {
       let qm = chooseQM(value)
       value = qm + value + qm
@@ -269,7 +273,8 @@ function parseAttribute(el, depth) {
    }
    
    if (!value.length || "default" in el.attrs) {
-      if ("type" in el.attrs) value = parseType(el.attrs.type, depth)
+      if ("datagen" in el) value = "'{{" + el.datagen.func + el.datagen.args + "}}'"
+      else if ("type" in el.attrs) value = parseType(el.attrs.type, depth)
       else value = parseSimpleType(el.content[0], depth)
    }
 

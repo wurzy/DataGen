@@ -46,7 +46,7 @@
     </Modal>
 
     <Modal
-      :key="dataset_tab"
+      :key="created_datasets"
       title="Modelo intermédio gerado na DSL do DataGen"
       more_width
       :model="model"
@@ -210,7 +210,8 @@ export default {
         unbounded: 10,
         prob_default: 60,
         prob_nil: 30,
-        prob_noAll: 30
+        prob_noAll: 30,
+        datagen_language: "pt"
       },
       
       // from JSON schemas
@@ -224,13 +225,14 @@ export default {
         random_props: false,
         extend_objectProperties: "OR",
         extend_prefixItems: "OR",
-        extend_schemaProperties: "OR"
+        extend_schemaProperties: "OR",
+        datagen_language: "pt"
       },
 
       // datasets produzidos
       dataset_tabs: [{ label: "", key: "dataset_1", dataset: "", model: "", filename: "", format: "" }],
       dataset_tab: "dataset_1",
-      created_datasets: 1,
+      created_datasets: 0,
 
       // modal de settings
       settings: false,
@@ -279,6 +281,9 @@ export default {
 
       this.dataset_tabs = [{ label: "", key: "dataset_1", dataset: "", model: "", filename: "", format: "" }]
       this.dataset_tab = "dataset_1"
+      this.created_datasets = 0
+
+      this.grammar_errors = []
     })
   },
   computed: {
@@ -390,7 +395,7 @@ export default {
       }
     },
     async askXmlMainSchema() {
-      let {data} = await axios.post('http://localhost:3000/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
+      let {data} = await axios.post('/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
       
       if ("message" in data) this.grammar_errors = [aux.translateMsg(data)]
       else if ("elements" in data) {
@@ -479,7 +484,7 @@ export default {
     },
     async sendGenRequest(type, body) {
       try {
-        return await axios.post(`http://localhost:3000/api/${type}_schema/`, body, {timeout: 35000})
+        return await axios.post(`/api/${type}_schema/`, body, {timeout: 35000})
       } 
       catch (err) {
         this.errorMsg = "A operação de geração do dataset excedeu o tempo limite!"
@@ -533,6 +538,7 @@ export default {
     newDataset(result, filename) {
       let index = this.dataset_tabs.findIndex(t => t.key == this.dataset_tab)
       let tab = this.dataset_tabs[index]
+      let key = "dataset_" + ++this.created_datasets
 
       if (!tab.dataset.length) {
         tab.label = tab.filename = filename
@@ -541,8 +547,6 @@ export default {
         tab.format = this.output_mode
       }
       else {
-        this.created_datasets++
-        let key = "dataset_" + this.created_datasets
         this.$refs.tab.addTab({label: filename, key, ...result, filename, format: this.output_mode})
         this.dataset_tab = key
       }

@@ -22,7 +22,7 @@ let clone = x => JSON.parse(JSON.stringify(x))
 function convert(json, user_settings) {
     original_json = json
     SETTINGS = user_settings
-    return "<!LANGUAGE pt>\n" + parseJSON(json.schema, 1, 1)
+    return `<!LANGUAGE ${SETTINGS.datagen_language}>\n` + parseJSON(json.schema, 1, 1)
 }
 
 function parseJSON(json, depth, arr_offset) {
@@ -95,6 +95,9 @@ function parseType(json, depth, arr_offset) {
     if ("default" in json.type[type]) {
         let keys = Object.keys(json.type[type])
         if (keys.length == 1 || (type == "number" && keys.length == 2 && keys.includes("integer"))) return predefinedValue(json.type[type].default)
+    }
+    if ("_datagen" in json) {
+        if (type == json._datagen.type || (type == "number" && json._datagen.type == "integer")) return "'{{" + json._datagen.func + json._datagen.args + "}}'"
     }
 
     if (type == "object") value = parseObjectType(clone(json.type.object), false, depth)

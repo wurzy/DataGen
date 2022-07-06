@@ -11,6 +11,17 @@
           {{$props.title ? $props.title : "Mensagem"}}
           <v-spacer></v-spacer>
 
+          <div v-if="datagen" class="btns">
+            <v-tooltip top max-width="420px">
+              <template v-slot:activator="{ on }">
+                <v-btn fab depressed color="grey lighten-2" v-on="on" @click="redirect" @mouseleave="$event.target.blur()">
+                  <v-icon>mdi-arrow-top-right-bold-box-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Visitar</span>
+            </v-tooltip>
+          </div>
+
           <div v-if="model!==undefined" class="btns">
             <v-tooltip top max-width="420px">
               <template v-slot:activator="{ on }">
@@ -41,7 +52,7 @@
           </div>
         </v-card-title>
 
-        <div :class="model!==undefined ? '' : 'message'">
+        <div :class="(api || model!==undefined) ? '' : 'message'">
           <slot></slot>
         </div>
 
@@ -88,7 +99,9 @@ export default {
       settings: Boolean,
       valid_settings: Boolean,
       more_width: Boolean,
-      model: String
+      model: String,
+      api: Boolean,
+      datagen: Boolean
     },
     data() {
       return {
@@ -104,6 +117,7 @@ export default {
       })
     },
     methods: {
+      redirect() { window.open("https://datagen.di.uminho.pt/") },
       close() { this.$emit('close') },
       confirm() { this.$emit('confirm') },
       copy() {

@@ -154,6 +154,16 @@
                 </v-select>
             </v-col>
         </v-row>
+
+        <v-radio-group
+            row
+            v-model="new_settings.datagen_language"
+            :rules="[rules.required]"
+            label="Língua dos resultados de funções de interpolação do DataGen:"
+        >
+            <v-radio :label="'Português'" :value="'pt'" color="var(--json-primary)"/>
+            <v-radio :label="'Inglês'" :value="'en'" color="var(--json-primary)"/>
+        </v-radio-group>
     </v-form>
 </template>
 
@@ -175,7 +185,8 @@ export default {
                 random_props: false,
                 extend_objectProperties: "OR",
                 extend_prefixItems: "OR",
-                extend_schemaProperties: "OR"
+                extend_schemaProperties: "OR",
+                datagen_language: "pt"
             },
             options1: [{key: "OR", label: "Extensão"}, {key: "OW", label: "Sobrescrição"}],
             options2: [{key: "OR", label: "Extensão"}, {key: "OWP", label: "Sobrescrição parcial"}, {key: "OWT", label: "Sobrescrição total"}, {key: "AP", label: "Concatenação"}],

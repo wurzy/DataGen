@@ -538,9 +538,20 @@
       return error(`Um elemento <b>&#60;${elem}&#62;</b> deve ter o atributo <b>${attr}</b> ou um elemento filho <b>&#60;simpleType&#62;</b> para indicar o tipo a derivar!`)
     return true
   }
+
+  // incluir as informações da função do DataGen que vai dar override ao simpleType do elemento em questão, se for o caso
+  function datagenTypeOverride(el_name, attrs, close) {
+    let result = {element: el_name, attrs, content: close.content}
+    if (!close.merged && close.content.length > 0 && close.content[0].element == "datagen") {
+      let datagen = close.content.shift()
+      delete datagen.element
+      result.datagen = datagen
+    }
+    return result
+  }
 }
 
-DSL_text = ws dec:XML_declaration ws xsd:schema ws comments { return {xml_declaration: dec, xsd, simpleTypes, complexTypes, unbounded_min} }
+DSL_text = ws dec:XML_declaration xsd:schema comments { return {xml_declaration: dec, xsd, simpleTypes, complexTypes, unbounded_min} }
 
 ws "whitespace" = [ \t\n\r]*
 ws2 = [ \t\n\r]+
@@ -548,7 +559,7 @@ ws2 = [ \t\n\r]+
 
 // ----- Declaração XML -----
 
-XML_declaration = comments dec:$("<?xml" XML_version XML_encoding? XML_standalone? ws '?>') {return dec}
+XML_declaration = comments dec:$("<?xml" XML_version XML_encoding? XML_standalone? ws '?>') ws {return dec}
 
 XML_version = ws2 "version" ws "=" ws q1:QM "1.0" q2:QM &{return checkQM(q1,q2,null,null)}
 
@@ -635,7 +646,7 @@ element = comments prefix:open_XSD_el el_name:$("element" {any_type = "BSC"; cur
           close:(merged_close / openEl content:element_content close_el:close_XSD_el {return {merged: false, ...close_el, content}}) &{
   if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um elemento local deve ter, pelo menos, o atributo <b>name</b> ou <b>ref</b>!")
   return check_elTags(el_name, prefix, close) && check_elemMutex(attrs, close.content)
-} {return {element: el_name, attrs, content: close.content}}
+} { return datagenTypeOverride(el_name, attrs, close) }
 
 element_attrs = el:(elem_abstract / elem_block / elem_default / elem_substitutionGroup /
                 elem_final / elem_fixed / elem_form / elem_id / elem_minOccurs /
@@ -663,7 +674,7 @@ elem_source = ws2 attr:"source" ws "=" ws val:string                            
 elem_substitutionGroup = ws2 attr:"substitutionGroup" ws "=" q1:QMo val:QName q2:QMc                        {return checkQM(q1,q2,attr,val)}
 elem_type = ws2 attr:"type" ws "=" q1:QMo val:type_value q2:QMc                                             {return checkQM(q1,q2,attr,val)}
 
-element_content = c:(annotation? (simpleType / complexType)? (keyOrUnique / keyref)*) {return cleanContent(c.flat())}
+element_content = c:(datagen_comment? annotation? (simpleType / complexType)? (keyOrUnique / keyref)*) {return cleanContent(c.flat())}
 
 
 // ----- <field> -----
@@ -721,7 +732,7 @@ attribute = comments prefix:open_XSD_el el_name:$("attribute" {any_type = "BS"})
             close:(merged_close / openEl content:attribute_content close_el:close_XSD_el {return {merged: false, ...close_el, content}}) &{
   if ((close.merged || !close.content.length) && !validateLocalEl(attrs)) return error("Um atributo local deve ter, pelo menos, o atributo <b>name</b> ou <b>ref</b>!")
   return check_elTags(el_name, prefix, close) && check_attrMutex(attrs, close.content)
-} {return {element: el_name, attrs, content: close.content}}
+} { return datagenTypeOverride(el_name, attrs, close) }
 
 attribute_attrs = el:(elem_default / elem_fixed / elem_form / elem_id / attr_name / attr_ref / elem_type / attr_use)*
                   {any_type = "BSC"; return checkError(attrsAPI.check_attributeElAttrs(el, "attribute", schema_depth))}
@@ -730,7 +741,7 @@ attr_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc                &{ret
 attr_ref = ws2 attr:"ref" ws "=" q1:QMo val:QName q2:QMc      {queue.push({attr: "ref", args: [val, "attribute"]}); return checkQM(q1,q2,attr,val)}
 attr_use = ws2 attr:"use" ws "=" q1:QMo val:use_values q2:QMc                                                      {return checkQM(q1,q2,attr,val)}
 
-attribute_content = c:(annotation? simpleType?) {return cleanContent(c)}
+attribute_content = c:(datagen_comment? annotation? simpleType?) {return cleanContent(c)}
 
 
 // ----- <attributeGroup> -----
@@ -1142,6 +1153,21 @@ comments = comment*
 comment = "<!--" comment_content close_comment ws
 comment_content = (!close_comment). comment_content*
 close_comment = "-->"
+
+
+// ----- Tipo DataGen -----
+
+datagen_comment = "<!--datagen:" func:datagen_func args:datagen_args? "-->" ws {return {element: "datagen", ...func, args: args!==null ? args : "()"}}
+datagen_func = datagen_boolean / datagen_integer / datagen_float / datagen_string
+
+datagen_boolean = func:"boolean" {return {func, type: "boolean"}}
+datagen_integer = func:("index"/"integer"/"integerOfSize") {return {func, type: "integer"}}
+datagen_float = func:("float"/"multipleOf") {return {func, type: "float"}}
+datagen_string = func:("date"/"formattedInteger"/"formattedFloat"/"guid"/"hexBinary"/"language"/"letter"/"lorem"/"objectID"/"pattern"/"position"/"pt_phone_number"/"stringOfSize"/"time"/"xsd_date"/"xsd_dateTime"/"xsd_duration"/"xsd_gDay"/"xsd_gMonth"/"xsd_gMonthDay"/"xsd_gYear"/"xsd_gYearMonth"/"xsd_string"/"actor"/"animal"/"brand"/"buzzword"/"capital"/"car_brand"/"continent"/"country"/"cultural_center"/"firstName"/"fullName"/"gov_entity"/"hacker"/"job"/"month"/"musician"/"nationality"/"political_party_abbr"/"political_party_name"/"pt_businessman"/"pt_city"/"pt_county"/"pt_district"/"pt_entity_abbr"/"pt_entity_name"/"pt_parish"/"pt_politician"/"pt_public_figure"/"pt_top100_celebrity"/"religion"/"soccer_club"/"soccer_player"/"sport"/"surname"/"top100_celebrity"/"weekday"/"writer") {return {func, type: "string"}}
+
+datagen_args = "(" datagen_args_content? datagen_args_close ws {return text()}
+datagen_args_content = (!datagen_args_close). datagen_args_content*
+datagen_args_close = ")"
 
 
 // ----- Regex recorrentes -----

@@ -9,7 +9,7 @@ const dslConverter = require('../grammars/datagen_dsl/conversions')
 const xmlConverter = require('../grammars/xml_schema/converter/converter')
 
 const ws = "‏‏‎ ‎"
-const settings_str = `"settings": {\n${ws}${ws}"recursivity": {"lower": ?, "upper": ?},\n${ws}${ws}"unbounded": ?,\n${ws}${ws}"prob_default": ?,\n${ws}${ws}"prob_nil": ?,\n${ws}${ws}"prob_noAll": ?\n}`
+const settings_str = `"settings": {\n${ws}${ws}"datagen_language": ?,\n${ws}${ws}"recursivity": {"lower": ?, "upper": ?},\n${ws}${ws}"unbounded": ?,\n${ws}${ws}"prob_default": ?,\n${ws}${ws}"prob_nil": ?,\n${ws}${ws}"prob_noAll": ?\n}`
 
 function cleanSettings(settings, frontend) {
   if (frontend) {
@@ -28,6 +28,7 @@ function cleanSettings(settings, frontend) {
   if (!(typeof settings.prob_default == "number" && settings.prob_default >= 0 && settings.prob_default <= 100)) return "O valor 'prob_default' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
   if (!(typeof settings.prob_nil == "number" && settings.prob_nil >= 0 && settings.prob_nil <= 100)) return "O valor 'prob_nil' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
   if (!(typeof settings.prob_noAll == "number" && settings.prob_noAll >= 0 && settings.prob_noAll <= 100)) return "O valor 'prob_noAll' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
+  if (!(typeof settings.datagen_language == "string" && ["pt","en"].includes(settings.datagen_language))) return `O valor 'datagen_language' das definições deve ter um dos seguintes valores: "pt" (português) ou "en" (inglês)!`
 
   settings.prob_default = parseFloat(settings.prob_default.toFixed(2))/100
   settings.prob_nil = parseFloat(settings.prob_nil.toFixed(2))/100
@@ -109,7 +110,7 @@ router.post('/:output', (req, res) => {
     if (typeof req.body.schema != "string") return res.status(500).send("A schema deve ser enviada em string!")
     if (typeof req.body.element != "string") return res.status(500).send("O nome do elemento-raiz a gerar deve ser uma string!")
 
-    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "unbounded" in settings && "prob_default" in settings && "prob_nil" in settings && "prob_noAll" in settings))
+    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "unbounded" in settings && "prob_default" in settings && "prob_nil" in settings && "prob_noAll" in settings && "datagen_language" in settings))
       return res.status(500).send(`As definições enviadas no corpo do pedido não estão corretas! Devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
 
     try {

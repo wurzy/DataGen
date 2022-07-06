@@ -1,4 +1,4 @@
-let genericKeys = ["type","enum","const","default"]
+let genericKeys = ["type","enum","const","default","_datagen"]
 let annotationKeys = ["title","description","examples","readOnly","writeOnly","deprecated","$comment"] // a gramática reconhece mas ignora
 let mediaKeys = ["contentMediaType","contentEncoding","contentSchema"] // a gramática reconhece mas ignora
 let schemaKeys = ["allOf","anyOf","oneOf","not","if","then","else"]
@@ -58,8 +58,10 @@ function checkKeysByType(obj) {
     }
   }
 
-  for (let k in obj)
+  for (let k in obj) {
     if (!keywords.includes(k)) return error(`O tipo {<b>${obj.type.join("</b>, <b>")}</b>} não suporta a chave <b>${k}</b>!`)
+    if (k == "_datagen" && !(obj.type.includes(obj[k].type) || (obj[k].type == "integer" && obj.type.includes("number")))) return error(`O tipo de dados produzido pela função <b>${obj[k].func}</b> do DataGen não é suportado pela schema em questão!`)
+  }
       
   return true
 }
