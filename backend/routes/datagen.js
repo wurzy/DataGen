@@ -1,13 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-var fs = require('fs')
-const FormData = require('form-data')
-const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
-
-const parser = require('../grammars/datagen_dsl/parser')
-const converter = require('../grammars/datagen_dsl/conversions')
+const parser = require('../grammars/dsl/parser')
+const converter = require('../grammars/dsl/conversions')
 
 // POST front-end route para obter a informação toda
 router.post('/', function(req,res){
@@ -65,36 +60,5 @@ router.post('/csv', function(req,res){
         res.status(404).jsonp(err)
     }
 })
-
-// POST para uso em aplicações
-/* router.post('/dfs', upload.single('model'), function(req,res){
-    let model = fs.readFileSync(req.file.path, "utf8")
-    
-    try {
-        data = parser.parse(model)
-
-        if (req.body.output_format == "JSON") data = converter.cleanJson(data.dataModel.data)
-        if (req.body.output_format == "XML") data = converter.jsonToXml(data.dataModel.data, {xml_declaration: req.body.xml_declaration})
-        console.log(data)
-
-        fs.writeFileSync('./output/dataset.txt', JSON.stringify(data), function (err) {
-            if (err) return console.log(err)
-        });
-      
-        const formData = new FormData()
-        let file = fs.readFileSync('./output/dataset.txt', "utf8")
-        formData.append('dataset', file, "dataset.txt")
-
-        res.writeHead(201, {
-            'Content-Type': 'text/plain',
-            'Content-Disposition': 'attachment; filename=dataset.txt'
-        });
-        res.write(file)
-        res.end()
-    } catch (err) {
-        console.log(err)
-        res.status(404).jsonp(err)
-    }
-}) */
 
 module.exports = router;

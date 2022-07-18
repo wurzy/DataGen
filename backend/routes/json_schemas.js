@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-const dslParser = require('../grammars/datagen_dsl/parser')
+const dslParser = require('../grammars/dsl/parser')
 const jsonParser = require('../grammars/json_schema/parser/parser')
 
-const dslConverter = require('../grammars/datagen_dsl/conversions')
+const dslConverter = require('../grammars/dsl/conversions')
 const jsonConverter = require('../grammars/json_schema/converter/converter')
 
 const {resolve_refs} = require('../grammars/json_schema/converter/refs')

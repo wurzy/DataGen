@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 const utils = require('../utils/utils')
 
-const dslParser = require('../grammars/datagen_dsl/parser')
+const dslParser = require('../grammars/dsl/parser')
 const xmlParser = require('../grammars/xml_schema/parser/parser')
 
-const dslConverter = require('../grammars/datagen_dsl/conversions')
+const dslConverter = require('../grammars/dsl/conversions')
 const xmlConverter = require('../grammars/xml_schema/converter/converter')
 
 const ws = "‏‏‎ ‎"
