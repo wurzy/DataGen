@@ -1,0 +1,12 @@
+{
+    "$id": "https://datagen.di.uminho.pt/schemas/link",
+    "type": "object",
+    "properties": {
+        "id": { "type": "integer", "_datagen": "index" },
+        "origin": { "type": "integer", "_datagen": "integer(0, 100)" },
+        "destiny": { "type": "integer", "_datagen": "integer(0, 100)" },
+        "weight": { "type": "number", "_datagen": "float(1, 300)" }
+    },
+    "additionalProperties": false,
+    "required": ["id", "origin", "destiny", "weight"]
+}

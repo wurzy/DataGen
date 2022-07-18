@@ -65,7 +65,7 @@ function generate(req, data, frontend) {
   if (format == "json") dataset = JSON.stringify(dslConverter.cleanJson(dataset.dataModel.data), null, 2)
   if (format == "xml") {
     let schema = data[0].subschemas.pop()
-    dataset = dslConverter.jsonToXml(dataset.dataModel.data, {root_name: /^anon\d+$/.test(schema.id) ? "dataset" : schema.id.split("/json-schemas/")[1]})
+    dataset = dslConverter.jsonToXml(dataset.dataModel.data, {root_name: /^anon\d+$/.test(schema.id) ? "dataset" : schema.id.split("/schemas/")[1]})
   }
   console.log('dataset convertido')
 

@@ -96,8 +96,10 @@ function parseType(json, depth, arr_offset) {
         let keys = Object.keys(json.type[type])
         if (keys.length == 1 || (type == "number" && keys.length == 2 && keys.includes("integer"))) return predefinedValue(json.type[type].default)
     }
-    if ("_datagen" in json) {
-        if (type == json._datagen.type || (type == "number" && json._datagen.type == "integer")) return "'{{" + json._datagen.func + json._datagen.args + "}}'"
+    if ("_datagen" in json.type[type]) {
+        let datagen = json.type[type]._datagen
+        if ("integer" in json.type[type]) datagen.args = "(" + lcm_two_numbers(1, parseFloat(datagen.args.slice(1,-1))) + ")"
+        return "'{{" + datagen.func + datagen.args + "}}'"
     }
 
     if (type == "object") value = parseObjectType(clone(json.type.object), false, depth)
@@ -563,7 +565,7 @@ function parseArrayType(json, depth) {
     else {
         let convertItem = x => {
             if (x == "null") return x
-            if (/^'(#\/|(https:\/\/datagen.di.uminho.pt)?\/json-schemas)/.test(x)) return x.replace(/{{/g, "' + gen.").replace(/}}/g, " + '")
+            if (/^'(#\/|(https:\/\/datagen.di.uminho.pt)?\/schemas)/.test(x)) return x.replace(/{{/g, "' + gen.").replace(/}}/g, " + '")
             if (/^'{{/.test(x)) return "gen." + x.slice(3,-3)
             if (/^gen => { return/.test(x)) return x.split("return ")[1].slice(0,-2)
             if (/^gen => { \/\/numeric/.test(x)) return x.split("gen => { //numeric")[1].replace(/\n/g, "\n\t\t")

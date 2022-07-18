@@ -1,0 +1,11 @@
+{
+    "$id": "https://datagen.di.uminho.pt/schemas/person",
+    "type": "object",
+    "properties": {
+        "name": { "type": "string" },
+        "children": {
+            "type": "array",
+            "items": { "$ref": "#" }
+        }
+    }
+}

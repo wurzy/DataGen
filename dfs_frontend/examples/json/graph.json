@@ -1,0 +1,18 @@
+{
+	"$id": "https://datagen.di.uminho.pt/schemas/graph",
+    "type": "object",
+    "properties": {
+    	"nodes": {
+            "type": "array",
+            "minItems": 100,
+            "maxItems": 100,
+            "items": { "$ref": "/schemas/node" }
+        },
+        "links": {
+            "type": "array",
+            "minItems": 2000,
+            "maxItems": 2000,
+            "items": { "$ref": "/schemas/link" }
+        }
+    }
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:element name="bin-tree">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="Tnode"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="Tnode">
+		<xs:sequence>
+			<xs:element name="info" type="xs:string"/>
+			<xs:element name="bin-tree-l" type="Tnode"/>
+			<xs:element name="bin-tree-r" type="Tnode"/>
+		</xs:sequence>
+		<xs:attribute name="type" type="Ttree" use="optional" default="numeric"/>
+	</xs:complexType>
+	<xs:simpleType name="Ttree">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="numeric"/>
+			<xs:enumeration value="textual"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

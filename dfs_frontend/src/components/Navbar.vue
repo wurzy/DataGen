@@ -51,8 +51,8 @@
                                 <li>é possível personalizar o conteúdo de elementos <b>&#60;attribute&#62;</b> ou <b>&#60;element&#62;</b>;</li>
                                 <li>o tipo-base do elemento em questão deve ser obrigatoriamente um tipo simples (<b>simpleType</b>). Não é possível usar funções de interpolação em elementos com tipos complexos (<b>complexType</b>);</li>
                                 <li>a função utilizada substitui o conteúdo do elemento (definido através do atributo <b>type</b> ou de um elemento-filho <b>simpleType</b>), mas os seus atributos continuam em vigência - atributos como <b>nillable</b>, <b>fixed</b>, <b>default</b> e <b>use</b> serão considerados na mesma durante a geração do modelo de dados;</li>
-                                <li>a função pretendida deve aparecer <b>em comentário</b> <u>dentro do elemento em questão</u>, antes de qualquer elemento-filho;</li>
-                                <li>deve aparecer no seguinte formato: <code>&#60;!--datagen:[nome_função][argumentos]--&#62;</code>, por exemplo:
+                                <li>a função pretendida deve aparecer <b>em comentário</b> <u>dentro do elemento em questão</u>, <b>antes de qualquer elemento-filho</b>;</li>
+                                <li>deve aparecer no seguinte formato: <code>&#60;!--datagen:<span style="color:red">{nome_função}{argumentos}</span>--&#62;</code>, por exemplo:
                                     <ul>
                                         <li><code>&#60;!--datagen:firstName()--&#62;</code></li>
                                         <li><code>&#60;!--datagen:time("hh:mm:ss", 12, false)--&#62;</code></li>
@@ -84,7 +84,7 @@
                                 <li>é possível personalizar o conteúdo de (sub)schemas do tipo <b>string</b>, <b>boolean</b>, <b>integer</b> ou <b>number</b> - o tipo de dados produzido pela função de interpolação deve corresponder ao tipo da schema onde se encontra;</li>
                                 <li>a função utilizada substitui o conteúdo da respetiva schema, mas continuam em vigência chaves genéricas como <b>const</b>, <b>enum</b> e <b>default</b>;</li>
                                 <li>a função pretendida deve aparecer como valor (string) da chave <b>_datagen</b>, <u>na schema em questão</u>;</li>
-                                <li>deve aparecer no seguinte formato: <code>"_datagen": "[nome_função][argumentos]"</code>, por exemplo:
+                                <li>deve aparecer no seguinte formato: <code>"_datagen": "<span style="color:red">{nome_função}{argumentos}</span>"</code>, por exemplo:
                                     <ul>
                                         <li><code>"_datagen": "firstName()"</code></li>
                                         <li><code>"_datagen": "time("hh:mm:ss", 12, false)"</code></li>

@@ -1,0 +1,11 @@
+{
+  "$id": "https://datagen.di.uminho.pt/schemas/address",
+  "type": "object",
+  "properties": {
+    "street_address": { "type": "string" },
+    "parish": { "type": "string", "_datagen": "pt_parish" },
+    "city": { "type": "string", "_datagen": "pt_city" }
+  },
+  "additionalProperties": false,
+  "required": ["street_address", "parish", "city"]
+}

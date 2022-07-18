@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:report="http://xml.di.uminho.pt/report2007"
+    targetNamespace="http://xml.di.uminho.pt/paragraph2007"
+    xmlns:p="http://xml.di.uminho.pt/paragraph2007"
+    >
+    <xs:element name="p">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:group ref="p:free"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:group name="emph">
+        <xs:choice>
+            <xs:element name="b">
+                <xs:complexType mixed="true">
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element type="xs:string" name="i"/>
+                        <xs:element type="xs:string" name="u"/>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="i">
+                <xs:complexType mixed="true">
+                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="u" type="xs:string"/>
+                        <xs:element name="b" type="xs:string"/>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="u">
+                <xs:complexType mixed="true">
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="b" type="xs:string"/>
+                        <xs:element name="i" type="xs:string"/>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="inlinecode" type="xs:string">
+            </xs:element>
+        </xs:choice>
+    </xs:group>
+    <xs:group name="free">
+        <xs:choice>
+            <xs:element name="footnote" type="xs:string"/>
+            <xs:element name="ref">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="target" type="xs:ID" use="required"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="xref">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="target" use="required" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="citref">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="target" use="required" type="xs:IDREF"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="iterm" type="xs:string"/>
+            <xs:group ref="p:emph"/>
+            <xs:element name="acronym">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="term" type="xs:string"/>
+                        <xs:element name="description" type="xs:string" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:group>
+</xs:schema>

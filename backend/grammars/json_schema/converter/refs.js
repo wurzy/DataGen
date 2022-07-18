@@ -74,13 +74,13 @@ function resolve_localRefs(json, schema_id, schema_refs, schema_anchors, pn_refs
 			if (resolved !== true) return resolved
 			schema_refs.splice(i--, 1)
 		}
-		else if (/^##[a-zA-Z][a-zA-Z0-9\-\_\:\.]*/.test(ref)) {
-			ref = ref.slice(2)
+		else if (/^#?#[a-zA-Z][a-zA-Z0-9\-\_\:\.]*/.test(ref)) {
+			ref = ref.replace(/^#+/, "")
 			if (!(ref in schema_anchors)) return `A $ref '${schema_refs[i].$ref}' é inválida!`
 			schema = schema_anchors[ref]
 			if ("$ref" in schema) nested_ref = true
 		}
-		else if (/^#\//.test(ref)) {
+		else if (/^#?#\//.test(ref)) {
 			schema = replace_ref(ref.split("/"), json)
 			
 			if (typeof schema == "string" && schema == "invalid_ref") return `A $ref '${schema_refs[i].$ref}' é inválida!`
@@ -156,7 +156,7 @@ function resolve_foreignRefs(refs, anchors, pn_refs) {
             let ref_id = subschema_list[ref_id_index]
             ref = ref.replace(ref_id, "#")
 
-            if (/^##[a-zA-Z][a-zA-Z0-9\-\_\:\.]*/.test(ref)) {
+            if (/^#?#[a-zA-Z][a-zA-Z0-9\-\_\:\.]*/.test(ref)) {
               ref = ref.slice(2)
               if (!(ref in anchors[ref_id])) return `A $ref '${refs_map[id][i]}' é inválida!`
               schema = anchors[ref_id][ref]

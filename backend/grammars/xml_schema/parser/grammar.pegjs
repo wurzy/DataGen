@@ -637,7 +637,7 @@ redefine = comments prefix:open_XSD_el el_name:$("redefine" {curr.redefine = tru
            &{return check_elTags(el_name, prefix, close)}
            {curr.redefine = false; return null} //return {element: el_name, attrs, content: close.content}}
 
-redefine_content = c:(annotation / (simpleType / complexType / group / attributeGroup))* {return cleanContent(c)}
+redefine_content = c:(comments annotation / (simpleType / complexType / group / attributeGroup))* {return cleanContent(c)}
 
 
 // ----- <element> -----
@@ -674,7 +674,7 @@ elem_source = ws2 attr:"source" ws "=" ws val:string                            
 elem_substitutionGroup = ws2 attr:"substitutionGroup" ws "=" q1:QMo val:QName q2:QMc                        {return checkQM(q1,q2,attr,val)}
 elem_type = ws2 attr:"type" ws "=" q1:QMo val:type_value q2:QMc                                             {return checkQM(q1,q2,attr,val)}
 
-element_content = c:(datagen_comment? annotation? (simpleType / complexType)? (keyOrUnique / keyref)*) {return cleanContent(c.flat())}
+element_content = c:(datagen_comment? comments annotation? (simpleType / complexType)? (keyOrUnique / keyref)*) {return cleanContent(c.flat())}
 
 
 // ----- <field> -----
@@ -711,7 +711,7 @@ keyOrUnique_attrs = attrs:(elem_constraint_name elem_id? / elem_id elem_constrai
 
 elem_constraint_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc {return checkQM(q1,q2,attr,val)}
 
-xpath_content = c:(annotation? (selector field+)) {return cleanContent(c.flat())}
+xpath_content = c:(comments annotation? (selector field+)) {return cleanContent(c.flat())}
 
 
 // ----- <keyref> -----
@@ -741,7 +741,7 @@ attr_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc                &{ret
 attr_ref = ws2 attr:"ref" ws "=" q1:QMo val:QName q2:QMc      {queue.push({attr: "ref", args: [val, "attribute"]}); return checkQM(q1,q2,attr,val)}
 attr_use = ws2 attr:"use" ws "=" q1:QMo val:use_values q2:QMc                                                      {return checkQM(q1,q2,attr,val)}
 
-attribute_content = c:(datagen_comment? annotation? simpleType?) {return cleanContent(c)}
+attribute_content = c:(datagen_comment? comments annotation? simpleType?) {return cleanContent(c)}
 
 
 // ----- <attributeGroup> -----
@@ -758,7 +758,7 @@ attributeGroup_attrs = el:(elem_id / attrGroup_name / attrGroup_ref)* {return ch
 attrGroup_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc           &{return validateName(val,"attributeGroup")} {return checkQM(q1,q2,attr,val)}
 attrGroup_ref = ws2 attr:"ref" ws "=" q1:QMo val:QName q2:QMc {queue.push({attr: "ref", args: [val, "attributeGroup"]}); return checkQM(q1,q2,attr,val)}
 
-attributeGroup_content = c:(annotation? attributes) {return cleanContent(c.flat())}
+attributeGroup_content = c:(comments annotation? attributes) {return cleanContent(c.flat())}
 
 
 // ----- <anyAttribute> -----
@@ -806,7 +806,7 @@ simpleType_attrs = el:(simpleType_final / elem_id / simpleType_name)* {return ch
 simpleType_final = ws2 attr:"final" ws "=" q1:QMo val:simpleType_final_values q2:QMc                       {return checkQM(q1,q2,attr,val)}
 simpleType_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc    {val = newLocalType(val,"simpleType"); return checkQM(q1,q2,attr,val)}
 
-simpleType_content = c:(annotation? (restrictionST / list / union)) {any_type = "BSC"; return cleanContent(c)}
+simpleType_content = c:(comments annotation? (restrictionST / list / union)) {any_type = "BSC"; return cleanContent(c)}
 
 
 // ----- <annotation> -----
@@ -832,8 +832,8 @@ appinfo_prefix = prefix:open_XSD_el el_name:"appinfo" attr:elem_source? ws
                  &{return check_elTags(el_name, prefix, close)} 
                  {return {element: el_name, attrs: getAttrs(attr), content: (close.content === [] || close.content === null) ? "" : close.content}}
 
-appinfo_content_simple = (!close_appinfo_simple). appinfo_content_simple* {return text().trim()}
-appinfo_content_prefix = (!close_appinfo_prefix). appinfo_content_prefix* {return text().trim()}
+appinfo_content_simple = comments (!close_appinfo_simple). appinfo_content_simple* {return text().trim()}
+appinfo_content_prefix = comments (!close_appinfo_prefix). appinfo_content_prefix* {return text().trim()}
 
 close_appinfo_simple = "</appinfo" ws ">" ws
 close_appinfo_prefix = prefix:close_XSD_prefix name:"appinfo" ws ">" ws {return {name, prefix}}
@@ -854,8 +854,8 @@ doc_prefix = prefix:open_XSD_el el_name:"documentation" attrs:documentation_attr
              &{return check_elTags(el_name, prefix, close)}
              {return {element: el_name, attrs, content: (close.content===[] || close.content===null) ? "" : close.content}}
 
-doc_content_prefix = (!close_doc_prefix). doc_content_prefix* {return text().trim()}
-doc_content_simple = (!close_doc_simple). doc_content_simple* {return text().trim()}
+doc_content_prefix = comments (!close_doc_prefix). doc_content_prefix* {return text().trim()}
+doc_content_simple = comments (!close_doc_simple). doc_content_simple* {return text().trim()}
 
 close_doc_simple = "</documentation" ws ">" ws
 close_doc_prefix = prefix:close_XSD_prefix name:"documentation" ws ">" ws {return {name, prefix}}
@@ -872,7 +872,7 @@ union_attrs = attrs:(elem_id union_memberTypes? / union_memberTypes elem_id?)? {
 
 union_memberTypes = ws2 attr:"memberTypes" ws "=" q1:QMo val:list_types q2:QMc {return checkQM(q1,q2,attr,val)}
 
-union_content = c:(annotation? simpleType*) {return cleanContent(c.flat())}
+union_content = c:(comments annotation? simpleType*) {return cleanContent(c.flat())}
 
 
 // ----- <list> -----
@@ -886,7 +886,7 @@ list_attrs = attrs:(elem_id list_itemType? / list_itemType elem_id?)? {return ge
 
 list_itemType = ws2 attr:"itemType" ws "=" q1:QMo val:type_value q2:QMc {return checkQM(q1,q2,attr,val)}
 
-list_content = c:(annotation? simpleType?) {return cleanContent(c)}
+list_content = c:(comments annotation? simpleType?) {return cleanContent(c)}
 
 
 // ----- <restriction> (simpleType) -----
@@ -912,7 +912,7 @@ base_attrs = attrs:(base elem_id? / elem_id base?)? {return getAttrs(attrs)}
 
 base = ws2 attr:"base" ws "=" q1:QMo val:type_value q2:QMc {return checkQM(q1,q2,attr,val)}
                      
-restrictionST_content = h1:annotation? h2:simpleType? t:constrFacet* {return cleanContent([h1, h2, ...t])}
+restrictionST_content = comments h1:annotation? h2:simpleType? t:constrFacet* {return cleanContent([h1, h2, ...t])}
 
 
 // ----- <restriction> (simpleContent) -----
@@ -965,7 +965,7 @@ restrictionSC = comments prefix:open_XSD_el el_name:"restriction" attrs:base_att
   return restriction
 }
                      
-restrictionSC_content = c:(restrictionST_content attributes) {return cleanContent(c.flat())}
+restrictionSC_content = comments c:(restrictionST_content attributes) {return cleanContent(c.flat())}
 
 
 // ----- <restriction> (complexContent) -----
@@ -975,7 +975,7 @@ restrictionCC = comments prefix:open_XSD_el el_name:"restriction" attrs:base_att
                 &{return check_requiredBase(el_name, "complexContent", prefix, attrs, close)} 
                 {return {element: el_name, attrs, content: close.content}}
                      
-CC_son_content = c:(annotation? (all / choiceOrSequence / group)? attributes) {return cleanContent(c.flat())}
+CC_son_content = c:(comments annotation? (all / choiceOrSequence / group)? attributes) {return cleanContent(c.flat())}
 
 
 // ----- <extension> (simpleContent) -----
@@ -985,7 +985,7 @@ extensionSC = comments prefix:open_XSD_el el_name:"extension" attrs:base_attrs w
               &{return check_requiredBase(el_name, "simpleContent", prefix, attrs, close)}
               {return {element: el_name, attrs, content: close.content}}
                      
-extensionSC_content = c:(annotation? attributes) {return cleanContent(c.flat())}
+extensionSC_content = c:(comments annotation? attributes) {return cleanContent(c.flat())}
 
 
 // ----- <extension> (complexContent) -----
@@ -1048,7 +1048,7 @@ complexType_block = ws2 attr:"block" ws "=" q1:QMo val:elem_final_values q2:QMc 
 complex_mixed = ws2 attr:"mixed" ws "=" q1:QMo val:boolean q2:QMc                                            {return checkQM(q1,q2,attr,val)}
 complexType_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc    {val = newLocalType(val,"complexType"); return checkQM(q1,q2,attr,val)}
 
-complexType_content = c:(annotation? (simpleContent / complexContent / ((all / choiceOrSequence / group)? attributes))) {return cleanContent(c.flat(2))}
+complexType_content = c:(comments annotation? (simpleContent / complexContent / ((all / choiceOrSequence / group)? attributes))) {return cleanContent(c.flat(2))}
 
 
 // ----- <simpleContent> -----
@@ -1074,7 +1074,7 @@ simpleContent = comments prefix:open_XSD_el el_name:"simpleContent" attr:elem_id
   return simpleType
 }
 
-simpleContent_content = c:(annotation? (restrictionSC / extensionSC)) {return cleanContent(c)}
+simpleContent_content = c:(comments annotation? (restrictionSC / extensionSC)) {return cleanContent(c)}
 
 
 // ----- <complexContent> -----
@@ -1085,7 +1085,7 @@ complexContent = comments prefix:open_XSD_el el_name:$("complexContent" {any_typ
 
 complexContent_attrs = attrs:(complex_mixed elem_id? / elem_id complex_mixed?)? {return getAttrs(attrs)}
 
-complexContent_content = c:(annotation? (restrictionCC / extensionCC)) {any_type = "BSC"; return cleanContent(c)}
+complexContent_content = c:(comments annotation? (restrictionCC / extensionCC)) {any_type = "BSC"; return cleanContent(c)}
 
 
 // ----- <all> -----
@@ -1100,7 +1100,7 @@ all_attrs = el:(elem_id / all_maxOccurs / all_minOccurs)* {return check_occursAt
 all_maxOccurs = ws2 attr:"maxOccurs" ws "=" q1:QMo val:"1"  q2:QMc {return checkQM(q1,q2,attr,parseInt(val))}
 all_minOccurs = ws2 attr:"minOccurs" ws "=" q1:QMo val:[01] q2:QMc {return checkQM(q1,q2,attr,parseInt(val))}
 
-all_content = c:(annotation? element*) {return cleanContent(c.flat())}
+all_content = c:(comments annotation? element*) {return cleanContent(c.flat())}
 
 
 // ----- <choice/sequence> -----
@@ -1112,7 +1112,7 @@ choiceOrSequence = comments prefix:open_XSD_el el_name:$("choice"/"sequence") at
 
 choiceOrSeq_attrs = el:(elem_id / elem_maxOccurs / elem_minOccurs)* {return el}
 
-choiceOrSeq_content = c:(annotation? (element / choiceOrSequence / group / any)*) {return cleanContent(c.flat())}
+choiceOrSeq_content = c:(comments annotation? (element / choiceOrSequence / group / any)*) {return cleanContent(c.flat())}
 
 
 // ----- <group> -----
@@ -1132,7 +1132,7 @@ group_attrs = el:(group_name / elem_id / elem_maxOccurs / elem_minOccurs / group
 group_name = ws2 attr:"name" ws "=" q1:QMo val:NCName q2:QMc           &{return validateName(val,"group")} {return checkQM(q1,q2,attr,val)}
 group_ref = ws2 attr:"ref" ws "=" q1:QMo val:QName q2:QMc {queue.push({attr: "ref", args: [val, "group"]}); return checkQM(q1,q2,attr,val)}
 
-group_content = c:(annotation? (all / choiceOrSequence)?) {return cleanContent(c)}
+group_content = c:(comments annotation? (all / choiceOrSequence)?) {return cleanContent(c)}
 
 
 // ----- <notation> -----
@@ -1149,7 +1149,7 @@ notation_URI_attrs = ws2 attr:("public" / "system") ws "=" ws val:string {return
 
 // ----- Comentário -----
 
-comments = comment*
+comments = comment* {return null}
 comment = "<!--" comment_content close_comment ws
 comment_content = (!close_comment). comment_content*
 close_comment = "-->"
@@ -1181,7 +1181,7 @@ close_XSD_prefix = "</" prefix:(p:NCName ":" {return p})? {return prefix}
 merged_close = "/>" ws comments {return {merged: true, content: []}}
 
 close_XSD_el = prefix:close_XSD_prefix name:XSD_el_name ws closeEl comments {return {name, prefix}}
-ann_content = openEl content:annotation? close_el:close_XSD_el {return {merged: false, ...close_el, content: cleanContent(content)}}
+ann_content = openEl comments content:annotation? close_el:close_XSD_el {return {merged: false, ...close_el, content: cleanContent(content)}}
 
 attributes = c:((attribute / attributeGroup)* anyAttribute?) {return c.flat()}
 

@@ -265,11 +265,11 @@ int "integer"
 string "string" = QM str:$char* QM {return str}
 pattern_string = QM str:$[^"]* QM {return str}
 anchor "anchor" = QM value:anchor_value QM {return value}
-schema_id = QM "https://datagen.di.uminho.pt"? id:$("/json-schemas" ("/" [^/"]+)+) QM {return id}
-schema_ref "$ref" = QM "https://datagen.di.uminho.pt"? ref:$("#" ref_segment / ("/json-schemas/" [^/"]+ ref_segment)) QM {if (current_key == "propertyNames") propertyNames_refs.push(ref); return ref}
+schema_id = QM "https://datagen.di.uminho.pt"? id:$("/schemas" ("/" [^/#"]+)+) QM {return id}
+schema_ref "$ref" = QM "https://datagen.di.uminho.pt"? ref:$(("/schemas/" [^/#"]+)? ref_segment / "/schemas/" [^/#"]+) QM {if (current_key == "propertyNames") propertyNames_refs.push(ref); return ref}
 
 anchor_value = $([a-zA-Z][a-zA-Z0-9\-\_\:\.]*)
-ref_segment = "#" anchor_value / ("/" [^/#"]+)*
+ref_segment = "#" (anchor_value / ("/" [^/#"]+)*)
 
 char
   = unescaped
@@ -303,9 +303,9 @@ datagen_keyword = QM key:"_datagen" QM name_separator QM func:datagen_func args:
 datagen_func = datagen_boolean / datagen_integer / datagen_float / datagen_string
 
 datagen_boolean = func:"boolean" {return {func, type: "boolean"}}
-datagen_integer = func:("index"/"integer"/"integerOfSize"/"multipleOf") {return {func, type: "integer"}}
-datagen_float = func:"float" {return {func, type: "number"}}
-datagen_string = func:("date"/"formattedInteger"/"formattedFloat"/"guid"/"hexBinary"/"language"/"letter"/"lorem"/"objectID"/"pattern"/"position"/"pt_phone_number"/"stringOfSize"/"time"/"xsd_date"/"xsd_dateTime"/"xsd_duration"/"xsd_gDay"/"xsd_gMonth"/"xsd_gMonthDay"/"xsd_gYear"/"xsd_gYearMonth"/"xsd_string"/"actor"/"animal"/"brand"/"buzzword"/"capital"/"car_brand"/"continent"/"country"/"cultural_center"/"firstName"/"fullName"/"gov_entity"/"hacker"/"job"/"month"/"musician"/"nationality"/"political_party_abbr"/"political_party_name"/"pt_businessman"/"pt_city"/"pt_county"/"pt_district"/"pt_entity_abbr"/"pt_entity_name"/"pt_parish"/"pt_politician"/"pt_public_figure"/"pt_top100_celebrity"/"religion"/"soccer_club"/"soccer_player"/"sport"/"surname"/"top100_celebrity"/"weekday"/"writer") {return {func, type: "string"}}
+datagen_integer = func:("index"/"integerOfSize"/"integer") {return {func, type: "integer"}}
+datagen_float = func:("float"/"multipleOf") {return {func, type: "number"}}
+datagen_string = func:("date"/"formattedInteger"/"formattedFloat"/"guid"/"hexBinary"/"language"/"letter"/"lorem"/"objectID"/"pattern"/"position"/"pt_phone_number"/"stringOfSize"/"time"/"xsd_dateTime"/"xsd_date"/"xsd_duration"/"xsd_gDay"/"xsd_gMonthDay"/"xsd_gMonth"/"xsd_gYearMonth"/"xsd_gYear"/"xsd_string"/"actor"/"animal"/"brand"/"buzzword"/"capital"/"car_brand"/"continent"/"country"/"cultural_center"/"firstName"/"fullName"/"gov_entity"/"hacker"/"job"/"month"/"musician"/"nationality"/"political_party_abbr"/"political_party_name"/"pt_businessman"/"pt_city"/"pt_county"/"pt_district"/"pt_entity_abbr"/"pt_entity_name"/"pt_parish"/"pt_politician"/"pt_public_figure"/"pt_top100_celebrity"/"religion"/"soccer_club"/"soccer_player"/"sport"/"surname"/"top100_celebrity"/"weekday"/"writer") {return {func, type: "string"}}
 
 datagen_args = "(" datagen_args_content? datagen_args_close ws {return text()}
 datagen_args_content = (!datagen_args_close). datagen_args_content*

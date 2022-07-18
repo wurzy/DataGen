@@ -1,0 +1,14 @@
+{
+    "$id": "https://datagen.di.uminho.pt/schemas/order",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+  
+    "type": "object",
+    "properties": {
+      	"state": { "enum": ["No stock", "En route to the store", "Ready for pickup"] },
+        "delivery_date": { "type": "string", "_datagen": "date('20-07-2022','23-07-2022','YYYY-MM-DD')" },
+        "current_location": { "type": "string", "_datagen": "position" },
+        "product": { "$ref": "/schemas/product" },
+        "customer": { "$ref": "/schemas/customer" }
+    },
+    "required": ["state", "delivery_date", "current_location", "product", "customer"]
+}

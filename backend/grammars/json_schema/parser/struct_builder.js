@@ -37,6 +37,12 @@ function structureSchemaData(obj, boolean, vars) {
 
   for (let k in obj) {
     if (k == "type") ;
+    else if (k == "_datagen") {
+      let v_type = obj[k].type
+      if (!(v_type in schema.type)) schema.type[v_type] = {}
+      schema.type[v_type][k] = obj[k]
+      delete schema.type[v_type][k].type
+    }
     else if (k == "const" || k == "default") {
       let v_type = getValueType(obj[k][0])
       if (!(v_type in schema.type)) schema.type[v_type] = {}

@@ -14,13 +14,13 @@ function searchJsonSchemaId(schema, old_label/* , labels */) {
         }
     }
 
-    let id_regex = /"\$id":\s*"(https:\/\/datagen.di.uminho.pt)?\/json-schemas\/[^",}]+"/
+    let id_regex = /"\$id":\s*"(https:\/\/datagen.di.uminho.pt)?\/schemas\/[^",}]+"/
     for (let i = 0; i < chunks.length; i++) {
         let str = schema.substring(chunks[i].init, chunks[i].end)
 
         if (id_regex.test(str)) {
-            return str.match(id_regex)[0].split('/json-schemas/')[1].slice(0,-1)
-            /* let new_label = str.match(id_regex)[0].split('/json-schemas/')[1].slice(0,-1)
+            return str.match(id_regex)[0].split('/schemas/')[1].slice(0,-1)
+            /* let new_label = str.match(id_regex)[0].split('/schemas/')[1].slice(0,-1)
             
             if (!labels.includes(new_label)) return new_label
             else {
@@ -36,8 +36,8 @@ function searchJsonSchemaId(schema, old_label/* , labels */) {
 
 function getAllIds(schemas) {
     return schemas.reduce((acc, cur) => {
-        let id_matches = cur.matchAll(/"\$id":\s*"(https:\/\/datagen.di.uminho.pt)?\/json-schemas\/[^",}]+"/g)
-        acc = acc.concat([...id_matches].map(x => x[0].split('/json-schemas/')[1].slice(0,-1)))
+        let id_matches = cur.matchAll(/"\$id":\s*"(https:\/\/datagen.di.uminho.pt)?\/schemas\/[^",}]+"/g)
+        acc = acc.concat([...id_matches].map(x => x[0].split('/schemas/')[1].slice(0,-1)))
         return acc
     }, [])
 }
