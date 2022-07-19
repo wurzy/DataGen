@@ -161,7 +161,9 @@ And the supervisor of the project:
 <!-- LINKS -->
 ## Useful Links
 
-Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGen)
+Localhost Build Link: [https://github.com/Abjiri/DataGen-From-Schemas](https://github.com/Abjiri/DataGen-From-Schemas)
+
+Live Build Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGen)
 
 Official University of Minho Repository Entry: [http://repositorium.sdum.uminho.pt/handle/1822/73506](http://repositorium.sdum.uminho.pt/handle/1822/73506)
 
