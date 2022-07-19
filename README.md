@@ -42,9 +42,9 @@
   <h1 align="center">DataGen From Schemas (v2)</h1>
 
   <p align="center">
-    New version capable of producing datasets in JSON/XML from both JSON and XML schemas, taking advantage of its DataGen's workflow. 
+    New version capable of producing datasets in JSON/XML from both JSON and XML schemas, taking advantage of DataGen's workflow. 
     <br />
-    <a href="https://github.com/wurzy/DataGen/tree/main/dfs_frontend">README</a>
+    <a href="https://github.com/wurzy/DataGen/tree/main/dfs_frontend">Navigate here</a>
   </p>
 </p>
 
