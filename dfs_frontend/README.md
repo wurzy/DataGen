@@ -86,9 +86,7 @@ The back end is built using the following frameworks and tools:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-**DataGen From Schemas** is integrated in the original application, since both components work together and are encapsulated by the same **Docker** instance.
-
-The installation process of the application is simple, assuming you meet the requirements.
+**DataGen From Schemas** is integrated in the original application, since both components work together and are encapsulated by the same **Docker** instance. The installation process of the application is simple, assuming you meet the requirements.
 
 ### Prerequisites
 
