@@ -39,7 +39,7 @@
 <br />
 <p align="center">
 
-  <h1 align="center">DataGen From Schemas (v2)</h1>
+  <h1 align="center">[DataGen From Schemas](https://github.com/wurzy/DataGen/tree/main/frontend) (v2)</h1>
 
   <p align="center">
     A dataset generator from JSON and XML schemas that produces data in JSON or XML, from either type of schema, taking advantage of its previous version's data generation from its own Domain Specific Language (DSL) models. 
@@ -52,6 +52,7 @@
 
 
 
+<br />
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary>Table of Contents</summary>
