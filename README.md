@@ -19,7 +19,6 @@
 
 
 <!-- PROJECT LOGO -->
-<br />
 <p align="center">
 
   <h1 align="center">DataGen</h1>
@@ -37,6 +36,7 @@
 
 
 
+<br />
 <p align="center">
 
   <h1 align="center">DataGen From Schemas (v2)</h1>
