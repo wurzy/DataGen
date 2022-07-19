@@ -45,7 +45,7 @@ services:
             context: ./dfs_frontend
             dockerfile: ./Dockerfile
         ports: 
-            - "8080:80"
+            - "12081:80"
         links:
             - back-end
         networks:
