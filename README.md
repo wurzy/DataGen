@@ -22,7 +22,7 @@
 <br />
 <p align="center">
 
-  <h3 align="center">DataGen</h3>
+  <h1 align="center">DataGen</h1>
 
   <p align="center">
     A JSON, XML and CSV dataset generator, featuring a Domain Specific Language (DSL) that allows for automatic creation of RESTful APIs on the generated datasets. 
@@ -55,7 +55,8 @@
       </ul>
     </li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#contacts">Contacts</a></li>
+    <li><a href="#useful-contact">Useful Links</a></li>
   </ol>
 </details>
 
@@ -74,14 +75,15 @@ DataGen is available online for public use, try it now: [https://datagen.di.umin
 
 ### Built With
 
-The front-end of the application is built mainly using:
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+The front end of the application is built mainly using:
+* [Bootstrap](https://getbootstrap.com/)
+* [JQuery](https://jquery.com/)
 * [Vue](https://vuejs.org/)
 
-The back-end is using the following frameworks and tools:
+The back end is built using the following frameworks and tools:
 * [MongoDB](https://www.mongodb.com/)
 * [Node.js](https://nodejs.org/en/)
+* [PEG.js](https://pegjs.org/)
 * [Strapi](https://strapi.io/)
 
 
@@ -146,13 +148,18 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Contacts
 
 * Filipa Santos - [LinkedIn](https://www.linkedin.com/in/filipa-santos-00111b1b5/) - [GitHub](https://github.com/fliper6)
-* Hugo Cardoso - [LinkedIn](https://www.linkedin.com/in/hugo-cardoso-b868a474/) - [GitHub](https://github.com/Abjiri)
+* Hugo Cardoso - [LinkedIn](https://www.linkedin.com/in/hugo-cardoso99/) - [GitHub](https://github.com/Abjiri)
 * João Cunha - [LinkedIn](https://www.linkedin.com/in/jo%C3%A3o-cunha-6aab35215/) - [GitHub](https://github.com/Jcc20)
 * Válter Carvalho - [LinkedIn](https://www.linkedin.com/in/valterfpcarvalho/) - [GitHub](https://github.com/wurzy)
 
 And the supervisor of the project:
 
 * José Ramalho - [LinkedIn](https://pt.linkedin.com/in/josé-carlos-ramalho-ab5535a) - [GitHub](https://github.com/jcramalho)
+
+
+
+<!-- LINKS -->
+## Useful Links
 
 Project Link: [https://github.com/wurzy/DataGen](https://github.com/wurzy/DataGen)
 
