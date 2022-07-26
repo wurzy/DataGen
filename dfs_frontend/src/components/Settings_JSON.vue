@@ -3,7 +3,7 @@
         <v-row>
             <v-col cols="12" sm="6">
                 <v-text-field
-                    v-model="new_settings.recursivity.lower"
+                    v-model="new_settings.recursion.lower"
                     :rules="[rules.required, rules.nonNegative, rules.lessThanUpper]"
                     type="number"
                     label="Limite inferior de recursividade"
@@ -11,7 +11,7 @@
             </v-col>
             <v-col cols="12" sm="6">
                 <v-text-field
-                    v-model="new_settings.recursivity.upper"
+                    v-model="new_settings.recursion.upper"
                     :rules="[rules.required, rules.nonNegative, rules.moreThanLower]"
                     type="number"
                     label="Limite superior de recursividade"
@@ -179,7 +179,7 @@ export default {
         return {
             valid: true,
             new_settings: {
-                recursivity: {lower: 0, upper: 3},
+                recursion: {lower: 0, upper: 3},
                 prob_if: 50,
                 prob_patternProperty: 80,
                 random_props: false,
@@ -194,8 +194,8 @@ export default {
                 required: v => !!v || "Valor obrigatório.",
                 required_bool: v => v === true || v === false || "Valor obrigatório.",
                 nonNegative: v => parseInt(v) >= 0 || "O valor não pode ser negativo.",
-                lessThanUpper: v => parseInt(v) <= parseInt(this.new_settings.recursivity.upper) || "Não pode ser maior que o limite superior.",
-                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursivity.lower) || "Não pode ser menor que o limite inferior.",
+                lessThanUpper: v => parseInt(v) <= parseInt(this.new_settings.recursion.upper) || "Não pode ser maior que o limite superior.",
+                moreThanLower: v => parseInt(v) >= parseInt(this.new_settings.recursion.lower) || "Não pode ser menor que o limite inferior.",
                 probability: v => parseInt(v) >= 0 && parseInt(v) <= 100 || "O valor deve ser uma probabilidade (entre 0 e 100)."
             }
         }

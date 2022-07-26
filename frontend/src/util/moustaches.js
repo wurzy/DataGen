@@ -299,10 +299,18 @@ function multipleOf(num, i) {
     return num * randomize(0,100)
 }
 
+function language(len, i) {
+    if (len !== null) len = Array.isArray(len) ? len[i] : len
+
+    let langs = ["af","ar-ae","ar-bh","ar-dz","ar-eg","ar-iq","ar-jo","ar-kw","ar-lb","ar-ly","ar-ma","ar-om","ar-qa","ar-sa","ar-sy","ar-tn","ar-ye","ar","as","az","be","bg","bn","ca","cs","da","de-at","de-ch","de-li","de-lu","de","el","en-au","en-bz","en-ca","en-gb","en-ie","en-jm","en-nz","en-ph","en-tt","en-us","en-za","en-zw","en","es-ar","es-bo","es-cl","es-co","es-cr","es-do","es-ec","es-gt","es-hn","es-mx","es-ni","es-pa","es-pe","es-pr","es-py","es-sv","es-us","es-uy","es-ve","es","et","eu","fa","fi","fo","fr-be","fr-ca","fr-ch","fr-lu","fr-mc","fr","gd","gl","gu","he","hi","hr","hu","hy","id","is","it-ch","it","ja","ka","kk","kn","ko","kz","lt","lv","mk","ml","mn","mr","ms","mt","nb-no","ne","nl-be","nl","nn-no","no","or","pa","pl","pt-br","pt","rm","ro-md","ro","ru-md","ru","sa","sb","sk","sl","sq","sr","sv-fi","sv","sw","sx","ta","te","th","tn","tr","ts","tt","uk","ur","uz","vi","xh","yi","zh-cn","zh-hk","zh-mo","zh-sg","zh-tw","zh","zu"]
+    if (len !== null && (len == 2 || len == 5)) langs = langs.filter(x => x.length == len)
+    
+    return langs[randomizeToLen(langs.length)]
+}
+
 function stringOfSize(min, max, i) {
     min = Array.isArray(min) ? min[i] : min
     if (max !== null) max = Array.isArray(max) ? max[i] : max
-
     let length = max === null ? min : randomize(min, max)
 
     let str = ""
@@ -310,8 +318,10 @@ function stringOfSize(min, max, i) {
     return str.slice(0, length)
 }
 
-function xsd_string(base, length, i) {
-    length = Array.isArray(length) ? length[i] : length
+function xsd_string(base, min, max, i) {
+    min = Array.isArray(min) ? min[i] : min
+    if (max !== null) max = Array.isArray(max) ? max[i] : max
+    let length = max === null ? min : randomize(min, max)
 
     //[".",":","-","_"]
     let alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","z","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
@@ -329,8 +339,10 @@ function xsd_string(base, length, i) {
     return str
 }
 
-function hexBinary(length, i) {
-    length = Array.isArray(length) ? length[i] : length
+function hexBinary(min, max, i) {
+    min = Array.isArray(min) ? min[i] : min
+    if (max !== null) max = Array.isArray(max) ? max[i] : max
+    let length = max === null ? min : randomize(min, max)
 
     let hexChars = [...Array(60).keys()].map(i => i + 20)
     hexChars = hexChars.concat(["2","3","4","5","6","7"].map(x => ["A","B","C","D","E","F"].map(y => x+y)).flat())
@@ -341,8 +353,7 @@ function hexBinary(length, i) {
     return str
 }
 
-function xsd_complexGType(base, max, min, list, i) {
-    let str = ""
+function xsd_complexGType(base, min, max, i) {
     let left = base == "gMonthDay" ? "month" : "year"
     let right = base == "gMonthDay" ? "day" : "month"
     
@@ -355,76 +366,68 @@ function xsd_complexGType(base, max, min, list, i) {
        }
     }
 
-    for (let j = 0; j < randomize(list.max, list.min); j++) {
-       let right_val, left_val = randomize(max[left], min[left])
-       
-       if (left_val == max[left]) right_val = randomize(max[right], 1)
-       else if (left_val == min[left]) right_val = randomize(min[right], right_lower_bound[right](left_val))
-       else right_val = randomize(1, right_lower_bound[right](left_val))
-
-       let hyphens = {gMonthDay: 2, gYearMonth: 0}
-       let pad = base == "gMonthDay" ? [2,2] : [4,2]
-
-       str += "-".repeat(hyphens[base]) + left_val.toString().padStart(pad[0],"0") + "-" + right_val.toString().padStart(pad[1],"0") + " "
-    }
-
-    return str.slice(0,-1)
-}
-
-function xsd_dateTime(base, max, min, list, i) {
-    let str = ""
-
-    for (let j = 0; j < randomize(list.max,list.min); j++) {
-        let timee, datee = max !== null ? date(min.date[0], max.date[0], "YYYY-MM-DD", 0) : date(min.date[0], null, "YYYY-MM-DD", 0)
-          
-        if (max !== null) max.date[0] = max.date[0].split("/").reverse().join("-")
-        min.date[0] = min.date[0].split("/").reverse().join("-")
-        
-        if (base == "dateTime") {             
-            if (max !== null && datee == max.date[0]) timee = time("hh:mm:ss", 24, false, {start: max.date[1], end: "23:59:59"}, 0)
-            else if (datee == min.date[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: min.date[1]}, 0)
-            else timee = time("hh:mm:ss", 24, false, null, 0)
-        }
-        if ((max !== null && date > max.date[0]) || datee < min.date[0]) datee = "-" + datee
-        str += datee + (base == "dateTime" ? ("T" + timee) : "") + " "
-    }
+    let right_val, left_val = randomize(max[left], min[left])
     
-    return str.slice(0,-1)
+    if (left_val == max[left]) right_val = randomize(max[right], 1)
+    else if (left_val == min[left]) right_val = randomize(min[right], right_lower_bound[right](left_val))
+    else right_val = randomize(1, right_lower_bound[right](left_val))
+
+    let hyphens = {gMonthDay: 2, gYearMonth: 0}
+    let pad = base == "gMonthDay" ? [2,2] : [4,2]
+
+    return "-".repeat(hyphens[base]) + left_val.toString().padStart(pad[0],"0") + "-" + right_val.toString().padStart(pad[1],"0")
 }
 
-function xsd_duration(max, min, list, i) {
-    let str = ""
+function xsd_dateTime(base, min, max, i) {
+    min = min.split("T")
+    if (max !== null) max = max.split("T")
 
-    for (let j = 0; j < randomize(list.max,list.min); j++) {
-        let duration = "P", units = ["Y","M","D","H","M",".","S"], maxPossible = [0, 12, 30, 24, 59, 59, 999]
-        let fstEq = false, random
-        for (let k = 0; k < max.length; k++) {
-            if (!fstEq) {
-                if (max[k] == min[k]) {
-                    if (max[k] != 0) duration += max[k] + units[k]
-                    else if (units[k] == ".") duration += units[k]
-                }
-                else {
-                    fstEq = true
-                    random = {new: randomize(max[k], min[k]), inf: min[k], sup: max[k]}
-                    let sum = arr => arr.reduce((c,a) => c+a, 0)
-                    if (max[0] == 1 && !min[0] && !sum(max.slice(1)) && !sum(min.slice(1))) random.new = 0
-                    if (random.new != 0) duration += random.new + units[k]
-                }
+    let fmin = _.cloneDeep(min), fmax = _.cloneDeep(max)
+    
+    min[0] = min[0].split("-").reverse().join("-")
+    if (max !== null) max[0] = max[0].split("-").reverse().join("-")
+
+    let timee, datee = max !== null ? date(min[0], max[0], "YYYY-MM-DD", 0) : date(min[0], null, "YYYY-MM-DD", 0)
+    
+    if (base == "dateTime") {
+        if (fmax !== null && datee == fmax[0] && datee == fmin[0]) timee = time("hh:mm:ss", 24, false, {start: fmin[1], end: fmax[1]}, 0)
+        else if (fmax !== null && datee == fmax[0]) timee = time("hh:mm:ss", 24, false, {start: "00:00:00", end: fmax[1]}, 0)
+        else if (datee == fmin[0]) timee = time("hh:mm:ss", 24, false, {start: fmin[1], end: "23:59:59"}, 0)
+        else timee = time("hh:mm:ss", 24, false, null, 0)
+    }
+    if ((fmax !== null && datee > fmax[0]) || datee < fmin[0]) datee = "-" + datee
+    return datee + (base == "dateTime" ? ("T" + timee) : "")
+}
+
+function xsd_duration(min, max, i) {
+    let duration = "P", units = ["Y","M","D","H","M",".","S"], maxPossible = [0, 12, 30, 24, 59, 59, 999]
+    let fstEq = false, random
+
+    for (let k = 0; k < max.length; k++) {
+        if (!fstEq) {
+            if (max[k] == min[k]) {
+                if (max[k] != 0) duration += max[k] + units[k]
+                else if (units[k] == ".") duration += units[k]
             }
             else {
-                let next_part
-                if (random.new == random.inf) next_part = randomize(maxPossible[k], min[k])
-                else if (random.new == random.sup) next_part = randomize(max[k], 0)
-                else next_part = randomize(maxPossible[k], 0)
-                if (next_part > 0) duration += next_part + units[k]
+                fstEq = true
+                random = {new: randomize(max[k], min[k]), inf: min[k], sup: max[k]}
+                let sum = arr => arr.reduce((c,a) => c+a, 0)
+                if (max[0] == 1 && !min[0] && !sum(max.slice(1)) && !sum(min.slice(1))) random.new = 0
+                if (random.new != 0) duration += random.new + units[k]
             }
-            if (k == 2) duration += "T"
         }
-        str += duration + " "
+        else {
+            let next_part
+            if (random.new == random.inf) next_part = randomize(maxPossible[k], min[k])
+            else if (random.new == random.sup) next_part = randomize(max[k], 0)
+            else next_part = randomize(maxPossible[k], 0)
+            if (next_part > 0) duration += next_part + units[k]
+        }
+        if (k == 2) duration += "T"
     }
-
-    return str.slice(0,-1)
+    
+    return duration
 }
 
 function regex() {
@@ -481,6 +484,7 @@ module.exports = {
     range,
     pattern,
     multipleOf,
+    language,
     stringOfSize,
     xsd_string,
     hexBinary,

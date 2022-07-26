@@ -57,7 +57,7 @@
         <li><b>URI relativo:</b> <code>/schemas/<span style="color:red">{nome_schema}</span></code></li>
       </ul>
       <br>
-      <h3>Referenciação de schemas ($ref)</h3>
+      <h3>Referenciação de schemas (<a href="https://json-schema.org/understanding-json-schema/structuring.html#ref" target="_blank">$ref</a>)</h3>
       <ul>
         <li>
           <b>Schema com $id:</b> 
@@ -152,7 +152,7 @@
 
       <v-col xs="6" sm="6" md="3" align="end">
         <v-btn
-          v-if="!no_datasets"
+          v-if="!no_datasets && !grammar_errors.length"
           depressed
           :color='`var(--${input_mode}-primary)`'
           :disabled="loading"
@@ -180,7 +180,7 @@
       </v-col>
 
       <v-col xs="6" sm="6" md="3">
-        <div v-if="!no_datasets" class="d-flex justify-end">
+        <div v-if="!no_datasets && !grammar_errors.length" class="d-flex justify-end">
           <input class="filename-input" v-model="filename"/>
           <v-btn depressed :color='`var(--${input_mode}-primary)`' :disabled="loading" class="white--text" @click="download">
             Download<v-icon right>mdi-download</v-icon>
@@ -262,7 +262,7 @@ export default {
       xml_element: {},
       xml_schema_changes_since_last_gen: false,
       xml_settings: {
-        recursivity: {lower: 0, upper: 3},
+        recursion: {lower: 0, upper: 3},
         unbounded: 10,
         prob_default: 60,
         prob_nil: 30,
@@ -275,7 +275,7 @@ export default {
       json_schemas: [{ label: "Schema 1", key: "schema_1" }],
       json_tab: {label: "Schema 1", key: "schema_1"},
       json_settings: {
-        recursivity: {lower: 0, upper: 3},
+        recursion: {lower: 0, upper: 3},
         prob_if: 50,
         prob_patternProperty: 80,
         random_props: false,
@@ -452,7 +452,7 @@ export default {
       }
     },
     async askXmlMainSchema() {
-      let {data} = await axios.post('/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
+      let {data} = await axios.post('http://localhost:3000/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
       
       if ("message" in data) this.grammar_errors = [aux.translateMsg(data)]
       else if ("elements" in data) {
@@ -541,7 +541,7 @@ export default {
     },
     async sendGenRequest(type, body) {
       try {
-        return await axios.post(`/api/${type}_schema/`, body, {timeout: 35000})
+        return await axios.post(`http://localhost:3000/api/${type}_schema/`, body, {timeout: 30000})
       } 
       catch (err) {
         this.errorMsg = "A operação de geração do dataset excedeu o tempo limite!"

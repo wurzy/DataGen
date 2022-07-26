@@ -9,21 +9,21 @@ const dslConverter = require('../grammars/dsl/conversions')
 const xmlConverter = require('../grammars/xml_schema/converter/converter')
 
 const ws = "‏‏‎ ‎"
-const settings_str = `"settings": {\n${ws}${ws}"datagen_language": ?,\n${ws}${ws}"recursivity": {"lower": ?, "upper": ?},\n${ws}${ws}"unbounded": ?,\n${ws}${ws}"prob_default": ?,\n${ws}${ws}"prob_nil": ?,\n${ws}${ws}"prob_noAll": ?\n}`
+const settings_str = `"settings": {\n${ws}${ws}"datagen_language": ?,\n${ws}${ws}"recursion": {"lower": ?, "upper": ?},\n${ws}${ws}"unbounded": ?,\n${ws}${ws}"prob_default": ?,\n${ws}${ws}"prob_nil": ?,\n${ws}${ws}"prob_noAll": ?\n}`
 
 function cleanSettings(settings, frontend) {
   if (frontend) {
-    settings.recursivity.lower = parseInt(settings.recursivity.lower)
-    settings.recursivity.upper = parseInt(settings.recursivity.upper)
+    settings.recursion.lower = parseInt(settings.recursion.lower)
+    settings.recursion.upper = parseInt(settings.recursion.upper)
     settings.unbounded = parseInt(settings.unbounded)
     settings.prob_default = parseFloat(settings.prob_default)
     settings.prob_nil = parseFloat(settings.prob_nil)
     settings.prob_noAll = parseFloat(settings.prob_noAll)
   }
 
-  if (!(Number.isInteger(settings.recursivity.lower) && settings.recursivity.lower >= 0)) return "O valor 'recursivity.lower' das definições deve ser um inteiro não-negativo!"
-  if (!(Number.isInteger(settings.recursivity.upper) && settings.recursivity.upper >= 0)) return "O valor 'recursivity.upper' das definições deve ser um inteiro não-negativo!"
-  if (settings.recursivity.upper < settings.recursivity.lower) return "O valor 'recursivity.lower' deve ser inferior ou igual ao 'recursivity.upper'!"
+  if (!(Number.isInteger(settings.recursion.lower) && settings.recursion.lower >= 0)) return "O valor 'recursion.lower' das definições deve ser um inteiro não-negativo!"
+  if (!(Number.isInteger(settings.recursion.upper) && settings.recursion.upper >= 0)) return "O valor 'recursion.upper' das definições deve ser um inteiro não-negativo!"
+  if (settings.recursion.upper < settings.recursion.lower) return "O valor 'recursion.lower' deve ser inferior ou igual ao 'recursion.upper'!"
   if (!(Number.isInteger(settings.unbounded) && settings.unbounded >= 0)) return "O valor 'unbounded' das definições deve ser um inteiro não-negativo!"
   if (!(typeof settings.prob_default == "number" && settings.prob_default >= 0 && settings.prob_default <= 100)) return "O valor 'prob_default' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
   if (!(typeof settings.prob_nil == "number" && settings.prob_nil >= 0 && settings.prob_nil <= 100)) return "O valor 'prob_nil' das definições deve ser um número entre 0 e 100, correspondente à probabilidade pretendida!"
@@ -110,7 +110,7 @@ router.post('/:output', (req, res) => {
     if (typeof req.body.schema != "string") return res.status(500).send("A schema deve ser enviada em string!")
     if (typeof req.body.element != "string") return res.status(500).send("O nome do elemento-raiz a gerar deve ser uma string!")
 
-    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursivity" in settings && "lower" in settings.recursivity && "upper" in settings.recursivity && "unbounded" in settings && "prob_default" in settings && "prob_nil" in settings && "prob_noAll" in settings && "datagen_language" in settings))
+    if (!(typeof settings == 'object' && !Array.isArray(settings) && settings !== null && "recursion" in settings && "lower" in settings.recursion && "upper" in settings.recursion && "unbounded" in settings && "prob_default" in settings && "prob_nil" in settings && "prob_noAll" in settings && "datagen_language" in settings))
       return res.status(500).send(`As definições enviadas no corpo do pedido não estão corretas! Devem ser enviadas num objeto com a seguinte estrutura:\n\n${settings_str}`)
 
     try {

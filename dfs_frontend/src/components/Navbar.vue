@@ -134,7 +134,7 @@
                                 <p>O corpo do pedido deve ter apenas três propriedades: <b>schema</b>, <b>element</b> e <b>settings</b>, sendo que a <b>schema</b> deve estar em forma de string e <b>element</b> é o elemento-raiz da schema que se pretende gerar. As definições devem ser enviadas num objeto com as seguintes propriedades:</p>
                                 <ul style="font-size: 14px">
                                     <li><b>datagen_language</b> - língua dos resultados de funções (com suporte de datasets) do DataGen; deve ser "pt" (português) ou "en" (inglês).</li>
-                                    <li><b>recursivity</b> - objeto com os limites de recursividade, deve possuir as seguintes propriedades:
+                                    <li><b>recursion</b> - objeto com os limites de recursividade, deve possuir as seguintes propriedades:
                                         <ul>
                                             <li><b>lower</b> - limite inferior de recursividade; deve ser um inteiro não-negativo.</li>
                                             <li><b>upper</b> - limite superior de recursividade; deve ser um inteiro não-negativo.</li>
@@ -161,7 +161,7 @@
                                 <p>O corpo do pedido deve ter apenas três propriedades: <b>main_schema</b>, <b>other_schemas</b> e <b>settings</b>, sendo que <b>main_schema</b> é a schema a partir da qual se pretende gerar o dataset, <b>other_schemas</b> é um array com as restantes schemas e tanto a <b>main_schema</b> como as restantes devem estar em forma de objeto JSON. As definições devem ser enviadas num objeto com as seguintes propriedades:</p>
                                 <ul style="font-size: 14px">
                                     <li><b>datagen_language</b> - língua dos resultados de funções (com suporte de datasets) do DataGen; deve ser "pt" (português) ou "en" (inglês).</li>
-                                    <li><b>recursivity</b> - objeto com os limites de recursividade, deve possuir as seguintes propriedades:
+                                    <li><b>recursion</b> - objeto com os limites de recursividade, deve possuir as seguintes propriedades:
                                         <ul>
                                             <li><b>lower</b> - limite inferior de recursividade; deve ser um inteiro não-negativo.</li>
                                             <li><b>upper</b> - limite superior de recursividade; deve ser um inteiro não-negativo.</li>
@@ -221,7 +221,7 @@
 
             <div v-if="!session" class="btns">
                 <v-btn :color="color('secondary')" :disabled="loading" @click="user_auth=true">
-                    <span>Entrar</span>
+                    <span>Login</span>
                     <v-icon right>mdi-login</v-icon>
                 </v-btn>
             </div>

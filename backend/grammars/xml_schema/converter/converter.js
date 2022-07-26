@@ -31,7 +31,7 @@ function default_occurs(attrs) {
 }
 
 // identificar os elementos recursivos da schema
-function checkRecursivity(xsd_content, complexTypes) {
+function checkRecursion(xsd_content, complexTypes) {
    let recursiv = {element: {}, complexType: {}, group: {}}
 
    // complexType
@@ -102,7 +102,7 @@ function convert(xsd, st, ct, main_elem, user_settings) {
    simpleTypes = st
    complexTypes = ct
    SETTINGS = user_settings
-   recursiv = checkRecursivity(xsd_content, ct)
+   recursiv = checkRecursion(xsd_content, ct)
    temp_structs = 0
 
    let depth = 1, new_temp_structs = 1
@@ -136,10 +136,10 @@ function parseElement(el, depth, schemaElem) {
 
    if (recursiv_el !== null) {
       // se este novo elemento recursivo ultrapassar a recursividade máxima, não produzir
-      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursivity.upper) return ""
+      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursion.upper) return ""
       else {
          // se o elemento recursivo ainda não tiver cumprido a recursividade mínima, obrigar que seja produzido
-         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursivity.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
+         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursion.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
          recursiv_el.ref[recursiv_el.key]++ 
       }     
    }
@@ -309,6 +309,7 @@ function parseExtensionSC(el, depth) {
       str += parsed.attrs
       if (parsed.content.length > 0) str += ",\n"
    }
+   else if (parsed.content.length > 0) return parsed.content
 
    if (parsed.content.length > 0) str += indent(depth+1)
    return `${str}DFXS_SIMPLE_CONTENT: ${parsed.content}\n${indent(depth)}}`
@@ -326,10 +327,10 @@ function parseGroup(el, depth) {
 
    if (recursiv_el !== null) {
       // se este novo elemento recursivo ultrapassar a recursividade máxima, não produzir
-      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursivity.upper) return ""
+      if (recursiv_el.ref[recursiv_el.key] == SETTINGS.recursion.upper) return ""
       else {
          // se o elemento recursivo ainda não tiver cumprido a recursividade mínima, obrigar que seja produzido
-         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursivity.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
+         if (recursiv_el.ref[recursiv_el.key] < SETTINGS.recursion.lower && !el.attrs.minOccurs) el.attrs.minOccurs = 1
          recursiv_el.ref[recursiv_el.key]++ 
       }     
    }
@@ -385,7 +386,7 @@ function parseSequence(el, depth) {
 
    let min = el.attrs.minOccurs, max = el.attrs.maxOccurs, repeat = min!=1 || max!=1
 
-   let str = parseCT_child_content(el.element, "", el.content, depth+1).slice(0, -2)
+   let str = parseCT_child_content("", el.content, depth+1).slice(0, -2)
    str = `${indent(depth)}DFXS_FLATTEN__${++temp_structs}: [ ${repeat ? `'repeat(${min}${min==max ? "" : `,${max}`})': ` : ""}{\n${str}\n${indent(depth)}} ]`
    return str
 }
@@ -398,50 +399,23 @@ function parseChoice(el, depth) {
    let str = "", or_str = `${indent(depth+1)}or() {\n`
 
    // usar a primitiva or para fazer exclusividade mútua
-   str = parseCT_child_content(el.element, or_str, el.content, depth+2).slice(0, -2) + `\n${indent(depth+1)}}`
+   str = parseCT_child_content(or_str, el.content, depth+2).slice(0, -2) + `\n${indent(depth+1)}}`
    if (/\t+or\(\) \n/.test(str)) return ""
    str = `${indent(depth)}DFXS_FLATTEN__${++temp_structs}: [ ${repeat ? `'repeat(${min}${min==max ? "" : `,${max}`})': ` : ""}{\n${str}\n${indent(depth)}} ]`
    return str
 }
 
-function parseCT_child_content(parent, str, content, depth) {
+function parseCT_child_content(str, content, depth) {
    content.forEach(x => {
       let parsed
-      
-      // na string de um <element>, é preciso por indentação
-      if (x.element == "element") {
-         parsed = parseElement(x, depth, false)
-         if (parsed.length > 0) str += `${indent(depth)}${parsed},\n`
+      switch (x.element) {
+         case "element": parsed = parseElement(x, depth, false); break;
+         case "group": parsed = parseGroup(x, depth); break;
+         case "sequence": parsed = parseSequence(x, depth); break;
+         case "choice": parsed = parseChoice(x, depth); break;
+         case "all": parsed = parseAll(x, depth); break;
       }
-
-      if (x.element == "group") {
-         parsed = parseGroup(x, depth)
-         if (parsed.length > 0) str += parsed + ",\n"
-      }
-
-      if (x.element == "sequence") {
-         parsed = parseSequence(x, depth)
-
-         if (parsed.length > 0) {
-            if (parent == "choice") {
-               // para uma sequence dentro de uma choice, queremos escolher a sequência inteira e não apenas um dos seus elementos
-               // por isso, cria-se um objeto na DSL com uma chave especial que posteriormente é removido na tradução para XML
-               parsed = "\t" + parsed.replace(/\n\t/g, "\n\t\t")
-               str += `${indent(depth)}DFXS_TEMP__${++temp_structs}: {\n${parsed}\n${indent(depth)}},\n`
-            }
-            else str += parsed + ",\n"
-         }
-      }
-
-      if (x.element == "choice") {
-         parsed = parseChoice(x, depth)
-         if (parsed.length > 0) str += parsed + ",\n"
-      }
-
-      if (x.element == "all") {
-         parsed = parseAll(x, depth)
-         if (parsed.length > 0) str += parsed + ",\n"
-      }
+      if (parsed.length > 0) str += parsed + ",\n"
    })
    
    return str
