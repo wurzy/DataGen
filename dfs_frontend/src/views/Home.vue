@@ -452,7 +452,7 @@ export default {
       }
     },
     async askXmlMainSchema() {
-      let {data} = await axios.post('http://localhost:3000/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
+      let {data} = await axios.post('/api/xml_schema/elements', {schema: this.xml_tabs[0].content})
       
       if ("message" in data) this.grammar_errors = [aux.translateMsg(data)]
       else if ("elements" in data) {
@@ -541,7 +541,7 @@ export default {
     },
     async sendGenRequest(type, body) {
       try {
-        return await axios.post(`http://localhost:3000/api/${type}_schema/`, body, {timeout: 30000})
+        return await axios.post(`/api/${type}_schema/`, body, {timeout: 30000})
       } 
       catch (err) {
         this.errorMsg = "A operação de geração do dataset excedeu o tempo limite!"
