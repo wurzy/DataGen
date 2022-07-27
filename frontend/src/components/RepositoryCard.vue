@@ -66,7 +66,7 @@ body {
   display: block;
   box-sizing: border-box;
   border: 1px solid #ccc;
-  margin: 10px;
+  margin-bottom: 10px;
   padding: 20px;
   color: #555;
   text-decoration: none;
@@ -74,12 +74,12 @@ body {
   flex: 1;
   min-width: 250px;
   max-width: 500px;
-
+  margin-top: -50px;
   position: sticky;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
 }
+
 .github-card > h3 {
   margin-top: 0;
   color: #4078c0;

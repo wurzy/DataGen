@@ -150,9 +150,13 @@
         </p>
         <p>Versão Atual: 3.0.</p> 
         <br/><br/>
-        <div style="display: inline;">
-            <RepositoryCard :repo="'https://api.github.com/repos/wurzy/datagen'" @gitDate="handleDate"/>
-            <RepositoryCard :repo="'https://api.github.com/repos/Abjiri/DataGen-From-Schemas'" @gitDate="handleDate"/>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <RepositoryCard :repo="'https://api.github.com/repos/wurzy/datagen'" @gitDate="handleDate"/>
+            </div>
+            <div class="col-md-3">
+                <RepositoryCard :repo="'https://api.github.com/repos/wurzy/datagen'" @gitDate="handleDate"/>
+            </div>
         </div>
 
     </div>
