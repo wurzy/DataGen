@@ -15,18 +15,24 @@ function renameProperty(o, old_key, new_key) {
     return o
 }
 
+function cleanEmptyObjects(json) {
+    let keys = Object.keys(json)
 
-function cleanJson(json) {
-    // condição para evitar processamento desnecessário, se não for um JSON a partir de XML Schema
-    let first_key = Object.keys(json)[0]
-    if (first_key == "DFXS__FROM_XML_SCHEMA" && json[first_key] === true) {
-        delete json[first_key]
-        return cleanJsonFromXsd(json, {}, null, 0)
+    for (let i = 0; i < keys.length; i++) {
+        if (keys[i] == "DFJS_EMPTY_OBJECT") delete json[keys[i]]
+        else if (typeof json[keys[i]] == "object" && json[keys[i]] != null) cleanEmptyObjects(json[keys[i]])
     }
-    return cleanJsonFromJsonSchema(json)
+    return json
 }
 
-function cleanJsonFromXsd(json, dataset, flatten_map, depth) {
+
+function cleanJson(json) {
+    let dataset = cleanJson2(json, {}, null, 0)
+    if (Array.isArray(dataset)) dataset = cleanEmptyObjects(dataset)
+    return dataset
+}
+
+function cleanJson2(json, dataset, flatten_map, depth) {
     let keys = Object.keys(json), temp = "", last_attr = -1 // se for mixed, para só escrever texto entre partículas depois dos atributos
     let mixed = {bool: false, content: null, counter: 1}
 
@@ -35,7 +41,9 @@ function cleanJsonFromXsd(json, dataset, flatten_map, depth) {
     for (let i = 0; i < keys.length; i++) {
         let prop = keys[i]
 
-        if (/^DFXS_TEMP__\d+/.test(prop)) cleanJsonFromXsd(json[prop], dataset, flatten_map, depth+1)
+        if (prop == "DFJS_EMPTY_OBJECT") ;
+        else if (prop == "DFJS_NOT_OBJECT") return json[prop]
+        else if (/^DFXS_TEMP__\d+/.test(prop)) cleanJson2(json[prop], dataset, flatten_map, depth+1)
         else if (/^DFXS_MIXED_/.test(prop)) {
             mixed.bool = true
             if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = json[prop]
@@ -52,7 +60,7 @@ function cleanJsonFromXsd(json, dataset, flatten_map, depth) {
             let temp_dataset = {}
 
             json[prop].map(obj => {
-                let res = cleanJsonFromXsd(obj, temp_dataset, keys_map, depth+1)
+                let res = cleanJson2(obj, temp_dataset, keys_map, depth+1)
                 keys_map = res.flatten_map
             })
             
@@ -84,7 +92,7 @@ function cleanJsonFromXsd(json, dataset, flatten_map, depth) {
                 if (typeof json[prop] == "object" && json[prop] != null) {
                     dataset[prop_name] = {}
 
-                    let res = cleanJsonFromXsd(json[prop], dataset[prop_name], null, depth+1)
+                    let res = cleanJson2(json[prop], dataset[prop_name], null, depth+1)
                     dataset[prop_name] = res.temp.length > 0 ? res.dataset[res.temp] : res.dataset
                 }
                 else dataset[prop_name] = json[prop]
@@ -104,23 +112,6 @@ function cleanJsonFromXsd(json, dataset, flatten_map, depth) {
     }
 
     return !depth ? dataset : {dataset, temp, flatten_map}
-}
-
-function cleanJsonFromJsonSchema(json, depth) {
-    let keys = Object.keys(json)
-
-    for (let i = 0; i < keys.length; i++) {
-        let prop = keys[i]
-        
-        if (prop == "DFJS_EMPTY_JSON") delete json[prop]
-        else if (prop == "DFJS_NOT_OBJECT") {
-            if (typeof json[prop] == "object" && json[prop] !== null) json[prop] = cleanJsonFromJsonSchema(json[prop], depth)
-            return json[prop]
-        }
-        else if (typeof json[prop] == "object" && json[prop] != null) cleanJsonFromJsonSchema(json[prop], depth+1)
-    }
-
-    return json
 }
 
 
@@ -149,9 +140,6 @@ function convertXMLString(input, outputFormat, depth) {
 
 
 function jsonToXml(obj, settings) {
-    let first_key = Object.keys(obj)[0]
-    if (first_key == "DFXS__FROM_XML_SCHEMA" && obj[first_key] === true) delete obj[first_key]
-
     let xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>'
     if (settings !== undefined) {
         if ("xml_declaration" in settings) xml_declaration = settings.xml_declaration
@@ -203,7 +191,7 @@ function jsonToXml2(obj, depth) {
                 xml = `${xml.slice(0, -2)} ${prop_name}=${qm}${obj[prop]}${qm}>\n`
             }
             else {
-                if (prop_name == "DFJS_EMPTY_JSON") return xml
+                if (prop_name == "DFJS_EMPTY_OBJECT") return xml
                 if (/^DFXS(_NORMALIZED)?_(\d+|ELEM)__/.test(prop)) {
                     prop_name = prop.replace(/^DFXS(_NORMALIZED)?_(\d+|ELEM)__/, "")
                     prop_name = denormalizeNameXML(prop, prop_name)

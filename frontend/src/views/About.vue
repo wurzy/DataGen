@@ -148,9 +148,12 @@
             Última atualização: {{ this.gitDate | moment('DD/MM/YYYY, hh:mm') }}. 
             
         </p>
-        <p>Versão Atual: 2.3.</p> 
+        <p>Versão Atual: 3.0.</p> 
         <br/><br/>
-        <RepositoryCard @gitDate="handleDate"/>
+        <div style="display: inline;">
+            <RepositoryCard :repo="'https://api.github.com/repos/wurzy/datagen'" @gitDate="handleDate"/>
+            <RepositoryCard :repo="'https://api.github.com/repos/Abjiri/DataGen-From-Schemas'" @gitDate="handleDate"/>
+        </div>
 
     </div>
    </div>

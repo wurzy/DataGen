@@ -106,7 +106,7 @@ function convert(xsd, st, ct, main_elem, user_settings) {
    temp_structs = 0
 
    let depth = 1, new_temp_structs = 1
-   let str = `<!LANGUAGE ${SETTINGS.datagen_language}>\n{\n${indent(depth)}DFXS__FROM_XML_SCHEMA: true,\n`
+   let str = `<!LANGUAGE ${SETTINGS.datagen_language}>\n{\n`
 
    let elements = xsd.content.filter(x => x.element == "element")
    if (!elements.length) str += indent(depth) + "DFXS_EMPTY_XML: true\n"

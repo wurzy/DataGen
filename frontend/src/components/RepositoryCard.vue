@@ -1,6 +1,6 @@
 <template>
   <div>
-  <a href="https://github.com/wurzy/DataGen" class="github-card" data-github="wurzy/DataGen" style="max-width:300px">
+  <a href="https://github.com/wurzy/DataGen" class="github-card" data-github="wurzy/DataGen" style="max-width:310px">
     <h3>{{this.name}}</h3>
     <p>{{this.description}}</p>
     <span class="github-card__meta">
@@ -27,6 +27,9 @@ import axios from 'axios'
 
 export default {
     name: "RepositoryCard",
+    props: {
+      repo: String
+    },
     data(){
         return {
             forks: 0,
@@ -40,7 +43,7 @@ export default {
         let instance = axios.create()
         delete instance.defaults.headers.common['Authorization'];
 
-        instance.get('https://api.github.com/repos/wurzy/datagen')
+        instance.get(this.repo)
             .then(data => {
                 this.forks = data.data.forks
                 this.stars = data.data.stargazers_count
@@ -82,7 +85,6 @@ body {
   color: #4078c0;
   font-size: 15px;
 }
-
 .github-card__meta {
   margin-right: 20px;
 }

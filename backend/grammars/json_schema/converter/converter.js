@@ -28,10 +28,7 @@ function convert(json, user_settings) {
 function parseJSON(json, depth, arr_offset) {
     // processar refs que tenham sido substítuidas dentro de chaves de composição de schemas
     if ("undef" in json.type) structureUndefType(json)
-
-    let str = parseType(json, depth, arr_offset)
-    if (depth==1 && str[0] != "{") str = "{\n" + indent(depth) + `DFJS_NOT_OBJECT: ${str}\n}`
-    return str
+    return parseType(json, depth, arr_offset)
 }
 
 // processa as chaves de composição de schemas pela ordem que aparecem no objeto
@@ -162,8 +159,11 @@ function parseNumericType(json, depth) {
     let integer = "integer" in json && json.integer
     let notInteger = "integer" in json && !json.integer
 
-    if (multipleOf === undefined) multipleOf = notInteger ? [0.4] : [1]
+    if (multipleOf === undefined) multipleOf = notInteger ? [0.43] : [1]
     else if (integer) multipleOf.push(1)
+
+    if (notMultipleOf !== undefined) multipleOf = multipleOf.filter(x => notMultipleOf.indexOf(x) == -1)
+    if (!multipleOf.length) multipleOf = notInteger ? [0.43] : [1]
 
     let any_frac = multipleOf.reduce((a,c) => a || (c%1 != 0), false)
     let max = null, min = null
@@ -234,7 +234,7 @@ function parseStringType(json) {
             case "regex": return `'{{regex()}}'`
 
             case "email": case "idn-email":
-                return `gen => { return gen.stringOfSize(5,20).replace(/[^a-zA-Z]/g, '').toLowerCase() + "@" + gen.random("gmail","yahoo","hotmail","outlook") + ".com" }`
+                return `'{{pattern("[a-z]{5,20}@(gmail|yahoo|hotmail|outlook)\\.com")}}'`
 
             case "hostname": case "idn-hostname":
                 return `gen => { return Array.apply(null, Array(gen.random(...gen.range(1,5)))).map(x => gen.stringOfSize(3,10).replace(/[^a-zA-Z]/g, '').toLowerCase()).join(".") }`
@@ -373,7 +373,7 @@ function parseObjectType(json, only_req, depth) {
     // converter o objeto final para string da DSL
     Object.keys(obj).map(k => str += `${indent(depth)}${k}: ${obj[k]},\n`)
 
-    if (str == "{\n") str = "{\n" + indent(depth) + "DFJS_EMPTY_JSON: true\n" + indent(depth-1) + "}"
+    if (str == "{\n") str = "{\n" + indent(depth) + "DFJS_EMPTY_OBJECT: true\n" + indent(depth-1) + "}"
     else str = `${str.slice(0, -2)}\n${indent(depth-1)}}`
     return str
 }
