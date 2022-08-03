@@ -3,7 +3,7 @@
 let indent = depth => '\t'.repeat(depth)
 
 function convertDSLToFunction(str) {
-   if (str == "{DFXS_IDREF}") return '"'+str+'"'
+   if (/{DFXS_ID(REF)?}/.test(str)) return '"'+str+'"'
    if (/^{{time/.test(str) && str.includes(".")) {
       str = str.split(".").map(x => x.slice(2,-2))
       return `gen.${str[0]}+"."+gen.${str[1]}`
@@ -413,7 +413,7 @@ function parseSimpleType(st, depth) {
 
    // derivação por união
    else if ("union" in st) {
-      let types = st.union.map(x => parseSimpleType(x, depth).str)
+      let types = st.union.map(x => parseSimpleType(x, depth))
 
       if (!st.union.some(x => "list" in x)) str = `gen => { return gen.random(${types.map(x => convertDSLToFunction(x.slice(1,-1))).join(", ")}) }`
       else str = parseComplexUnion(types, depth)

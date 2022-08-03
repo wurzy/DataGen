@@ -223,14 +223,11 @@ function parseStringType(json) {
 
     if ("notFormat" in json && "format" in json && json.notFormat.includes(json.format)) delete json.format
     if ("format" in json) {
-        let minDate = {date: ["01/01/1950", "00:00:00"], neg: false}
-        let defaultList = {max: 1, min: 1}
-        
         switch (json.format) {
-            case "date-time": return `'{{xsd_dateTime("dateTime",null,${JSON.stringify(minDate)},${JSON.stringify(defaultList)})}}'`
-            case "date": return `'{{xsd_dateTime("date",null,${JSON.stringify(minDate)},${JSON.stringify(defaultList)})}}'`
+            case "date-time": return `'{{xsd_dateTime("1950-01-01T00:00:00")}}'`
+            case "date": return `'{{xsd_date("1950-01-01")}}'`
             case "time": return `'{{time("hh:mm:ss", 24, false, "00:00:00", "23:59:59")}}'`
-            case "duration": return `'{{xsd_duration("P","P1Y",${JSON.stringify(defaultList)})}}'`
+            case "duration": return `'{{xsd_duration("P","P1Y")}}'`
             case "regex": return `'{{regex()}}'`
 
             case "email": case "idn-email":

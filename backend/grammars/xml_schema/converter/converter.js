@@ -342,7 +342,7 @@ function parseGroup(el, depth) {
          parsed = parseAll(el.content[0], depth+3)
          
          if (parsed.length > 0) {
-            parsed = parsed.replace(/\n\t+/g, "\n" + indent(depth+3)).replace(/\t+}/, indent(depth+2) + "}") // ajustar a formatação
+            parsed = parsed.replace(/(^|\n)(\t+)/g, (m,m1,m2) => m1 + indent(m2.length-1)).replace(/\t+}/, (m) => indent(m.length-1) + "}") // ajustar a formatação
             parsed = `${indent(depth+1)}DFXS_TEMP__${++temp_structs}: {\n${parsed}\n${indent(depth+1)}}`
          }
          break;
@@ -409,7 +409,7 @@ function parseCT_child_content(str, content, depth) {
    content.forEach(x => {
       let parsed
       switch (x.element) {
-         case "element": parsed = parseElement(x, depth, false); break;
+         case "element": parsed = indent(depth) + parseElement(x, depth, false); break;
          case "group": parsed = parseGroup(x, depth); break;
          case "sequence": parsed = parseSequence(x, depth); break;
          case "choice": parsed = parseChoice(x, depth); break;
