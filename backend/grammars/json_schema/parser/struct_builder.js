@@ -38,7 +38,7 @@ function structureSchemaData(obj, boolean, vars) {
   for (let k in obj) {
     if (k == "type") ;
     else if (k == "_datagen") {
-      let v_type = obj[k].type
+      let v_type = obj[k].type == "integer" ? "number" : obj[k].type
       if (!(v_type in schema.type)) schema.type[v_type] = {}
       schema.type[v_type][k] = obj[k]
       delete schema.type[v_type][k].type

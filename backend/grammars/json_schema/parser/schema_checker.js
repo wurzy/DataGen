@@ -60,7 +60,7 @@ function checkKeysByType(obj) {
 
   for (let k in obj) {
     if (!keywords.includes(k)) return error(`O tipo {<b>${obj.type.join("</b>, <b>")}</b>} não suporta a chave <b>${k}</b>!`)
-    if (k == "_datagen" && !(obj.type.includes(obj[k].type) || (obj[k].type == "integer" && obj.type.includes("number")))) return error(`O tipo de dados produzido pela função <b>${obj[k].func}</b> do DataGen não é suportado pela schema em questão!`)
+    if (k == "_datagen" && !(obj.type.includes(obj[k].type) || (obj[k].type == "integer" && obj.type.includes("number")) || (obj[k].type == "number" && obj.type.includes("integer")))) return error(`O tipo de dados produzido pela função <b>${obj[k].func}</b> do DataGen não é suportado pela schema em questão!`)
   }
       
   return true

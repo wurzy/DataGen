@@ -95,7 +95,7 @@ function parseType(json, depth, arr_offset) {
     }
     if ("_datagen" in json.type[type]) {
         let datagen = json.type[type]._datagen
-        if ("integer" in json.type[type]) datagen.args = "(" + lcm_two_numbers(1, parseFloat(datagen.args.slice(1,-1))) + ")"
+        if ("integer" in json.type[type] && ["float","multipleOf"].includes(datagen.func)) datagen.args = "(" + lcm_two_numbers(1, parseFloat(datagen.args.slice(1,-1))) + ")"
         return "'{{" + datagen.func + datagen.args + "}}'"
     }
 

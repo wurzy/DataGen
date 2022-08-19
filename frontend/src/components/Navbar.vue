@@ -109,7 +109,7 @@
       <div style="text-align: right;">
         <router-link to="" class="nav-link" @click.native="dfs">
           <li class="nav-item">
-            <font-awesome-icon icon="external-link-alt"/> DataGen From Schemas
+            <font-awesome-icon icon="external-link-alt"/>From Schemas
           </li>
         </router-link>
       </div>

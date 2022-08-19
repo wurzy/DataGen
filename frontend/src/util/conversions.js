@@ -90,8 +90,7 @@ function cleanJson2(json, dataset, flatten_map, depth) {
                 }
                 
                 if (typeof json[prop] == "object" && json[prop] != null) {
-                    dataset[prop_name] = {}
-
+                    dataset[prop_name] = Array.isArray(json[prop]) ? [] : {}
                     let res = cleanJson2(json[prop], dataset[prop_name], null, depth+1)
                     dataset[prop_name] = res.temp.length > 0 ? res.dataset[res.temp] : res.dataset
                 }

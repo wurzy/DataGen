@@ -409,7 +409,10 @@ function parseCT_child_content(str, content, depth) {
    content.forEach(x => {
       let parsed
       switch (x.element) {
-         case "element": parsed = indent(depth) + parseElement(x, depth, false); break;
+         case "element":
+            parsed = parseElement(x, depth, false)
+            if (parsed.length > 0) parsed = indent(depth) + parsed
+            break
          case "group": parsed = parseGroup(x, depth); break;
          case "sequence": parsed = parseSequence(x, depth); break;
          case "choice": parsed = parseChoice(x, depth); break;
