@@ -152,15 +152,15 @@ function jsonToXml(obj, settings) {
             }
             else if (typeof obj == "object") xml += "\n" //objetos
             
-            return xml + jsonToXml2(obj,1) + `</${settings.root_name}>`
+            return xml + jsonToXml2(obj,1,null) + `</${settings.root_name}>`
         }
     } 
-    return xml_declaration + "\n" + jsonToXml2(obj,0)
+    return xml_declaration + "\n" + jsonToXml2(obj,0,null)
 }
 
-function jsonToXml2(obj, depth) {
-    var xml = ''
-    var mixed = {bool: false, content: null}
+function jsonToXml2(obj, depth, mix) {
+    let xml = ''
+    let mixed = mix !== null ? mix : {bool: false, content: null}
     let keys = Object.keys(obj)
 
     // se for mixed, para só escrever texto entre partículas depois dos atributos
@@ -176,8 +176,8 @@ function jsonToXml2(obj, depth) {
             mixed.bool = true
             if (prop == "DFXS_MIXED_RESTRICTED") mixed.content = obj[prop]
         }
-        else if (/^DFXS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth)
-        else if (/^DFXS_FLATTEN__\d+/.test(prop)) xml += obj[prop].reduce((str,cur) => str += jsonToXml2(cur, depth), "")
+        else if (/^DFXS_TEMP__\d+/.test(prop)) xml += jsonToXml2(obj[prop], depth, mixed.bool ? mixed : null)
+        else if (/^DFXS_FLATTEN__\d+/.test(prop)) xml += obj[prop].reduce((str,cur) => str += jsonToXml2(cur, depth, mixed.bool ? mixed : null), "")
         else if (/^DFXS_SIMPLE_CONTENT/.test(prop)) xml += '\t'.repeat(depth) + obj[prop] + '\n'
         else {
             let prop_name = prop
@@ -205,7 +205,7 @@ function jsonToXml2(obj, depth) {
                     empty = !child_keys.length
                     onlyAttrs = child_keys.length > 0 && child_keys.every(k => /^DFXS(_NORMALIZED)?_ATTR__/.test(k))
 
-                    let content = jsonToXml2(obj[prop], next_depth)
+                    let content = jsonToXml2(obj[prop], next_depth, mixed.bool ? mixed : null)
                     if (content[0] == " ") xml = xml.slice(0, -2) // atributos
                     xml += content
                 }
