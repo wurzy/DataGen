@@ -38,12 +38,10 @@ true  = "true"  { return true;  }
 
 
 // ----- Keywords -----
-
 keyword = datagen_keyword / generic_keyword / string_keyword / number_keyword / object_keyword / array_keyword / 
           media_keyword / schemaComposition_keyword / conditionalSubschemas_keyword / structuring_keyword
 
 // ---------- Keywords generic ----------
-
 generic_keyword = kw_type / kw_enum / kw_const / kw_default / annotation_keyword
 
 kw_type = QM key:"type" QM name_separator value:type_value {return {key, value}}
@@ -55,7 +53,6 @@ kw_const = QM key:"const" QM name_separator value:value {return {key, value: [va
 kw_default = QM key:"default" QM name_separator value:value {return {key, value: [value]}}
 
 // ---------- Keywords annotation ----------
-
 annotation_keyword = (kws_annotation_stringValues / kw_examples / kws_annotation_booleanValues) {return null}
 
 kws_annotation_stringValues = QM key:$("title"/"description"/"$comment") QM name_separator value:string {return {key, value}}
@@ -63,7 +60,6 @@ kw_examples = QM key:"examples" QM name_separator value:array {return {key, valu
 kws_annotation_booleanValues = QM key:$("readOnly"/"writeOnly"/"deprecated") QM name_separator value:boolean {return {key, value}}
 
 // ---------- Keywords string ----------
-
 string_keyword = kws_string_length / kw_pattern / kw_format
 
 kws_string_length = QM key:$("minLength"/"maxLength") QM name_separator value:int {return {key, value}}
@@ -74,14 +70,12 @@ format_value = QM f:("date-time" / "time" / "date" / "duration" / "email" / "idn
                / "uuid" / "uri-reference" / "uri-template" / "uri" / "iri-reference" / "iri" / "json-pointer" / "relative-json-pointer" / "regex") QM {return f}
 
 // ---------- Keywords number ----------
-
 number_keyword = kw_multipleOf / kws_range
 
 kw_multipleOf = QM key:"multipleOf" QM name_separator value:positiveNumber {return {key, value: [value]}}
 kws_range = QM key:$("minimum"/"exclusiveMinimum"/"maximum"/"exclusiveMaximum") QM name_separator value:number {return {key, value}}
 
 // ---------- Keywords object ----------
-
 object_keyword = kws_props / kw_moreProps / kw_requiredProps / kw_propertyNames / kws_size
 
 kws_props = QM key:$("patternProperties"/"properties") QM name_separator value:object_schemaMap &{return aux.checkFalseProp(key, value, error)} {return {key, value}}
@@ -91,7 +85,6 @@ kw_propertyNames = QM key:$("propertyNames" {current_key = "propertyNames"}) QM 
 kws_size = QM key:$("minProperties"/"maxProperties") QM name_separator value:int {return {key, value}}
 
 // ---------- Keywords array ----------
-
 array_keyword = kw_items / kw_prefixItems / kw_unevaluatedItems / kw_contains / kws_mContains / kws_array_length / kw_uniqueness
 
 kw_items = QM key:"items" QM name_separator value:schema_object {return {key, value}}
@@ -103,7 +96,6 @@ kws_array_length = QM key:$("minItems"/"maxItems") QM name_separator value:int {
 kw_uniqueness = QM key:"uniqueItems" QM name_separator value:boolean {return {key, value}}
 
 // ---------- Keywords media ----------
-
 media_keyword = (kw_contentMediaType / kw_contentEncoding / kw_contentSchema) {return null}
 
 kw_contentMediaType = QM key:"contentMediaType" QM name_separator value:string {return {key, value}}
@@ -114,14 +106,12 @@ encoding = QM e:$("7bit" / "8bit" / "binary" / "quoted-printable" / "base16" / "
 kw_contentSchema = QM key:"contentSchema" QM name_separator value:schema_object {return {key, value}}
 
 // ---------- Keywords schema composition ----------
-
 schemaComposition_keyword = kws_combineSchemas / kw_notSchema
 
 kws_combineSchemas = QM key:$("allOf"/"anyOf"/"oneOf") QM name_separator value:schema_array &{return aux.checkCompositionTypes(key, value, error)} {return {key, value}}
 kw_notSchema = QM key:$("not" {current_key = "not"}) QM name_separator value:schema_object {current_key = ""; return {key, value}}
 
 // ---------- Keywords conditional subschemas ----------
-
 conditionalSubschemas_keyword = kw_dependentRequired / kw_dependentSchemas / kw_ifThenElse
 
 kw_dependentRequired = QM key:"dependentRequired" QM name_separator value:object_arrayOfStringsMap {return {key, value}}
@@ -129,7 +119,6 @@ kw_dependentSchemas = QM key:"dependentSchemas" QM name_separator value:object_s
 kw_ifThenElse = QM key:$(k:("if"/"then"/"else") {current_key = k}) QM name_separator value:schema_object &{return key != "if" ? aux.checkFalseSchema(key,value,error) : true} {current_key = ""; return {key, value}}
 
 // ---------- Keywords structuring ----------
-
 structuring_keyword = kw_schema / kw_id / kw_anchor / kw_ref / kw_defs
 
 kw_schema = QM key:"$schema" QM name_separator value:schema_value &{return atRoot(key)} {return null}//{key, value}}
@@ -142,7 +131,7 @@ kw_ref = QM key:"$ref" QM name_separator value:schema_ref {return {key, value}}
 kw_defs = QM key:"$defs" QM name_separator value:object_schemaMap {return {key, value}}
 
 
-// ----- Objetos -----
+// ----- Objects -----
 
 schema_object
   = boolean:boolean { return structureSchemaData(null, boolean, {current_key, error}) } /
@@ -189,8 +178,7 @@ object
     })? end_object
     { return members !== null ? members: {}; }
 
-member /* "object member" */
-  = name:string name_separator value:value {return {name, value}}
+member = name:string name_separator value:value {return {name, value}}
 
 object_schemaMap
   = begin_object members:(
@@ -201,8 +189,7 @@ object_schemaMap
     })? end_object
     { return members !== null ? members: {}; }
 
-schema_member /* "object member with a schema value" */
-  = name:string name_separator value:schema_object {return {name, value}}
+schema_member = name:string name_separator value:schema_object {return {name, value}}
 
 object_arrayOfStringsMap
   = begin_object members:(
@@ -213,8 +200,7 @@ object_arrayOfStringsMap
     })? end_object
     { return members !== null ? members: {}; }
 
-arrayOfStrings_member /* "object member with a string array value" */
-  = name:string name_separator value:string_array {return {name, value}}
+arrayOfStrings_member = name:string name_separator value:string_array {return {name, value}}
 
 
 // ----- Arrays -----
@@ -248,7 +234,7 @@ type_array "array of JSON types"
     { return values !== null ? values : error("O array de tipos não pode ser vazio!"); }
 
 
-// ----- Números -----
+// ----- Numbers -----
 
 number "number" = "-"? int frac? { return parseFloat(text()); }
 positiveNumber "positive number" = ("0" frac / [1-9] [0-9]* frac?) { return parseFloat(text()); }
@@ -256,8 +242,7 @@ positiveNumber "positive number" = ("0" frac / [1-9] [0-9]* frac?) { return pars
 exp = [eE] ("-"/"+")? [0-9]+
 frac = "." [0-9]+
 
-int "integer" 
-  = integer:(("0"* i:([1-9] [0-9]*) {return i}) / (i:"0" "0"* {return i})) {return parseInt(Array.isArray(integer) ? integer.flat().join("") : integer)}
+int "integer" = integer:(("0"* i:([1-9] [0-9]*) {return i}) / (i:"0" "0"* {return i})) {return parseInt(Array.isArray(integer) ? integer.flat().join("") : integer)}
 
 
 // ----- Strings -----
